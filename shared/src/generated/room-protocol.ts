@@ -176,7 +176,9 @@ export type RoomCommand = {
   "roomId"?: string | null;
   "expectedRoomRevision"?: number | null;
   "command": "CREATE_ROOM" | "JOIN_ROOM" | "LEAVE_ROOM" | "SET_READY" | "CHANGE_SEAT" | "UPDATE_ROOM_SETTINGS" | "KICK_PLAYER" | "TRANSFER_HOST" | "START_GAME" | "CLOSE_ROOM" | "PRESELECT_CHARACTER" | "LOCK_CHARACTER" | "SEND_CHAT";
-  "payload": CreateRoomPayload | JoinRoomPayload | SetReadyPayload | ChangeSeatPayload | UpdateRoomSettingsPayload | TargetUserPayload | PreselectCharacterPayload | LockCharacterPayload | RoomSendChatPayload | EmptyPayload;
+  "payload": {
+
+};
 };
 
 export type RoomCommandAccepted = {
