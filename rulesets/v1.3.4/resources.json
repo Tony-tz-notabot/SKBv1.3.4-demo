@@ -1,0 +1,1583 @@
+{
+  "rulesetVersion": "1.3.4",
+  "fallbackPolicy": [
+    "specific",
+    "category_placeholder",
+    "generic_placeholder"
+  ],
+  "items": [
+    {
+      "resourceKey": "character.character.knight",
+      "entityId": "character.knight",
+      "assetPath": "assets/角色/骑士.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.alchemist",
+      "entityId": "character.alchemist",
+      "assetPath": "assets/角色/炼金术士.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.headtaker",
+      "entityId": "character.headtaker",
+      "assetPath": "assets/角色/枭首者.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.werewolf",
+      "entityId": "character.werewolf",
+      "assetPath": "assets/角色/狼人.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.paladin",
+      "entityId": "character.paladin",
+      "assetPath": "assets/角色/圣骑士.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.elf",
+      "entityId": "character.elf",
+      "assetPath": "assets/角色/精灵.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.ranger",
+      "entityId": "character.ranger",
+      "assetPath": "assets/角色/游侠.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.taoist",
+      "entityId": "character.taoist",
+      "assetPath": "assets/角色/道士.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.priest",
+      "entityId": "character.priest",
+      "assetPath": "assets/角色/牧师.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.punching_bag",
+      "entityId": "character.punching_bag",
+      "assetPath": "assets/角色/拳击柱.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.interdimensional_traveler",
+      "entityId": "character.interdimensional_traveler",
+      "assetPath": "assets/角色/超界者.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.ancient_elementalist",
+      "entityId": "character.ancient_elementalist",
+      "assetPath": "assets/角色/古代元素使.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.miner",
+      "entityId": "character.miner",
+      "assetPath": "assets/角色/矿工.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.demonmancer",
+      "entityId": "character.demonmancer",
+      "assetPath": "assets/角色/恶魔术士.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.necromancer",
+      "entityId": "character.necromancer",
+      "assetPath": "assets/角色/死灵法师.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.robot",
+      "entityId": "character.robot",
+      "assetPath": "assets/角色/机器人.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.assassin",
+      "entityId": "character.assassin",
+      "assetPath": "assets/角色/刺客.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.wizard",
+      "entityId": "character.wizard",
+      "assetPath": "assets/角色/法师.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.qi_master",
+      "entityId": "character.qi_master",
+      "assetPath": "assets/角色/气宗.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.trap_master",
+      "entityId": "character.trap_master",
+      "assetPath": "assets/角色/陷阱大师.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.engineer",
+      "entityId": "character.engineer",
+      "assetPath": "assets/角色/工程师.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.druid",
+      "entityId": "character.druid",
+      "assetPath": "assets/角色/德鲁伊.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.berserker",
+      "entityId": "character.berserker",
+      "assetPath": "assets/角色/狂战士.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.shaman",
+      "entityId": "character.shaman",
+      "assetPath": "assets/角色/萨满.png",
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "character.character.general",
+      "entityId": "character.general",
+      "assetPath": null,
+      "fallbackResourceKey": "placeholder.character"
+    },
+    {
+      "resourceKey": "card.basic.kill.white",
+      "entityId": "basic.kill.white",
+      "assetPath": "assets/基础牌/杀-白.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.kill.green",
+      "entityId": "basic.kill.green",
+      "assetPath": "assets/基础牌/杀-绿.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.kill.blue",
+      "entityId": "basic.kill.blue",
+      "assetPath": "assets/基础牌/杀-蓝.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.kill.orange",
+      "entityId": "basic.kill.orange",
+      "assetPath": "assets/基础牌/杀-橙.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.kill.red",
+      "entityId": "basic.kill.red",
+      "assetPath": "assets/基础牌/杀-红.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.dodge.white",
+      "entityId": "basic.dodge.white",
+      "assetPath": "assets/基础牌/闪-白.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.dodge.green",
+      "entityId": "basic.dodge.green",
+      "assetPath": "assets/基础牌/闪-绿.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.dodge.blue",
+      "entityId": "basic.dodge.blue",
+      "assetPath": "assets/基础牌/闪-蓝.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.dodge.orange",
+      "entityId": "basic.dodge.orange",
+      "assetPath": "assets/基础牌/闪-橙.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.dodge.red",
+      "entityId": "basic.dodge.red",
+      "assetPath": "assets/基础牌/闪-红.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.potion.white",
+      "entityId": "basic.potion.white",
+      "assetPath": "assets/基础牌/药水-白.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.potion.green",
+      "entityId": "basic.potion.green",
+      "assetPath": "assets/基础牌/药水-绿.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.potion.blue",
+      "entityId": "basic.potion.blue",
+      "assetPath": "assets/基础牌/药水-蓝.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.potion.orange",
+      "entityId": "basic.potion.orange",
+      "assetPath": "assets/基础牌/药水-橙.png",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.potion.red",
+      "entityId": "basic.potion.red",
+      "assetPath": "assets/基础牌/药水-红.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.horn.white",
+      "entityId": "basic.horn.white",
+      "assetPath": "assets/基础牌/号角.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.horn.green",
+      "entityId": "basic.horn.green",
+      "assetPath": "assets/基础牌/号角-绿.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.horn.blue",
+      "entityId": "basic.horn.blue",
+      "assetPath": "assets/基础牌/号角-蓝.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.horn.orange",
+      "entityId": "basic.horn.orange",
+      "assetPath": "assets/基础牌/号角-橙.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.horn.red",
+      "entityId": "basic.horn.red",
+      "assetPath": "assets/基础牌/号角-红.jpg",
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.coin.white",
+      "entityId": "basic.coin.white",
+      "assetPath": null,
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.basic.coin.red",
+      "entityId": "basic.coin.red",
+      "assetPath": null,
+      "fallbackResourceKey": "placeholder.basic"
+    },
+    {
+      "resourceKey": "card.weapon.w01",
+      "entityId": "weapon.w01",
+      "assetPath": "assets/武器/火焰之鹰.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w02",
+      "entityId": "weapon.w02",
+      "assetPath": "assets/武器/晶蟹钛刀.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w03",
+      "entityId": "weapon.w03",
+      "assetPath": "assets/武器/咖喱棒.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w04",
+      "entityId": "weapon.w04",
+      "assetPath": "assets/武器/炸药包.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w05",
+      "entityId": "weapon.w05",
+      "assetPath": "assets/武器/陨星炮.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w06",
+      "entityId": "weapon.w06",
+      "assetPath": "assets/武器/人民冲锋枪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w07",
+      "entityId": "weapon.w07",
+      "assetPath": "assets/武器/粒子之鹰.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w08",
+      "entityId": "weapon.w08",
+      "assetPath": "assets/武器/剧毒之鹰.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w09",
+      "entityId": "weapon.w09",
+      "assetPath": "assets/武器/霰弹枪二代.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w10",
+      "entityId": "weapon.w10",
+      "assetPath": "assets/武器/有机后浪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w11",
+      "entityId": "weapon.w11",
+      "assetPath": "assets/武器/弹弓.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w12",
+      "entityId": "weapon.w12",
+      "assetPath": "assets/武器/激光雨.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w13",
+      "entityId": "weapon.w13",
+      "assetPath": "assets/武器/大葱.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w14",
+      "entityId": "weapon.w14",
+      "assetPath": "assets/武器/天地通意拳.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w15",
+      "entityId": "weapon.w15",
+      "assetPath": "assets/武器/浮游炮.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w16",
+      "entityId": "weapon.w16",
+      "assetPath": "assets/武器/猎人弓.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w17",
+      "entityId": "weapon.w17",
+      "assetPath": "assets/武器/樱花霰弹枪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w18",
+      "entityId": "weapon.w18",
+      "assetPath": "assets/武器/天堂之拳.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w19",
+      "entityId": "weapon.w19",
+      "assetPath": "assets/武器/迷你UZI.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w20",
+      "entityId": "weapon.w20",
+      "assetPath": "assets/武器/近卫大剑.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w21",
+      "entityId": "weapon.w21",
+      "assetPath": "assets/武器/刺枪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w22",
+      "entityId": "weapon.w22",
+      "assetPath": "assets/武器/绿色的盆.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w23",
+      "entityId": "weapon.w23",
+      "assetPath": "assets/武器/手里剑.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w24",
+      "entityId": "weapon.w24",
+      "assetPath": "assets/武器/风魔手里剑.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w25",
+      "entityId": "weapon.w25",
+      "assetPath": "assets/武器/木锤.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w26",
+      "entityId": "weapon.w26",
+      "assetPath": "assets/武器/爆炸战锤.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w27",
+      "entityId": "weapon.w27",
+      "assetPath": "assets/武器/冰川.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w28",
+      "entityId": "weapon.w28",
+      "assetPath": "assets/武器/熔炉.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w29",
+      "entityId": "weapon.w29",
+      "assetPath": "assets/武器/极光.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w30",
+      "entityId": "weapon.w30",
+      "assetPath": "assets/武器/一拳.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w31",
+      "entityId": "weapon.w31",
+      "assetPath": "assets/武器/魅影.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w32",
+      "entityId": "weapon.w32",
+      "assetPath": "assets/武器/破旧的手枪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w33",
+      "entityId": "weapon.w33",
+      "assetPath": "assets/武器/妙妙枪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w34",
+      "entityId": "weapon.w34",
+      "assetPath": "assets/武器/光剑蓝.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w35",
+      "entityId": "weapon.w35",
+      "assetPath": "assets/武器/光剑绿.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w36",
+      "entityId": "weapon.w36",
+      "assetPath": "assets/武器/光剑红.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w37",
+      "entityId": "weapon.w37",
+      "assetPath": "assets/武器/光剑土豪金.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w38",
+      "entityId": "weapon.w38",
+      "assetPath": "assets/武器/光剑紫.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w39",
+      "entityId": "weapon.w39",
+      "assetPath": "assets/武器/一拳（白）.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w40",
+      "entityId": "weapon.w40",
+      "assetPath": "assets/武器/破碎的剑刃.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w41",
+      "entityId": "weapon.w41",
+      "assetPath": "assets/武器/破碎的剑柄.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w42",
+      "entityId": "weapon.w42",
+      "assetPath": "assets/武器/重铸的圣剑.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w43",
+      "entityId": "weapon.w43",
+      "assetPath": "assets/武器/重生十字章.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w44",
+      "entityId": "weapon.w44",
+      "assetPath": "assets/武器/冰霜之鹰.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w45",
+      "entityId": "weapon.w45",
+      "assetPath": "assets/武器/沙漠之鹰.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w46",
+      "entityId": "weapon.w46",
+      "assetPath": "assets/武器/左轮手枪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w47",
+      "entityId": "weapon.w47",
+      "assetPath": "assets/武器/雪狐土豪金.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w48",
+      "entityId": "weapon.w48",
+      "assetPath": "assets/武器/雪狐玫瑰金.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w49",
+      "entityId": "weapon.w49",
+      "assetPath": "assets/武器/冰与火之鹰.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w50",
+      "entityId": "weapon.w50",
+      "assetPath": "assets/武器/玄冥.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w51",
+      "entityId": "weapon.w51",
+      "assetPath": "assets/武器/火龙步枪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w52",
+      "entityId": "weapon.w52",
+      "assetPath": "assets/武器/千本.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w53",
+      "entityId": "weapon.w53",
+      "assetPath": "assets/武器/砍刀.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w54",
+      "entityId": "weapon.w54",
+      "assetPath": "assets/武器/撒币枪.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w55",
+      "entityId": "weapon.w55",
+      "assetPath": "assets/武器/大巫师之杖.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w56",
+      "entityId": "weapon.w56",
+      "assetPath": "assets/武器/阿努比斯的权杖.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w57",
+      "entityId": "weapon.w57",
+      "assetPath": "assets/武器/死神之息.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w58",
+      "entityId": "weapon.w58",
+      "assetPath": "assets/武器/陨星杖.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w59",
+      "entityId": "weapon.w59",
+      "assetPath": "assets/武器/金蟹战锤.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w60",
+      "entityId": "weapon.w60",
+      "assetPath": "assets/武器/法老之刃.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w61",
+      "entityId": "weapon.w61",
+      "assetPath": "assets/武器/扳手.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w62",
+      "entityId": "weapon.w62",
+      "assetPath": "assets/武器/地下水（崭新出厂）.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w63",
+      "entityId": "weapon.w63",
+      "assetPath": "assets/武器/肉.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w64",
+      "entityId": "weapon.w64",
+      "assetPath": "assets/武器/激光鱼.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w65",
+      "entityId": "weapon.w65",
+      "assetPath": "assets/武器/尚方宝剑.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.weapon.w66",
+      "entityId": "weapon.w66",
+      "assetPath": "assets/武器/进水的箱子.png",
+      "fallbackResourceKey": "placeholder.weapon"
+    },
+    {
+      "resourceKey": "card.armor.a01",
+      "entityId": "armor.a01",
+      "assetPath": "assets/防具/双节棍.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.armor.a02",
+      "entityId": "armor.a02",
+      "assetPath": "assets/防具/箱子.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.armor.a03",
+      "entityId": "armor.a03",
+      "assetPath": "assets/防具/光剑土豪金.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.armor.a04",
+      "entityId": "armor.a04",
+      "assetPath": "assets/防具/盾牌.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.armor.a05",
+      "entityId": "armor.a05",
+      "assetPath": "assets/防具/幽灵王冠.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.armor.a06",
+      "entityId": "armor.a06",
+      "assetPath": "assets/防具/精致法杖.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.armor.a07",
+      "entityId": "armor.a07",
+      "assetPath": "assets/防具/斩首者.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.armor.a08",
+      "entityId": "armor.a08",
+      "assetPath": "assets/防具/圆盾.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.armor.a09",
+      "entityId": "armor.a09",
+      "assetPath": "assets/防具/陷阱箱.png",
+      "fallbackResourceKey": "placeholder.armor"
+    },
+    {
+      "resourceKey": "card.talent.strong_potion",
+      "entityId": "talent.strong_potion",
+      "assetPath": "assets/天赋/强力药水.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.triple_wield",
+      "entityId": "talent.triple_wield",
+      "assetPath": "assets/天赋/三持.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.max_hp_up",
+      "entityId": "talent.max_hp_up",
+      "assetPath": "assets/天赋/血量上限增加.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.max_shield_up",
+      "entityId": "talent.max_shield_up",
+      "assetPath": "assets/天赋/护盾上限增加.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.melee_counter",
+      "entityId": "talent.melee_counter",
+      "assetPath": "assets/天赋/近反.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.poison_shield",
+      "entityId": "talent.poison_shield",
+      "assetPath": "assets/天赋/毒盾.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.hand_limit_up",
+      "entityId": "talent.hand_limit_up",
+      "assetPath": "assets/天赋/能量上限增加.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.shop_discount",
+      "entityId": "talent.shop_discount",
+      "assetPath": "assets/天赋/商店半价.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.blood_box",
+      "entityId": "talent.blood_box",
+      "assetPath": "assets/天赋/血箱.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.life_steal",
+      "entityId": "talent.life_steal",
+      "assetPath": "assets/天赋/吸血.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.blue_shield",
+      "entityId": "talent.blue_shield",
+      "assetPath": "assets/天赋/蓝盾.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.ice_shield",
+      "entityId": "talent.ice_shield",
+      "assetPath": "assets/天赋/冰盾.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.mana_siphon",
+      "entityId": "talent.mana_siphon",
+      "assetPath": "assets/天赋/吸蓝.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.electric_shield",
+      "entityId": "talent.electric_shield",
+      "assetPath": "assets/天赋/电盾.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.combo_up",
+      "entityId": "talent.combo_up",
+      "assetPath": "assets/天赋/连击增加.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.fire_shield",
+      "entityId": "talent.fire_shield",
+      "assetPath": null,
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.spike_shield",
+      "entityId": "talent.spike_shield",
+      "assetPath": "assets/天赋/刺盾.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.critical_penetration",
+      "entityId": "talent.critical_penetration",
+      "assetPath": "assets/天赋/暴击穿透.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.scatter_up",
+      "entityId": "talent.scatter_up",
+      "assetPath": "assets/天赋/散弹增加.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.melee_range_up",
+      "entityId": "talent.melee_range_up",
+      "assetPath": "assets/天赋/近战距离增加.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.shield_breaker",
+      "entityId": "talent.shield_breaker",
+      "assetPath": "assets/天赋/碎盾.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.precision_strike",
+      "entityId": "talent.precision_strike",
+      "assetPath": "assets/天赋/精确打击.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.charge_acceleration",
+      "entityId": "talent.charge_acceleration",
+      "assetPath": "assets/天赋/蓄力加快.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.statue_double_trigger",
+      "entityId": "talent.statue_double_trigger",
+      "assetPath": "assets/天赋/雕像双触.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.talent.extra_gem",
+      "entityId": "talent.extra_gem",
+      "assetPath": "assets/天赋/额外宝石.png",
+      "fallbackResourceKey": "placeholder.talent"
+    },
+    {
+      "resourceKey": "card.mount.m01",
+      "entityId": "mount.m01",
+      "assetPath": "assets/坐骑/野猪.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m02",
+      "entityId": "mount.m02",
+      "assetPath": "assets/坐骑/温顺雪人.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m03",
+      "entityId": "mount.m03",
+      "assetPath": "assets/坐骑/暴走野猪.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m04",
+      "entityId": "mount.m04",
+      "assetPath": "assets/坐骑/水晶虫.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m05",
+      "entityId": "mount.m05",
+      "assetPath": "assets/坐骑/蜣螂.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m06",
+      "entityId": "mount.m06",
+      "assetPath": null,
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m07",
+      "entityId": "mount.m07",
+      "assetPath": "assets/坐骑/白龙马.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m08",
+      "entityId": "mount.m08",
+      "assetPath": "assets/坐骑/浮游装置.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m09",
+      "entityId": "mount.m09",
+      "assetPath": "assets/坐骑/铁拳.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m10",
+      "entityId": "mount.m10",
+      "assetPath": "assets/坐骑/瓦克恩.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.mount.m11",
+      "entityId": "mount.m11",
+      "assetPath": "assets/坐骑/百变怪.png",
+      "fallbackResourceKey": "placeholder.mount"
+    },
+    {
+      "resourceKey": "card.statue.wizard.white",
+      "entityId": "statue.wizard.white",
+      "assetPath": "assets/雕像/巫师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.wizard.green",
+      "entityId": "statue.wizard.green",
+      "assetPath": "assets/雕像/巫师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.wizard.blue",
+      "entityId": "statue.wizard.blue",
+      "assetPath": "assets/雕像/巫师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.wizard.orange",
+      "entityId": "statue.wizard.orange",
+      "assetPath": "assets/雕像/巫师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.wizard.red",
+      "entityId": "statue.wizard.red",
+      "assetPath": "assets/雕像/巫师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.werewolf.white",
+      "entityId": "statue.werewolf.white",
+      "assetPath": "assets/雕像/狼人雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.werewolf.green",
+      "entityId": "statue.werewolf.green",
+      "assetPath": "assets/雕像/狼人雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.werewolf.blue",
+      "entityId": "statue.werewolf.blue",
+      "assetPath": "assets/雕像/狼人雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.werewolf.orange",
+      "entityId": "statue.werewolf.orange",
+      "assetPath": "assets/雕像/狼人雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.werewolf.red",
+      "entityId": "statue.werewolf.red",
+      "assetPath": "assets/雕像/狼人雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.elf.white",
+      "entityId": "statue.elf.white",
+      "assetPath": "assets/雕像/珺之精灵雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.elf.green",
+      "entityId": "statue.elf.green",
+      "assetPath": "assets/雕像/珺之精灵雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.elf.blue",
+      "entityId": "statue.elf.blue",
+      "assetPath": "assets/雕像/珺之精灵雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.elf.orange",
+      "entityId": "statue.elf.orange",
+      "assetPath": "assets/雕像/珺之精灵雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.elf.red",
+      "entityId": "statue.elf.red",
+      "assetPath": "assets/雕像/珺之精灵雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.rogue.white",
+      "entityId": "statue.rogue.white",
+      "assetPath": "assets/雕像/盗贼雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.rogue.green",
+      "entityId": "statue.rogue.green",
+      "assetPath": "assets/雕像/盗贼雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.rogue.blue",
+      "entityId": "statue.rogue.blue",
+      "assetPath": "assets/雕像/盗贼雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.rogue.orange",
+      "entityId": "statue.rogue.orange",
+      "assetPath": "assets/雕像/盗贼雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.rogue.red",
+      "entityId": "statue.rogue.red",
+      "assetPath": "assets/雕像/盗贼雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.berserker.white",
+      "entityId": "statue.berserker.white",
+      "assetPath": "assets/雕像/狂战士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.berserker.green",
+      "entityId": "statue.berserker.green",
+      "assetPath": "assets/雕像/狂战士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.berserker.blue",
+      "entityId": "statue.berserker.blue",
+      "assetPath": "assets/雕像/狂战士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.berserker.orange",
+      "entityId": "statue.berserker.orange",
+      "assetPath": "assets/雕像/狂战士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.berserker.red",
+      "entityId": "statue.berserker.red",
+      "assetPath": "assets/雕像/狂战士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.paladin.white",
+      "entityId": "statue.paladin.white",
+      "assetPath": "assets/雕像/圣骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.paladin.green",
+      "entityId": "statue.paladin.green",
+      "assetPath": "assets/雕像/圣骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.paladin.blue",
+      "entityId": "statue.paladin.blue",
+      "assetPath": "assets/雕像/圣骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.paladin.orange",
+      "entityId": "statue.paladin.orange",
+      "assetPath": "assets/雕像/圣骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.paladin.red",
+      "entityId": "statue.paladin.red",
+      "assetPath": "assets/雕像/圣骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.priest.white",
+      "entityId": "statue.priest.white",
+      "assetPath": "assets/雕像/牧师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.priest.green",
+      "entityId": "statue.priest.green",
+      "assetPath": "assets/雕像/牧师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.priest.blue",
+      "entityId": "statue.priest.blue",
+      "assetPath": "assets/雕像/牧师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.priest.orange",
+      "entityId": "statue.priest.orange",
+      "assetPath": "assets/雕像/牧师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.priest.red",
+      "entityId": "statue.priest.red",
+      "assetPath": "assets/雕像/牧师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.knight.white",
+      "entityId": "statue.knight.white",
+      "assetPath": "assets/雕像/骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.knight.green",
+      "entityId": "statue.knight.green",
+      "assetPath": "assets/雕像/骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.knight.blue",
+      "entityId": "statue.knight.blue",
+      "assetPath": "assets/雕像/骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.knight.orange",
+      "entityId": "statue.knight.orange",
+      "assetPath": "assets/雕像/骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.knight.red",
+      "entityId": "statue.knight.red",
+      "assetPath": "assets/雕像/骑士雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.assassin.white",
+      "entityId": "statue.assassin.white",
+      "assetPath": "assets/雕像/刺客雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.assassin.green",
+      "entityId": "statue.assassin.green",
+      "assetPath": "assets/雕像/刺客雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.assassin.blue",
+      "entityId": "statue.assassin.blue",
+      "assetPath": "assets/雕像/刺客雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.assassin.orange",
+      "entityId": "statue.assassin.orange",
+      "assetPath": "assets/雕像/刺客雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.assassin.red",
+      "entityId": "statue.assassin.red",
+      "assetPath": "assets/雕像/刺客雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.engineer.white",
+      "entityId": "statue.engineer.white",
+      "assetPath": "assets/雕像/工程师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.engineer.green",
+      "entityId": "statue.engineer.green",
+      "assetPath": "assets/雕像/工程师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.engineer.blue",
+      "entityId": "statue.engineer.blue",
+      "assetPath": "assets/雕像/工程师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.engineer.orange",
+      "entityId": "statue.engineer.orange",
+      "assetPath": "assets/雕像/工程师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.statue.engineer.red",
+      "entityId": "statue.engineer.red",
+      "assetPath": "assets/雕像/工程师雕像.png",
+      "fallbackResourceKey": "placeholder.statue"
+    },
+    {
+      "resourceKey": "card.special.sp01",
+      "entityId": "special.sp01",
+      "assetPath": "assets/特殊/网瘾少年.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp02",
+      "entityId": "special.sp02",
+      "assetPath": "assets/特殊/网瘾少女.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp03",
+      "entityId": "special.sp03",
+      "assetPath": "assets/特殊/羊叫兽.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp04",
+      "entityId": "special.sp04",
+      "assetPath": "assets/特殊/死亡笔记.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp05",
+      "entityId": "special.sp05",
+      "assetPath": "assets/特殊/重铸熔炉.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp06",
+      "entityId": "special.sp06",
+      "assetPath": "assets/特殊/起源熔炉.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp07",
+      "entityId": "special.sp07",
+      "assetPath": "assets/特殊/号角小队.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp08",
+      "entityId": "special.sp08",
+      "assetPath": null,
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp09",
+      "entityId": "special.sp09",
+      "assetPath": "assets/特殊/超级大宝贝儿.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp10",
+      "entityId": "special.sp10",
+      "assetPath": "assets/特殊/奉献池.png",
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.special.sp11",
+      "entityId": "special.sp11",
+      "assetPath": null,
+      "fallbackResourceKey": "placeholder.special"
+    },
+    {
+      "resourceKey": "card.boss.purple_lord",
+      "entityId": "boss.purple_lord",
+      "assetPath": "assets/BOSS/紫爵士.png",
+      "fallbackResourceKey": "placeholder.boss"
+    },
+    {
+      "resourceKey": "card.boss.red_lord",
+      "entityId": "boss.red_lord",
+      "assetPath": "assets/BOSS/红爵士.png",
+      "fallbackResourceKey": "placeholder.boss"
+    },
+    {
+      "resourceKey": "card.boss.iron_pirate_king",
+      "entityId": "boss.iron_pirate_king",
+      "assetPath": "assets/BOSS/钢铁破浪者号.png",
+      "fallbackResourceKey": "placeholder.boss"
+    },
+    {
+      "resourceKey": "card.boss.crystal_crab",
+      "entityId": "boss.crystal_crab",
+      "assetPath": "assets/BOSS/水晶巨蟹.png",
+      "fallbackResourceKey": "placeholder.boss"
+    },
+    {
+      "resourceKey": "card.boss.c6h8o6",
+      "entityId": "boss.c6h8o6",
+      "assetPath": "assets/BOSS/C6H8O6.png",
+      "fallbackResourceKey": "placeholder.boss"
+    },
+    {
+      "resourceKey": "card.boss.dark_grand_knight",
+      "entityId": "boss.dark_grand_knight",
+      "assetPath": "assets/BOSS/暗黑大骑士.png",
+      "fallbackResourceKey": "placeholder.boss"
+    },
+    {
+      "resourceKey": "card.boss.giant_slime",
+      "entityId": "boss.giant_slime",
+      "assetPath": "assets/BOSS/大史莱姆.png",
+      "fallbackResourceKey": "placeholder.boss"
+    },
+    {
+      "resourceKey": "card.boss.golden_mask",
+      "entityId": "boss.golden_mask",
+      "assetPath": "assets/BOSS/金面猴王.png",
+      "fallbackResourceKey": "placeholder.boss"
+    },
+    {
+      "resourceKey": "card.boss.valkyrie",
+      "entityId": "boss.valkyrie",
+      "assetPath": "assets/BOSS/瓦尔基里.png",
+      "fallbackResourceKey": "placeholder.boss"
+    }
+  ],
+  "inventory": [
+    "assets/基础牌/号角-橙.jpg",
+    "assets/基础牌/号角-红.jpg",
+    "assets/基础牌/号角-绿.jpg",
+    "assets/基础牌/号角-蓝.jpg",
+    "assets/基础牌/号角.jpg",
+    "assets/基础牌/杀-橙.jpg",
+    "assets/基础牌/杀-白.jpg",
+    "assets/基础牌/杀-红.jpg",
+    "assets/基础牌/杀-绿.jpg",
+    "assets/基础牌/杀-蓝.jpg",
+    "assets/基础牌/药水-橙.png",
+    "assets/基础牌/药水-白.jpg",
+    "assets/基础牌/药水-红.jpg",
+    "assets/基础牌/药水-绿.jpg",
+    "assets/基础牌/药水-蓝.jpg",
+    "assets/基础牌/闪-橙.jpg",
+    "assets/基础牌/闪-白.jpg",
+    "assets/基础牌/闪-红.jpg",
+    "assets/基础牌/闪-绿.jpg",
+    "assets/基础牌/闪-蓝.jpg",
+    "assets/防具/光剑土豪金.png",
+    "assets/防具/双节棍.png",
+    "assets/防具/圆盾.png",
+    "assets/防具/幽灵王冠.png",
+    "assets/防具/斩首者.png",
+    "assets/防具/盾牌.png",
+    "assets/防具/箱子.png",
+    "assets/防具/精致法杖.png",
+    "assets/防具/陷阱箱.png",
+    "assets/天赋/三持.png",
+    "assets/天赋/元暴.png",
+    "assets/天赋/元素本源.png",
+    "assets/天赋/冰盾.png",
+    "assets/天赋/刺盾.png",
+    "assets/天赋/吸炸.png",
+    "assets/天赋/吸蓝.png",
+    "assets/天赋/吸血.png",
+    "assets/天赋/商店半价.png",
+    "assets/天赋/地狱烈火.png",
+    "assets/天赋/平行穿梭.png",
+    "assets/天赋/强力药水.png",
+    "assets/天赋/护盾上限增加.png",
+    "assets/天赋/散弹增加.png",
+    "assets/天赋/暴击穿透.png",
+    "assets/天赋/未卜先知.png",
+    "assets/天赋/毒盾.png",
+    "assets/天赋/汪汪队.png",
+    "assets/天赋/火遁.png",
+    "assets/天赋/猫头鹰.png",
+    "assets/天赋/电盾.png",
+    "assets/天赋/碎盾.png",
+    "assets/天赋/精确打击.png",
+    "assets/天赋/能量上限增加.png",
+    "assets/天赋/蓄力加快.png",
+    "assets/天赋/蓝盾.png",
+    "assets/天赋/血箱.png",
+    "assets/天赋/血量上限增加.png",
+    "assets/天赋/近反.png",
+    "assets/天赋/近战距离增加.png",
+    "assets/天赋/连击增加.png",
+    "assets/天赋/适应进化.png",
+    "assets/天赋/钱盾.png",
+    "assets/天赋/雕像双触.png",
+    "assets/天赋/额外宝石.png",
+    "assets/天赋/龟派气功.png",
+    "assets/坐骑/ChatGPT Image 2026年8月1日 08_38_49 (8).png",
+    "assets/坐骑/暴走野猪.png",
+    "assets/坐骑/水晶虫.png",
+    "assets/坐骑/浮游装置.png",
+    "assets/坐骑/温顺雪人.png",
+    "assets/坐骑/瓦克恩.png",
+    "assets/坐骑/白龙马.png",
+    "assets/坐骑/百变怪.png",
+    "assets/坐骑/蜣螂.png",
+    "assets/坐骑/野猪.png",
+    "assets/坐骑/铁拳.png",
+    "assets/雕像/刺客雕像.png",
+    "assets/雕像/圣骑士雕像.png",
+    "assets/雕像/工程师雕像.png",
+    "assets/雕像/巫师雕像.png",
+    "assets/雕像/牧师雕像.png",
+    "assets/雕像/狂战士雕像.png",
+    "assets/雕像/狼人雕像.png",
+    "assets/雕像/珺之精灵雕像.png",
+    "assets/雕像/盗贼雕像.png",
+    "assets/雕像/骑士雕像.png",
+    "assets/特殊/号角小队.png",
+    "assets/特殊/奉献池.png",
+    "assets/特殊/扳手.png",
+    "assets/特殊/死亡笔记.png",
+    "assets/特殊/献血祭坛.png",
+    "assets/特殊/网瘾少女.png",
+    "assets/特殊/网瘾少年.png",
+    "assets/特殊/羊叫兽.png",
+    "assets/特殊/起源熔炉.png",
+    "assets/特殊/超级大宝贝儿.png",
+    "assets/特殊/重铸熔炉.png",
+    "assets/武器/一拳.png",
+    "assets/武器/一拳（白）.png",
+    "assets/武器/人民冲锋枪.png",
+    "assets/武器/光剑土豪金.png",
+    "assets/武器/光剑紫.png",
+    "assets/武器/光剑红.png",
+    "assets/武器/光剑绿.png",
+    "assets/武器/光剑蓝.png",
+    "assets/武器/冰与火之鹰.png",
+    "assets/武器/冰川.png",
+    "assets/武器/冰霜之鹰.png",
+    "assets/武器/刺枪.png",
+    "assets/武器/剧毒之鹰.png",
+    "assets/武器/千本.png",
+    "assets/武器/咖喱棒.png",
+    "assets/武器/地下水（崭新出厂）.png",
+    "assets/武器/大巫师之杖.png",
+    "assets/武器/大葱.png",
+    "assets/武器/天地通意拳.png",
+    "assets/武器/天堂之拳.png",
+    "assets/武器/妙妙枪.png",
+    "assets/武器/尚方宝剑.png",
+    "assets/武器/左轮手枪.png",
+    "assets/武器/弹弓.png",
+    "assets/武器/手里剑.png",
+    "assets/武器/扳手.png",
+    "assets/武器/撒币枪.png",
+    "assets/武器/晶蟹钛刀.png",
+    "assets/武器/有机后浪.png",
+    "assets/武器/木锤.png",
+    "assets/武器/极光.png",
+    "assets/武器/樱花霰弹枪.png",
+    "assets/武器/死神之息.png",
+    "assets/武器/沙漠之鹰.png",
+    "assets/武器/法老之刃.png",
+    "assets/武器/浮游炮.png",
+    "assets/武器/激光雨.png",
+    "assets/武器/激光鱼.png",
+    "assets/武器/火焰之鹰.png",
+    "assets/武器/火龙步枪.png",
+    "assets/武器/炸药包.png",
+    "assets/武器/熔炉.png",
+    "assets/武器/爆炸战锤.png",
+    "assets/武器/猎人弓.png",
+    "assets/武器/玄冥.png",
+    "assets/武器/砍刀.png",
+    "assets/武器/破旧的手枪.png",
+    "assets/武器/破碎的剑刃.png",
+    "assets/武器/破碎的剑柄.png",
+    "assets/武器/粒子之鹰.png",
+    "assets/武器/绿色的盆.png",
+    "assets/武器/肉.png",
+    "assets/武器/近卫大剑.png",
+    "assets/武器/进水的箱子.png",
+    "assets/武器/迷你UZI.png",
+    "assets/武器/重生十字章.png",
+    "assets/武器/重铸的圣剑.png",
+    "assets/武器/金蟹战锤.png",
+    "assets/武器/阿努比斯的权杖.png",
+    "assets/武器/陨星杖.png",
+    "assets/武器/陨星炮.png",
+    "assets/武器/雪狐土豪金.png",
+    "assets/武器/雪狐玫瑰金.png",
+    "assets/武器/霰弹枪二代.png",
+    "assets/武器/风魔手里剑.png",
+    "assets/武器/魅影.png",
+    "assets/BOSS/C6H8O6.png",
+    "assets/BOSS/大史莱姆.png",
+    "assets/BOSS/暗黑大骑士.png",
+    "assets/BOSS/水晶巨蟹.png",
+    "assets/BOSS/瓦尔基里.png",
+    "assets/BOSS/紫爵士.png",
+    "assets/BOSS/红爵士.png",
+    "assets/BOSS/金面猴王.png",
+    "assets/BOSS/钢铁破浪者号.png",
+    "assets/角色/刺客.png",
+    "assets/角色/古代元素使.png",
+    "assets/角色/吸血鬼.png",
+    "assets/角色/圣骑士.png",
+    "assets/角色/工程师.png",
+    "assets/角色/德鲁伊.png",
+    "assets/角色/恶魔术士.png",
+    "assets/角色/拳击柱.png",
+    "assets/角色/机器人.png",
+    "assets/角色/枭首者.png",
+    "assets/角色/死灵法师.png",
+    "assets/角色/气宗.png",
+    "assets/角色/法师.png",
+    "assets/角色/游侠.png",
+    "assets/角色/炼金术士.png",
+    "assets/角色/牧师.png",
+    "assets/角色/特种骑士部队-红.png",
+    "assets/角色/特种骑士部队-绿.png",
+    "assets/角色/特种骑士部队-蓝.png",
+    "assets/角色/狂战士.png",
+    "assets/角色/狼人.png",
+    "assets/角色/皮套王子.png",
+    "assets/角色/矿工.png",
+    "assets/角色/精灵.png",
+    "assets/角色/萨满.png",
+    "assets/角色/警官.png",
+    "assets/角色/超时空忍者.png",
+    "assets/角色/超界者.png",
+    "assets/角色/道士.png",
+    "assets/角色/陷阱大师.png",
+    "assets/角色/骑士.png"
+  ]
+}

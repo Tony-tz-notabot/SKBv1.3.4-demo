@@ -1,0 +1,55 @@
+{
+  "dslVersion": "1.0.0",
+  "rulesetVersion": "1.3.4",
+  "effects": [
+    {
+      "effectId": "example.apply_frozen",
+      "op": "applyStatus",
+      "target": "$target",
+      "params": {
+        "statusId": "status.frozen",
+        "stackPolicy": "uniqueRefresh"
+      },
+      "expiry": {
+        "point": "target.nextPhase.play.after",
+        "skipPolicy": "expireOnSkippedBoundary"
+      }
+    },
+    {
+      "effectId": "example.melee_block",
+      "op": "invalidateAttack",
+      "params": {
+        "attack": "$attack",
+        "condition": {
+          "and": [
+            { "hasTag": ["$attack", "ranged"] },
+            { "not": { "hasTag": ["$attack", "cannotMeleeBlock"] } }
+          ]
+        },
+        "result": "miss"
+      }
+    },
+    {
+      "effectId": "example.serial_targets",
+      "op": "forEach",
+      "params": {
+        "items": { "selector": "attack.targets.counterclockwise" },
+        "mode": "serial"
+      },
+      "effects": [
+        {
+          "op": "resolveAttackTarget",
+          "target": "$item"
+        },
+        {
+          "op": "checkDying",
+          "target": "$item",
+          "params": {
+            "mode": "completeNestedFirst"
+          }
+        }
+      ],
+      "maxIterations": 4
+    }
+  ]
+}

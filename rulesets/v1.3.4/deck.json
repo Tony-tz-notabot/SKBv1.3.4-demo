@@ -1,0 +1,784 @@
+{
+  "rulesetVersion": "1.3.4",
+  "totalCount": 337,
+  "categoryTotals": {
+    "basic": 132,
+    "weapon": 61,
+    "armor": 8,
+    "talent": 50,
+    "mount": 11,
+    "statue": 50,
+    "special": 16,
+    "boss": 9
+  },
+  "entries": [
+    {
+      "cardId": "basic.kill.white",
+      "count": 16
+    },
+    {
+      "cardId": "basic.kill.green",
+      "count": 16
+    },
+    {
+      "cardId": "basic.kill.blue",
+      "count": 16
+    },
+    {
+      "cardId": "basic.kill.orange",
+      "count": 16
+    },
+    {
+      "cardId": "basic.kill.red",
+      "count": 16
+    },
+    {
+      "cardId": "basic.dodge.white",
+      "count": 7
+    },
+    {
+      "cardId": "basic.dodge.green",
+      "count": 7
+    },
+    {
+      "cardId": "basic.dodge.blue",
+      "count": 7
+    },
+    {
+      "cardId": "basic.dodge.orange",
+      "count": 7
+    },
+    {
+      "cardId": "basic.dodge.red",
+      "count": 7
+    },
+    {
+      "cardId": "basic.potion.white",
+      "count": 2
+    },
+    {
+      "cardId": "basic.potion.green",
+      "count": 2
+    },
+    {
+      "cardId": "basic.potion.blue",
+      "count": 2
+    },
+    {
+      "cardId": "basic.potion.orange",
+      "count": 2
+    },
+    {
+      "cardId": "basic.potion.red",
+      "count": 2
+    },
+    {
+      "cardId": "basic.horn.white",
+      "count": 1
+    },
+    {
+      "cardId": "basic.horn.green",
+      "count": 1
+    },
+    {
+      "cardId": "basic.horn.blue",
+      "count": 1
+    },
+    {
+      "cardId": "basic.horn.orange",
+      "count": 1
+    },
+    {
+      "cardId": "basic.horn.red",
+      "count": 1
+    },
+    {
+      "cardId": "basic.coin.white",
+      "count": 1
+    },
+    {
+      "cardId": "basic.coin.red",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w01",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w02",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w03",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w04",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w05",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w06",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w07",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w08",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w09",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w10",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w11",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w12",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w13",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w14",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w15",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w16",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w17",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w18",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w19",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w20",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w21",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w22",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w23",
+      "count": 2
+    },
+    {
+      "cardId": "weapon.w25",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w27",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w28",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w30",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w31",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w32",
+      "count": 4
+    },
+    {
+      "cardId": "weapon.w34",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w35",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w36",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w40",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w41",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w43",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w44",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w45",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w46",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w47",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w49",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w50",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w51",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w52",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w53",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w54",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w55",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w56",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w57",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w58",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w59",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w60",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w61",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w62",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w63",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w64",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w65",
+      "count": 1
+    },
+    {
+      "cardId": "weapon.w66",
+      "count": 1
+    },
+    {
+      "cardId": "armor.a01",
+      "count": 1
+    },
+    {
+      "cardId": "armor.a02",
+      "count": 1
+    },
+    {
+      "cardId": "armor.a03",
+      "count": 1
+    },
+    {
+      "cardId": "armor.a04",
+      "count": 1
+    },
+    {
+      "cardId": "armor.a05",
+      "count": 1
+    },
+    {
+      "cardId": "armor.a06",
+      "count": 1
+    },
+    {
+      "cardId": "armor.a07",
+      "count": 1
+    },
+    {
+      "cardId": "armor.a08",
+      "count": 1
+    },
+    {
+      "cardId": "talent.strong_potion",
+      "count": 2
+    },
+    {
+      "cardId": "talent.triple_wield",
+      "count": 2
+    },
+    {
+      "cardId": "talent.max_hp_up",
+      "count": 2
+    },
+    {
+      "cardId": "talent.max_shield_up",
+      "count": 2
+    },
+    {
+      "cardId": "talent.melee_counter",
+      "count": 2
+    },
+    {
+      "cardId": "talent.poison_shield",
+      "count": 2
+    },
+    {
+      "cardId": "talent.hand_limit_up",
+      "count": 2
+    },
+    {
+      "cardId": "talent.shop_discount",
+      "count": 2
+    },
+    {
+      "cardId": "talent.blood_box",
+      "count": 2
+    },
+    {
+      "cardId": "talent.life_steal",
+      "count": 2
+    },
+    {
+      "cardId": "talent.blue_shield",
+      "count": 2
+    },
+    {
+      "cardId": "talent.ice_shield",
+      "count": 2
+    },
+    {
+      "cardId": "talent.mana_siphon",
+      "count": 2
+    },
+    {
+      "cardId": "talent.electric_shield",
+      "count": 2
+    },
+    {
+      "cardId": "talent.combo_up",
+      "count": 2
+    },
+    {
+      "cardId": "talent.fire_shield",
+      "count": 2
+    },
+    {
+      "cardId": "talent.spike_shield",
+      "count": 2
+    },
+    {
+      "cardId": "talent.critical_penetration",
+      "count": 2
+    },
+    {
+      "cardId": "talent.scatter_up",
+      "count": 2
+    },
+    {
+      "cardId": "talent.melee_range_up",
+      "count": 2
+    },
+    {
+      "cardId": "talent.shield_breaker",
+      "count": 2
+    },
+    {
+      "cardId": "talent.precision_strike",
+      "count": 2
+    },
+    {
+      "cardId": "talent.charge_acceleration",
+      "count": 2
+    },
+    {
+      "cardId": "talent.statue_double_trigger",
+      "count": 2
+    },
+    {
+      "cardId": "talent.extra_gem",
+      "count": 2
+    },
+    {
+      "cardId": "mount.m01",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m02",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m03",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m04",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m05",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m06",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m07",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m08",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m09",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m10",
+      "count": 1
+    },
+    {
+      "cardId": "mount.m11",
+      "count": 1
+    },
+    {
+      "cardId": "statue.wizard.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.wizard.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.wizard.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.wizard.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.wizard.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.werewolf.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.werewolf.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.werewolf.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.werewolf.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.werewolf.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.elf.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.elf.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.elf.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.elf.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.elf.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.rogue.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.rogue.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.rogue.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.rogue.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.rogue.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.berserker.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.berserker.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.berserker.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.berserker.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.berserker.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.paladin.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.paladin.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.paladin.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.paladin.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.paladin.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.priest.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.priest.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.priest.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.priest.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.priest.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.knight.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.knight.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.knight.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.knight.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.knight.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.assassin.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.assassin.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.assassin.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.assassin.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.assassin.red",
+      "count": 1
+    },
+    {
+      "cardId": "statue.engineer.white",
+      "count": 1
+    },
+    {
+      "cardId": "statue.engineer.green",
+      "count": 1
+    },
+    {
+      "cardId": "statue.engineer.blue",
+      "count": 1
+    },
+    {
+      "cardId": "statue.engineer.orange",
+      "count": 1
+    },
+    {
+      "cardId": "statue.engineer.red",
+      "count": 1
+    },
+    {
+      "cardId": "special.sp01",
+      "count": 3
+    },
+    {
+      "cardId": "special.sp02",
+      "count": 3
+    },
+    {
+      "cardId": "special.sp04",
+      "count": 1
+    },
+    {
+      "cardId": "special.sp05",
+      "count": 2
+    },
+    {
+      "cardId": "special.sp06",
+      "count": 2
+    },
+    {
+      "cardId": "special.sp07",
+      "count": 1
+    },
+    {
+      "cardId": "special.sp08",
+      "count": 1
+    },
+    {
+      "cardId": "special.sp09",
+      "count": 1
+    },
+    {
+      "cardId": "special.sp10",
+      "count": 1
+    },
+    {
+      "cardId": "special.sp11",
+      "count": 1
+    },
+    {
+      "cardId": "boss.purple_lord",
+      "count": 1
+    },
+    {
+      "cardId": "boss.red_lord",
+      "count": 1
+    },
+    {
+      "cardId": "boss.iron_pirate_king",
+      "count": 1
+    },
+    {
+      "cardId": "boss.crystal_crab",
+      "count": 1
+    },
+    {
+      "cardId": "boss.c6h8o6",
+      "count": 1
+    },
+    {
+      "cardId": "boss.dark_grand_knight",
+      "count": 1
+    },
+    {
+      "cardId": "boss.giant_slime",
+      "count": 1
+    },
+    {
+      "cardId": "boss.golden_mask",
+      "count": 1
+    },
+    {
+      "cardId": "boss.valkyrie",
+      "count": 1
+    }
+  ]
+}

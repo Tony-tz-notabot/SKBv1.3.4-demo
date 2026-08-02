@@ -1,0 +1,120 @@
+{
+  "dslVersion": "1.0.0",
+  "rulesetVersion": "1.3.4",
+  "phaseGraph": {
+    "order": ["prepare", "judgment", "draw", "play", "discard", "end"],
+    "timings": ["before", "start", "body", "end.before", "end", "after"],
+    "skipEmits": ["phase.skip", "phase.after"],
+    "replaceEmits": ["phase.replace", "phase.after"]
+  },
+  "actionPipeline": [
+    "action.declare",
+    "action.legality.check",
+    "action.targets.chosen",
+    "action.costs.calculated",
+    "action.costs.paid",
+    "action.commit",
+    "action.resolve.before",
+    "action.resolve",
+    "action.resolve.after"
+  ],
+  "attackPipeline": [
+    "attack.declare",
+    "attack.weapon.resolve",
+    "attack.targets.chosen",
+    "attack.legality.check",
+    "attack.costs.paid",
+    "attack.killInvalidation.check",
+    "attack.commit",
+    "attack.targeted",
+    "attack.response.before",
+    "response.window.opened",
+    "response.window.closed",
+    "attack.hit.determine",
+    "attack.hit|attack.miss",
+    "damageSegments.serial",
+    "attack.target.after",
+    "dying.check.complete",
+    "attack.after",
+    "attack.resolved"
+  ],
+  "damagePipeline": [
+    "damage.proposed",
+    "damage.immunity.check",
+    "damage.replacement.before",
+    "priorityInterceptors",
+    "ordinaryModifiers",
+    "ironShield",
+    "specialLayers",
+    "shieldHpRouting",
+    "damage.finalized",
+    "damage.received",
+    "damage.applied",
+    "shield.broken",
+    "damage.after"
+  ],
+  "dyingPipeline": [
+    "dying.check",
+    "dying.enter",
+    "dying.rescue.window.opened",
+    "dying.rescued|dying.unresolved",
+    "death.before",
+    "death.occurred",
+    "death.replacement",
+    "elimination.before",
+    "elimination.occurred",
+    "game.victory.check"
+  ],
+  "ordering": {
+    "multiTarget": "counterclockwise_serial_completeTargetIncludingDying",
+    "sameControllerSameWindow": "controllerChoice",
+    "differentControllersSameWindow": "currentTurnPlayerThenCounterclockwise",
+    "explicitResponses": "stackLifo",
+    "newDyingDuringDying": "nestedFirst"
+  },
+  "defaults": {
+    "optionalTimeout": "pass",
+    "forcedTimeout": "randomLegal",
+    "maxChainDepth": 10,
+    "minimumFinalHandLimit": 0,
+    "minimumActualDraw": 0,
+    "minimumEffectiveDistance": 0,
+    "attackCost": {
+      "killCards": 1,
+      "attackCount": 1
+    },
+    "attackResponse": {
+      "dodgeCancelsAllSegments": true,
+      "meleeBlockCancelsAllSegments": true
+    }
+  },
+  "statusDefinitions": {
+    "status.frozen": {
+      "stackPolicy": "uniqueRefresh",
+      "effect": "skip play phase",
+      "expiryPoint": "owner.nextPhase.play.after",
+      "skipPolicy": "expireOnSkippedBoundary"
+    },
+    "status.electrified": {
+      "stackPolicy": "uniqueRefresh",
+      "effect": "skip draw phase",
+      "expiryPoint": "owner.nextPhase.draw.after",
+      "skipPolicy": "expireOnSkippedBoundary"
+    },
+    "status.stasis": {
+      "stackPolicy": "uniqueRefresh",
+      "refreshPolicy": "keepLaterExpiry",
+      "effect": "skip prepare judgment draw play discard; prohibit hand play except dying; disable nonLocked abilities",
+      "expiryPoint": "sourceDefined",
+      "skipPolicy": "ignoreSkip"
+    },
+    "status.equipmentDisabled": {
+      "stackPolicy": "uniqueRefresh",
+      "refreshPolicy": "keepLaterExpiry",
+      "effect": "equipment effects disabled; state and timers retained",
+      "expiryPoint": "sourceDefined",
+      "skipPolicy": "ignoreSkip"
+    }
+  },
+  "effects": []
+}

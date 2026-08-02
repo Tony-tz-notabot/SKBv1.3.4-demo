@@ -1,0 +1,79 @@
+{
+  "rulesetVersion": "1.3.4",
+  "players": 4,
+  "teamsBySeat": {
+    "1": "A",
+    "2": "B",
+    "3": "B",
+    "4": "A"
+  },
+  "turnDirection": "counterclockwise",
+  "defaultDrawCount": 2,
+  "defaultAttackCount": 1,
+  "cardColorRank": {
+    "white": 0,
+    "green": 1,
+    "blue": 2,
+    "orange": 3,
+    "red": 4
+  },
+  "special": {
+    "sp10": {
+      "flavorLines": [
+        "你的武器将会化作主的食粮",
+        "主会给予你恩惠",
+        "觐见主的力量已经降下……",
+        "只有一把武器了，确定要奉献吗？",
+        "主不欢迎空手之人",
+        "这不是武器",
+        "这把武器没有主需要的能量"
+      ]
+    }
+  },
+  "character": {
+    "traveler": {
+      "deadlyCurse": {
+        "minimumOwnedCardCount": 8,
+        "offFieldOwnTurnsUntilReturn": 3,
+        "returnHp": 3,
+        "returnShield": 2,
+        "returnDrawCount": 3,
+        "executionTargetHp": -1,
+        "executionTargetShield": 0,
+        "executionTargetHealthFloor": -99
+      }
+    }
+  },
+  "engine": {
+    "autoAdvanceMaxSteps": 64
+  },
+  "combat": {
+    "handKnife": {
+      "range": 1,
+      "damage": 2,
+      "attackType": "melee",
+      "killCards": 1,
+      "attackCount": 1
+    },
+    "killTemplatePrefix": "basic.kill.",
+    "attackCountLimitId": "attackCountRemaining"
+  },
+  "setup": {
+    "initialHandCount": 4,
+    "redraw": {
+      "enabled": true,
+      "maxUsesPerPlayer": 1,
+      "discardAll": true,
+      "drawCount": 4,
+      "timeoutMs": 10000,
+      "timeoutPolicy": "pass"
+    }
+  },
+  "boss": {
+    "allowGenericDismantle": true
+  },
+  "timeout": {
+    "optionalOrBeneficial": "pass",
+    "forcedOrHarmful": "random_legal"
+  }
+}

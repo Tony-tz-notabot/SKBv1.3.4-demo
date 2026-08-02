@@ -1,0 +1,5750 @@
+{
+  "rulePackId": "skb.v1.3.4.nonboss",
+  "dslVersion": "1.0.0",
+  "rulesetVersion": "1.3.4",
+  "source": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+  "testSource": "docs/整理/21-v1.3.4非BOSS牌测试清单.md",
+  "effectFamilies": [
+    {
+      "familyId": "basic.kill",
+      "displayName": "杀",
+      "usageKind": "attackCost",
+      "windows": [
+        "owner.phase.play"
+      ],
+      "costBinding": {
+        "event": "attack.costs.paid",
+        "count": 1,
+        "printedColorPreserved": true,
+        "moveKind": "play"
+      },
+      "effects": [
+        {
+          "op": "createAttack",
+          "params": {
+            "source": "$controller",
+            "weaponResolution": "currentPreselectedValidWeaponOrHandBlade",
+            "attackCountCost": 1,
+            "killCardRef": "$card",
+            "failBeforeCommitIfNoValidPreselection": true
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "basic.dodge",
+      "displayName": "闪",
+      "usageKind": "response",
+      "windows": [
+        "attack.response"
+      ],
+      "responseFilter": {
+        "attackAllowsDodge": true,
+        "responderIsTarget": true
+      },
+      "effects": [
+        {
+          "op": "invalidateAttack",
+          "params": {
+            "attack": "$attack",
+            "result": "miss",
+            "allDamageSegments": true
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "basic.potion",
+      "displayName": "药水",
+      "usageKind": "multiWindowUse",
+      "modes": [
+        {
+          "modeId": "play_self_heal",
+          "window": "owner.phase.play",
+          "targetRule": {
+            "selector": "self",
+            "min": 1,
+            "max": 1
+          },
+          "effects": [
+            {
+              "op": "recoverHp",
+              "target": "$controller",
+              "params": {
+                "amount": {
+                  "add": [
+                    2,
+                    {
+                      "if": {
+                        "hasEffectiveAbility": [
+                          "$controller",
+                          "talent.strong_potion"
+                        ]
+                      },
+                      "then": 1,
+                      "else": 0
+                    }
+                  ]
+                },
+                "sourceCardFamily": "$card.familyId"
+              }
+            }
+          ]
+        },
+        {
+          "modeId": "dying_rescue",
+          "window": "dying.rescue.window.opened",
+          "targetRule": {
+            "selector": "currentDyingCharacter",
+            "min": 1,
+            "max": 1
+          },
+          "effects": [
+            {
+              "op": "recoverHp",
+              "target": "$dyingCharacter",
+              "params": {
+                "amount": {
+                  "add": [
+                    2,
+                    {
+                      "if": {
+                        "hasEffectiveAbility": [
+                          "$controller",
+                          "talent.strong_potion"
+                        ]
+                      },
+                      "then": 1,
+                      "else": 0
+                    }
+                  ]
+                },
+                "sourceCardFamily": "$card.familyId"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "basic.horn",
+      "displayName": "号角",
+      "usageKind": "multiModeUse",
+      "modes": [
+        {
+          "modeId": "play_self_heal",
+          "window": "owner.phase.play",
+          "targetRule": {
+            "selector": "self",
+            "min": 1,
+            "max": 1
+          },
+          "effects": [
+            {
+              "op": "recoverHp",
+              "target": "$controller",
+              "params": {
+                "amount": {
+                  "add": [
+                    1,
+                    {
+                      "if": {
+                        "hasEffectiveAbility": [
+                          "$controller",
+                          "talent.strong_potion"
+                        ]
+                      },
+                      "then": 1,
+                      "else": 0
+                    }
+                  ]
+                },
+                "sourceCardFamily": "$card.familyId"
+              }
+            }
+          ]
+        },
+        {
+          "modeId": "play_prepare_critical",
+          "window": "owner.phase.play",
+          "targetRule": {
+            "min": 0,
+            "max": 0
+          },
+          "effects": [
+            {
+              "op": "createDuration",
+              "target": "$controller",
+              "params": {
+                "durationId": "duration.hornGuaranteedCritical",
+                "stackPolicy": "replaceByPriority",
+                "appliesTo": "nextCommittedWeaponAttack",
+                "consumeAt": "attack.commit",
+                "effect": {
+                  "op": "applyCritical",
+                  "params": {
+                    "mode": "guaranteed"
+                  }
+                }
+              },
+              "expiry": {
+                "point": "currentTurn.end",
+                "skipPolicy": "expireOnSkippedBoundary"
+              }
+            }
+          ]
+        },
+        {
+          "modeId": "dying_self_rescue",
+          "window": "dying.rescue.window.opened",
+          "requires": {
+            "controllerIsCurrentDyingCharacter": true
+          },
+          "targetRule": {
+            "selector": "self",
+            "min": 1,
+            "max": 1
+          },
+          "effects": [
+            {
+              "op": "recoverHp",
+              "target": "$controller",
+              "params": {
+                "amount": {
+                  "add": [
+                    1,
+                    {
+                      "if": {
+                        "hasEffectiveAbility": [
+                          "$controller",
+                          "talent.strong_potion"
+                        ]
+                      },
+                      "then": 1,
+                      "else": 0
+                    }
+                  ]
+                },
+                "sourceCardFamily": "$card.familyId"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "basic.coin",
+      "displayName": "金币",
+      "usageKind": "resource",
+      "normalInstance": {
+        "mayEnterHand": true
+      },
+      "temporaryInstance": {
+        "mayEnterHand": false,
+        "tags": [
+          "temporary.coin"
+        ],
+        "mustChooseImmediateLegalUse": true,
+        "passOrTimeoutDestination": "outsideDeck"
+      },
+      "legalUseDiscovery": "effectsAcceptingCoinResource"
+    },
+    {
+      "familyId": "armor.a01",
+      "displayName": "双截棍",
+      "usageKind": "armorResponse",
+      "windows": [
+        "attack.response"
+      ],
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor"
+      },
+      "limit": {
+        "scope": "perAttack",
+        "max": 1,
+        "consumeAt": "judgment.requested"
+      },
+      "effects": [
+        {
+          "op": "judgeColor",
+          "params": {
+            "matchedColors": [
+              "orange"
+            ],
+            "onMatched": {
+              "op": "invalidateAttack",
+              "params": {
+                "result": "miss",
+                "allDamageSegments": true
+              }
+            },
+            "onUnmatched": {
+              "op": "noop",
+              "params": {
+                "continueResponseWindow": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "armor.a02",
+      "displayName": "箱子",
+      "usageKind": "lockedArmor",
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor"
+      },
+      "state": {
+        "durability": {
+          "initial": 3,
+          "min": 0
+        }
+      },
+      "triggers": [
+        {
+          "event": "damage.replacement.before",
+          "mandatory": true,
+          "filter": {
+            "targetIsController": true,
+            "damageAmountPositive": true,
+            "durabilityAtLeast": 1
+          },
+          "effects": [
+            {
+              "op": "preventDamage",
+              "params": {
+                "amount": "all",
+                "priority": "beforeIronShield"
+              }
+            },
+            {
+              "op": "modifyValue",
+              "params": {
+                "path": "$card.durability",
+                "delta": -1
+              }
+            },
+            {
+              "op": "if",
+              "params": {
+                "condition": {
+                  "equals": [
+                    "$card.durability",
+                    0
+                  ]
+                },
+                "then": {
+                  "op": "scheduleEffect",
+                  "params": {
+                    "point": "currentDamageSegment.after",
+                    "effect": {
+                      "op": "loseCard",
+                      "target": "$card",
+                      "params": {
+                        "destination": "discardPile",
+                        "reason": "durabilityDepleted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "armor.a03",
+      "displayName": "光剑土豪金",
+      "usageKind": "armorResponse",
+      "windows": [
+        "attack.response"
+      ],
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor"
+      },
+      "limit": {
+        "scope": "perAttack",
+        "max": 1,
+        "consumeAt": "judgment.requested"
+      },
+      "effects": [
+        {
+          "op": "judgeColor",
+          "params": {
+            "matchedColors": [
+              "blue",
+              "orange"
+            ],
+            "onMatched": {
+              "op": "invalidateAttack",
+              "params": {
+                "result": "miss",
+                "allDamageSegments": true
+              }
+            },
+            "onUnmatched": {
+              "op": "noop",
+              "params": {
+                "continueResponseWindow": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "armor.a04",
+      "displayName": "盾牌",
+      "usageKind": "lockedArmor",
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor"
+      },
+      "triggers": [
+        {
+          "event": "attack.killInvalidation.check",
+          "mandatory": true,
+          "filter": {
+            "killPrintedColorIn": [
+              "white",
+              "blue"
+            ]
+          },
+          "effects": [
+            {
+              "op": "invalidateAttack",
+              "params": {
+                "result": "invalidBeforeCommit",
+                "costsRemainPaid": true,
+                "attackCountRemainsSpent": true,
+                "chargeStateUnchanged": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "armor.a05",
+      "displayName": "幽灵王冠",
+      "usageKind": "lockedArmor",
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor"
+      },
+      "triggers": [
+        {
+          "event": "phase.after",
+          "mandatory": true,
+          "filter": {
+            "phase": "play",
+            "actorIsController": true,
+            "committedWeaponAttacksThisTurn": 0,
+            "chargeActionsThisTurn": 0
+          },
+          "effects": [
+            {
+              "op": "createDuration",
+              "target": "$controller",
+              "params": {
+                "durationId": "duration.ghostCrownRangedInvalidation",
+                "stackPolicy": "refresh",
+                "attackFilter": {
+                  "attackType": "ranged",
+                  "excludesAttackType": "laser",
+                  "targetIsDurationOwner": true
+                },
+                "effect": {
+                  "op": "invalidateAttack",
+                  "params": {
+                    "result": "invalid",
+                    "sourceKind": "armor"
+                  }
+                }
+              },
+              "expiry": {
+                "point": "owner.nextPhase.prepare.before",
+                "skipPolicy": "expireOnSkippedBoundary"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "armor.a06",
+      "displayName": "精致法杖",
+      "usageKind": "lockedArmor",
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor"
+      },
+      "limit": {
+        "scope": "ownerRound",
+        "max": 1,
+        "resetAt": "owner.phase.prepare"
+      },
+      "triggers": [
+        {
+          "event": "attack.hit",
+          "mandatory": true,
+          "filter": {
+            "targetIsController": true,
+            "attackType": "ranged",
+            "quotaAvailable": true
+          },
+          "effects": [
+            {
+              "op": "consumeLimit",
+              "params": {
+                "limit": "firstHitRangedAttackPerOwnerRound"
+              }
+            },
+            {
+              "op": "setAttackTag",
+              "params": {
+                "tag": "refinedStaffPendingFirstPositiveSegment"
+              }
+            }
+          ]
+        },
+        {
+          "event": "damage.modified",
+          "mandatory": true,
+          "filter": {
+            "targetIsController": true,
+            "damageAmountPositive": true,
+            "attackHasTag": "refinedStaffPendingFirstPositiveSegment"
+          },
+          "effects": [
+            {
+              "op": "modifyDamage",
+              "params": {
+                "delta": -2,
+                "minimum": 0
+              }
+            },
+            {
+              "op": "setAttackTag",
+              "params": {
+                "removeTag": "refinedStaffPendingFirstPositiveSegment"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "armor.a07",
+      "displayName": "斩首者",
+      "usageKind": "armorResponse",
+      "windows": [
+        "attack.response"
+      ],
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor",
+        "attackType": "ranged",
+        "attackAllowsMeleeBlock": true
+      },
+      "costs": [
+        {
+          "kind": "playCardFromHand",
+          "cardFamilyId": "basic.kill",
+          "count": 1
+        }
+      ],
+      "effects": [
+        {
+          "op": "invalidateAttack",
+          "params": {
+            "result": "miss",
+            "allDamageSegments": true
+          }
+        },
+        {
+          "op": "emitEvent",
+          "params": {
+            "eventType": "response.resolved",
+            "tags": [
+              "meleeBlock"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "armor.a08",
+      "displayName": "圆盾",
+      "usageKind": "activeArmor",
+      "windows": [
+        "owner.phase.play"
+      ],
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor"
+      },
+      "limit": {
+        "scope": "ownerTurn",
+        "max": 1,
+        "resetAt": "owner.turn.started"
+      },
+      "effects": [
+        {
+          "op": "selectColor",
+          "params": {
+            "visibility": "controllerOnly",
+            "options": [
+              "white",
+              "blue",
+              "orange",
+              "red"
+            ]
+          }
+        },
+        {
+          "op": "createDuration",
+          "target": "$controller",
+          "params": {
+            "durationId": "duration.roundShieldKillColorLock",
+            "stackPolicy": "independentBySource",
+            "selectedColor": "$selection.color",
+            "visibility": "secretUntilFirstMatchedInvalidation",
+            "event": "attack.killInvalidation.check",
+            "filter": {
+              "killPrintedColorEquals": "$selection.color"
+            },
+            "effect": {
+              "op": "invalidateAttack",
+              "params": {
+                "result": "invalidBeforeCommit",
+                "revealSelectedColorOnFirstMatch": true,
+                "costsRemainPaid": true,
+                "attackCountRemainsSpent": true,
+                "chargeStateUnchanged": true
+              }
+            }
+          },
+          "expiry": {
+            "point": "owner.nextPhase.prepare.before",
+            "skipPolicy": "expireOnSkippedBoundary"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "armor.a09",
+      "displayName": "陷阱箱",
+      "usageKind": "synthesizedLockedArmor",
+      "requires": {
+        "controllerHasCardEquipped": true,
+        "equipmentEffectsEnabled": true,
+        "attackLacksTag": "ignoreArmor"
+      },
+      "state": {
+        "durability": {
+          "initial": 3,
+          "min": 0
+        }
+      },
+      "synthesis": {
+        "inputs": [
+          "armor.a02",
+          "special.sp03"
+        ],
+        "outputLeavesTo": "outsideDeck"
+      },
+      "triggers": [
+        {
+          "event": "damage.replacement.before",
+          "mandatory": true,
+          "filter": {
+            "targetIsController": true,
+            "damageAmountPositive": true,
+            "durabilityAtLeast": 1
+          },
+          "effects": [
+            {
+              "op": "preventDamage",
+              "params": {
+                "amount": "all",
+                "priority": "beforeIronShield"
+              }
+            },
+            {
+              "op": "modifyValue",
+              "params": {
+                "path": "$card.durability",
+                "delta": -1
+              }
+            },
+            {
+              "op": "scheduleEffect",
+              "params": {
+                "point": "rootAttack.after",
+                "order": "durabilityConsumptionOrder",
+                "effect": {
+                  "op": "createAttack",
+                  "params": {
+                    "source": "$controller",
+                    "targets": [
+                      "$damage.source"
+                    ],
+                    "attackType": "ranged",
+                    "distance": 2,
+                    "rangeCheck": false,
+                    "damage": 2,
+                    "attackCountCost": 0,
+                    "killCost": 0,
+                    "passiveCounterattack": true
+                  }
+                }
+              }
+            },
+            {
+              "op": "if",
+              "params": {
+                "condition": {
+                  "equals": [
+                    "$card.durability",
+                    0
+                  ]
+                },
+                "then": {
+                  "op": "scheduleEffect",
+                  "params": {
+                    "point": "lastGeneratedCounterattack.after",
+                    "effect": {
+                      "op": "loseCard",
+                      "target": "$card",
+                      "params": {
+                        "destination": "outsideDeck",
+                        "reason": "durabilityDepleted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.strong_potion",
+      "displayName": "强力药水",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "modifiers": [
+        {
+          "query": "recovery.amount",
+          "filter": {
+            "controllerIsTalentOwner": true,
+            "sourceCardFamilyIn": [
+              "basic.potion",
+              "basic.horn"
+            ]
+          },
+          "operation": {
+            "add": 1
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "talent.triple_wield",
+      "displayName": "三持",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "modifiers": [
+        {
+          "query": "equipment.slotCapacity",
+          "slot": "weaponSlot",
+          "operation": {
+            "add": 1
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "event": "card.lost",
+          "filter": {
+            "cardIsThisTalent": true,
+            "regularWeaponCountAboveCapacity": true
+          },
+          "mandatory": true,
+          "effects": [
+            {
+              "op": "selectCards",
+              "params": {
+                "chooser": "$controller",
+                "min": 1,
+                "max": 1,
+                "selector": {
+                  "zone": "weaponSlot",
+                  "category": "weapon"
+                },
+                "timeoutPolicy": "randomLegal"
+              }
+            },
+            {
+              "op": "discardCard",
+              "target": "$selection.card",
+              "params": {
+                "reason": "weaponSlotOverflow"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.max_hp_up",
+      "displayName": "血量上限增加",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "onEquip": [
+        {
+          "op": "changeMaxHp",
+          "target": "$controller",
+          "params": {
+            "delta": 2
+          }
+        },
+        {
+          "op": "recoverHp",
+          "target": "$controller",
+          "params": {
+            "amount": 2
+          }
+        }
+      ],
+      "onLose": [
+        {
+          "op": "changeMaxHp",
+          "target": "$controller",
+          "params": {
+            "delta": -2,
+            "clampCurrentOnlyAboveNewMaximum": true
+          }
+        },
+        {
+          "op": "checkDying",
+          "target": "$controller"
+        }
+      ]
+    },
+    {
+      "familyId": "talent.max_shield_up",
+      "displayName": "护盾上限增加",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "onEquip": [
+        {
+          "op": "changeMaxShield",
+          "target": "$controller",
+          "params": {
+            "delta": 1
+          }
+        },
+        {
+          "op": "recoverShield",
+          "target": "$controller",
+          "params": {
+            "amount": 1
+          }
+        }
+      ],
+      "onLose": [
+        {
+          "op": "changeMaxShield",
+          "target": "$controller",
+          "params": {
+            "delta": -1,
+            "clampCurrentOnlyAboveNewMaximum": true
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "talent.melee_counter",
+      "displayName": "近反",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "triggers": [
+        {
+          "event": "response.resolved",
+          "filter": {
+            "controllerIsResponder": true,
+            "tag": "meleeBlock"
+          },
+          "effects": [
+            {
+              "op": "createAttack",
+              "params": {
+                "source": "$controller",
+                "targets": [
+                  "$attack.source"
+                ],
+                "reflectedAttackSnapshot": "$attack",
+                "costPolicy": "none",
+                "recursionPolicy": "cannotReflectBackToSameAttack"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.poison_shield",
+      "displayName": "毒盾",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "immunities": [
+        {
+          "element": "poison"
+        }
+      ],
+      "modifiers": [
+        {
+          "query": "attack.elementRepeat",
+          "scope": "perTargetPerAttack",
+          "element": "poison",
+          "includeAdditional": true,
+          "excludeTag": "ignoresTalent",
+          "operation": {
+            "add": 1
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "talent.hand_limit_up",
+      "displayName": "能量上限增加",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "modifiers": [
+        {
+          "query": "hand.limit",
+          "operation": {
+            "add": 1
+          },
+          "minimumFinalValue": 0
+        }
+      ]
+    },
+    {
+      "familyId": "talent.shop_discount",
+      "displayName": "商店半价",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "cooldown": {
+        "value": 1,
+        "tickAt": "owner.phase.prepare",
+        "continuesWhileDisabled": true
+      },
+      "triggers": [
+        {
+          "event": "phase.body",
+          "mandatory": true,
+          "filter": {
+            "phase": "draw",
+            "actorIsController": true,
+            "cooldownReady": true
+          },
+          "effects": [
+            {
+              "op": "modifyEvent",
+              "params": {
+                "event": "$drawEvent",
+                "field": "drawCount",
+                "delta": 1
+              }
+            },
+            {
+              "op": "startCooldown",
+              "params": {
+                "value": 1,
+                "readyAfterOwnerRoundCount": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.blood_box",
+      "displayName": "血箱",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "triggers": [
+        {
+          "event": "card.lost",
+          "filter": {
+            "controllerOwnedLostCard": true,
+            "lostCardWasEquippedIn": "armorSlot"
+          },
+          "effects": [
+            {
+              "op": "recoverHp",
+              "target": "$controller",
+              "params": {
+                "amount": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.life_steal",
+      "displayName": "吸血",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "aggregate": {
+        "metric": "actualHpLoss",
+        "scope": "perTargetPerAttack",
+        "threshold": 2,
+        "maxTriggers": 1,
+        "excludeTargetsWithoutActualHpLoss": true
+      },
+      "triggers": [
+        {
+          "event": "damage.applied",
+          "filter": {
+            "attackSourceIsController": true,
+            "aggregateCrossedThreshold": 2
+          },
+          "effects": [
+            {
+              "op": "recoverHp",
+              "target": "$controller",
+              "params": {
+                "amount": 1
+              }
+            },
+            {
+              "op": "consumeLimit",
+              "params": {
+                "scope": "perTargetPerAttack"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.blue_shield",
+      "displayName": "蓝盾",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "replacements": [
+        {
+          "event": "damage.finalized",
+          "scope": "perDamageSegment",
+          "filter": {
+            "targetIsController": true,
+            "shieldAtSegmentStartPositive": true,
+            "damageType": "normal"
+          },
+          "effects": [
+            {
+              "op": "modifyDamage",
+              "params": {
+                "overflowPolicy": "noHpOverflowForThisSegment"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.ice_shield",
+      "displayName": "冰盾",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "immunities": [
+        {
+          "status": "status.frozen"
+        }
+      ],
+      "triggers": [
+        {
+          "event": "status.applied",
+          "filter": {
+            "sourceIsController": true,
+            "statusId": "status.frozen",
+            "resultIn": [
+              "applied",
+              "refreshed"
+            ]
+          },
+          "effects": [
+            {
+              "op": "createDamage",
+              "target": "$event.target",
+              "params": {
+                "amount": 1,
+                "deliveryType": "direct",
+                "damageType": "normal",
+                "element": "poison",
+                "isAdditional": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.mana_siphon",
+      "displayName": "吸蓝",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "aggregate": {
+        "metric": "actualHpLoss",
+        "scope": "perTargetPerAttack",
+        "threshold": 2,
+        "maxTriggers": 1,
+        "excludeTargetsWithoutActualHpLoss": true
+      },
+      "triggers": [
+        {
+          "event": "damage.applied",
+          "filter": {
+            "attackSourceIsController": true,
+            "aggregateCrossedThreshold": 2
+          },
+          "effects": [
+            {
+              "op": "drawCards",
+              "target": "$controller",
+              "params": {
+                "count": 1
+              }
+            },
+            {
+              "op": "consumeLimit",
+              "params": {
+                "scope": "perTargetPerAttack"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.electric_shield",
+      "displayName": "电盾",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "immunities": [
+        {
+          "status": "status.electrified"
+        }
+      ],
+      "attackModifiers": [
+        {
+          "filter": {
+            "sourceIsController": true,
+            "attackType": "laser"
+          },
+          "addTags": [
+            "ignoreArmor",
+            "cannotMeleeBlock"
+          ]
+        }
+      ],
+      "modifiers": [
+        {
+          "query": "attack.elementDamageTotal",
+          "scope": "perTargetPerAttack",
+          "element": "electric",
+          "operation": {
+            "add": 1,
+            "placement": "firstPositiveElectricSegment"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "talent.combo_up",
+      "displayName": "连击增加",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "modifiers": [
+        {
+          "query": "weapon.attackDimension",
+          "dimension": "combo",
+          "requiresExplicitDimension": true,
+          "operation": {
+            "add": 1
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "talent.fire_shield",
+      "displayName": "火盾",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "immunities": [
+        {
+          "element": "fire"
+        }
+      ],
+      "modifiers": [
+        {
+          "query": "attack.elementRepeat",
+          "scope": "perTargetPerAttack",
+          "element": "fire",
+          "includeAdditional": true,
+          "excludeTag": "ignoresTalent",
+          "operation": {
+            "add": 1
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "talent.spike_shield",
+      "displayName": "刺盾",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "triggers": [
+        {
+          "event": "damage.modified",
+          "mandatory": true,
+          "filter": {
+            "targetIsController": true,
+            "parentAttackType": "melee",
+            "damageAmountPositive": true,
+            "firstPositiveSegmentForTargetInAttack": true
+          },
+          "effects": [
+            {
+              "op": "modifyDamage",
+              "params": {
+                "delta": -1,
+                "minimum": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.critical_penetration",
+      "displayName": "暴击穿透",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "triggers": [
+        {
+          "event": "attack.hit",
+          "optional": true,
+          "filter": {
+            "sourceIsController": true,
+            "attackIsCritical": true,
+            "attackLacksTag": "criticalPenetrationFollowup"
+          },
+          "costs": [
+            {
+              "kind": "playCardFromHand",
+              "cardFamilyId": "basic.kill",
+              "count": 1
+            }
+          ],
+          "effects": [
+            {
+              "op": "selectTargets",
+              "params": {
+                "min": 1,
+                "max": 1,
+                "distinctFrom": "$attack.targets",
+                "selector": "otherCharacterLegalForOriginalWeapon",
+                "timeoutPolicy": "pass"
+              }
+            },
+            {
+              "op": "createAttack",
+              "params": {
+                "weaponRef": "$attack.weaponRef",
+                "weaponMode": "$attack.modeId",
+                "cannotChangeWeapon": true,
+                "targets": [
+                  "$selection.target"
+                ],
+                "attackCountCost": 0,
+                "killCostAlreadyPaid": true,
+                "tags": [
+                  "criticalPenetrationFollowup"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.scatter_up",
+      "displayName": "散弹增加",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "modifiers": [
+        {
+          "query": "weapon.attackDimension",
+          "dimension": "scatter",
+          "requiresExplicitDimension": true,
+          "operation": {
+            "add": 1
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "talent.melee_range_up",
+      "displayName": "近战距离增加",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "modifiers": [
+        {
+          "query": "attack.range",
+          "filter": {
+            "sourceIsController": true,
+            "attackType": "melee",
+            "requiresRangeCheck": true
+          },
+          "operation": {
+            "add": 1
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "talent.shield_breaker",
+      "displayName": "碎盾",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "triggers": [
+        {
+          "event": "shield.broken",
+          "optional": true,
+          "filter": {
+            "targetIsController": true,
+            "causedByDamage": true,
+            "sourceHasDismantlableCard": true
+          },
+          "effects": [
+            {
+              "op": "selectCards",
+              "params": {
+                "chooser": "$controller",
+                "min": 0,
+                "max": 1,
+                "selector": {
+                  "owner": "$damage.source",
+                  "dismantlable": true
+                },
+                "timeoutPolicy": "pass"
+              }
+            },
+            {
+              "op": "dismantleCard",
+              "target": "$selection.card",
+              "params": {
+                "ifSelected": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.precision_strike",
+      "displayName": "精确打击",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "triggers": [
+        {
+          "event": "attack.targeted",
+          "mandatory": true,
+          "scope": "perTargetPerAttack",
+          "filter": {
+            "sourceIsController": true,
+            "weaponAttack": true
+          },
+          "effects": [
+            {
+              "op": "judgeColor",
+              "params": {
+                "matchedColors": [
+                  "red",
+                  "orange"
+                ],
+                "purpose": "critical",
+                "onMatched": [
+                  {
+                    "op": "applyCritical",
+                    "params": {
+                      "attack": "$attack",
+                      "target": "$target"
+                    }
+                  },
+                  {
+                    "op": "applyRestriction",
+                    "target": "$target",
+                    "params": {
+                      "restrictionId": "noHandDodgeForAttack",
+                      "attackRef": "$attack",
+                      "stillAllows": [
+                        "abilityDodge",
+                        "armorResponse",
+                        "meleeBlock"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.charge_acceleration",
+      "displayName": "蓄力加快",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "modifiers": [
+        {
+          "query": "weapon.chargeRequirement",
+          "operation": {
+            "add": -1,
+            "minimum": 0
+          },
+          "zeroRequirementDoesNotCreateChargeAction": true
+        }
+      ]
+    },
+    {
+      "familyId": "talent.statue_double_trigger",
+      "displayName": "雕像双触",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "triggers": [
+        {
+          "event": "card.played",
+          "mandatory": true,
+          "filter": {
+            "controllerIsPlayer": true,
+            "cardCategory": "statue"
+          },
+          "effects": [
+            {
+              "op": "judgeColor",
+              "params": {
+                "matchedColors": [
+                  "blue"
+                ],
+                "purpose": "additionalEffect",
+                "onMatched": {
+                  "op": "scheduleEffect",
+                  "params": {
+                    "point": "playedStatue.effectFlow.after",
+                    "survivesEffectInvalidation": true,
+                    "effect": {
+                      "op": "moveCard",
+                      "target": "$playedCard",
+                      "params": {
+                        "fromResolvedDestination": true,
+                        "to": "hand",
+                        "moveKind": "return"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "talent.extra_gem",
+      "displayName": "额外宝石",
+      "usageKind": "equippedTalent",
+      "requires": {
+        "talentEffectiveForController": true,
+        "initialTalentIgnoresOrdinaryEquipmentDisable": true
+      },
+      "equipPolicy": {
+        "duplicateByFamilyIncludingInitialTalent": "illegalLoseHandCardThenDrawOne",
+        "duplicateLossMoveKind": "lose",
+        "initialTalent": {
+          "occupiesSlot": false,
+          "removable": false
+        }
+      },
+      "limit": {
+        "scope": "perEquippedInstance",
+        "max": 1,
+        "consumeAt": "dying.enter"
+      },
+      "triggers": [
+        {
+          "event": "dying.enter",
+          "mandatory": true,
+          "filter": {
+            "targetIsController": true,
+            "limitAvailable": true
+          },
+          "effects": [
+            {
+              "op": "drawCards",
+              "target": "$controller",
+              "params": {
+                "count": 3
+              }
+            },
+            {
+              "op": "consumeLimit",
+              "params": {
+                "scope": "perEquippedInstance"
+              }
+            },
+            {
+              "op": "scheduleEffect",
+              "params": {
+                "point": "thisDyingFlow.result",
+                "effectsByResult": {
+                  "rescued": [
+                    {
+                      "op": "removeCard",
+                      "target": "$card",
+                      "params": {
+                        "timing": "immediateAfterRescue"
+                      }
+                    }
+                  ],
+                  "death": [
+                    {
+                      "op": "selectTargets",
+                      "params": {
+                        "min": 1,
+                        "max": 1,
+                        "selector": "inPlayCharacter",
+                        "timeoutPolicy": "randomLegal"
+                      }
+                    },
+                    {
+                      "op": "giveCard",
+                      "params": {
+                        "cards": "$controller.hand.all",
+                        "to": "$selection.target"
+                      }
+                    },
+                    {
+                      "op": "removeCard",
+                      "target": "$card",
+                      "params": {
+                        "timing": "afterDeathHandTransfer"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "mount.m01",
+      "displayName": "野猪",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountDefenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 1,
+        "offenseDelta": 0,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m02",
+      "displayName": "温顺雪人",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountDefenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 1,
+        "offenseDelta": 0,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m03",
+      "displayName": "暴走野猪",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountOffenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 0,
+        "offenseDelta": -1,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m04",
+      "displayName": "水晶虫",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountDefenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 1,
+        "offenseDelta": 0,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m05",
+      "displayName": "蜣螂",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountOffenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 0,
+        "offenseDelta": -1,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m06",
+      "displayName": "蜘蛛",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountOffenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 0,
+        "offenseDelta": -1,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m07",
+      "displayName": "白龙马",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountDefenseSlot",
+        "mountOffenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 2,
+        "offenseDelta": 0,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m08",
+      "displayName": "浮游装置",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountDefenseSlot",
+        "mountOffenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 1,
+        "offenseDelta": -1,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m09",
+      "displayName": "铁拳",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountOffenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 0,
+        "offenseDelta": -2,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m10",
+      "displayName": "瓦克恩",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountDefenseSlot",
+        "mountOffenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 0,
+        "offenseDelta": -3,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "mount.m11",
+      "displayName": "百变怪",
+      "usageKind": "equippedMount",
+      "requires": {
+        "cardEquipped": true,
+        "equipmentEffectsEnabled": true
+      },
+      "occupiedSlots": [
+        "mountDefenseSlot",
+        "mountOffenseSlot"
+      ],
+      "replacementPolicy": {
+        "replaceEveryCardOccupyingAnyRequiredSlot": true,
+        "dualSlotMountLeavesAsSingleInstance": true,
+        "releaseAllOccupiedSlotsOnLeave": true,
+        "moveKind": "replace",
+        "destination": "discardPile"
+      },
+      "distanceModifier": {
+        "appliesOnlyWhenRangeCheckRequired": true,
+        "ignoresUnlimitedRange": true,
+        "defenseDelta": 0,
+        "offenseDelta": 0,
+        "finalEffectiveDistanceMinimum": 0
+      },
+      "dynamicDistanceModifier": {
+        "evaluateAt": "distance.calculate",
+        "effectiveTalentQuery": {
+          "includesInitialTalents": true,
+          "includesEnabledEquippedTalents": true,
+          "excludesDisabledEquippedTalents": true
+        },
+        "offenseDelta": {
+          "mul": [
+            -1,
+            {
+              "count": {
+                "effectiveTalentIdIn": [
+                  "talent.fire_shield",
+                  "talent.poison_shield"
+                ]
+              }
+            }
+          ]
+        },
+        "defenseDelta": {
+          "count": {
+            "effectiveTalentIdIn": [
+              "talent.ice_shield",
+              "talent.electric_shield"
+            ]
+          }
+        },
+        "disabledWhenThisMountEffectsDisabled": true,
+        "finalEffectiveDistanceMinimum": 0
+      }
+    },
+    {
+      "familyId": "statue.wizard",
+      "displayName": "巫师雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "effects": [
+        {
+          "op": "drawCards",
+          "target": "$controller",
+          "params": {
+            "count": 2
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "statue.werewolf",
+      "displayName": "狼人雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "targetRule": {
+        "selector": "inPlayCharacter",
+        "min": 1,
+        "max": 1,
+        "range": 2
+      },
+      "modes": [
+        {
+          "modeId": "drain_shield",
+          "effects": [
+            {
+              "op": "createDamage",
+              "target": "$target",
+              "params": {
+                "deliveryType": "direct",
+                "damageType": "shield",
+                "amount": 2,
+                "saveActualDamageAs": "actualDrain"
+              }
+            },
+            {
+              "op": "recoverShield",
+              "target": "$controller",
+              "params": {
+                "amount": "$actualDrain",
+                "skipWhenZero": true
+              }
+            }
+          ]
+        },
+        {
+          "modeId": "drain_hp",
+          "effects": [
+            {
+              "op": "createDamage",
+              "target": "$target",
+              "params": {
+                "deliveryType": "direct",
+                "damageType": "hp",
+                "amount": 1,
+                "saveActualDamageAs": "actualDrain"
+              }
+            },
+            {
+              "op": "recoverHp",
+              "target": "$controller",
+              "params": {
+                "amount": "$actualDrain",
+                "skipWhenZero": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "statue.elf",
+      "displayName": "珺之精灵雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "targetRule": {
+        "selector": "inPlayCharacter",
+        "min": 1,
+        "max": 1,
+        "range": "unlimited"
+      },
+      "effects": [
+        {
+          "op": "selectCards",
+          "params": {
+            "chooser": "$controller",
+            "min": 1,
+            "max": 1,
+            "selector": {
+              "owner": "$target",
+              "zones": "allSelectableCardZones",
+              "dismantlable": true,
+              "excludesInitialTalent": true
+            },
+            "visibility": {
+              "publicCards": "faceUpByIdentity",
+              "handCards": "serverShuffledCardBackOnly"
+            },
+            "timeoutPolicy": "randomLegal"
+          }
+        },
+        {
+          "op": "dismantleCard",
+          "target": "$selection.card",
+          "params": {
+            "destinationByCardRule": true
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "statue.rogue",
+      "displayName": "盗贼雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "targetRule": {
+        "selector": "inPlayCharacter",
+        "min": 1,
+        "max": 1,
+        "range": 1
+      },
+      "effects": [
+        {
+          "op": "selectCards",
+          "params": {
+            "chooser": "$controller",
+            "min": 1,
+            "max": 1,
+            "selector": {
+              "owner": "$target",
+              "zones": "allSelectableCardZones",
+              "gainable": true,
+              "excludesInitialTalent": true
+            },
+            "visibility": {
+              "publicCards": "faceUpByIdentity",
+              "handCards": "serverShuffledCardBackOnly"
+            },
+            "timeoutPolicy": "randomLegal"
+          }
+        },
+        {
+          "op": "gainCard",
+          "target": "$selection.card",
+          "params": {
+            "to": "$controller.hand",
+            "moveKind": "gain"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "statue.berserker",
+      "displayName": "狂战士雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "effects": [
+        {
+          "op": "modifyAttackCount",
+          "target": "$controller",
+          "params": {
+            "delta": 1,
+            "scope": "currentTurn"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "statue.paladin",
+      "displayName": "圣骑士雕像",
+      "usageKind": "effectResponse",
+      "defaultWindow": null,
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "response": {
+        "window": "card.effect.before",
+        "targetFilter": {
+          "controllerIsOtherPlayer": true,
+          "cardCategory": "statue"
+        },
+        "excludesCategories": [
+          "special",
+          "basic",
+          "equipment",
+          "boss"
+        ],
+        "stackPolicy": "lastInFirstOut",
+        "mayRespondToSameFamily": true
+      },
+      "effects": [
+        {
+          "op": "preventEvent",
+          "params": {
+            "event": "$respondedStatue.effect",
+            "doesNotCancelIndependentReturnSchedule": true
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "statue.priest",
+      "displayName": "牧师雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "effects": [
+        {
+          "op": "displayCards",
+          "params": {
+            "count": {
+              "count": {
+                "selector": "inPlayCharacter"
+              }
+            },
+            "replenishByReshuffle": true,
+            "saveAs": "displayedCards"
+          }
+        },
+        {
+          "op": "forEach",
+          "params": {
+            "items": {
+              "selector": "notEliminatedCharactersFromControllerCounterclockwise"
+            },
+            "mode": "serial",
+            "maxIterations": 25
+          },
+          "effects": [
+            {
+              "op": "selectCards",
+              "params": {
+                "chooser": "$item",
+                "min": 0,
+                "max": 1,
+                "selector": "$displayedCards.remaining",
+                "optional": true,
+                "timeoutPolicy": "pass",
+                "onlyOneOpportunityPerCharacter": true
+              }
+            },
+            {
+              "op": "gainCard",
+              "target": "$selection.card",
+              "params": {
+                "ifSelected": true,
+                "to": "$item.hand",
+                "moveKind": "gain"
+              }
+            }
+          ]
+        },
+        {
+          "op": "forEach",
+          "params": {
+            "items": "$displayedCards.remaining",
+            "mode": "serial",
+            "maxIterations": 337
+          },
+          "effects": [
+            {
+              "op": "discardCard",
+              "target": "$item"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "statue.knight",
+      "displayName": "骑士雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "targetRule": {
+        "selector": "inPlayCharacter",
+        "min": 1,
+        "max": 1
+      },
+      "effects": [
+        {
+          "op": "repeat",
+          "maxIterations": 160,
+          "params": {
+            "alternatingPlayers": [
+              "$target",
+              "$controller"
+            ],
+            "first": "$target",
+            "request": {
+              "cardFamilyId": "basic.kill",
+              "optional": true
+            },
+            "stopAtFirstPassOrNoLegalCard": true,
+            "savePasserAs": "duelLoser",
+            "saveOtherAs": "duelWinner"
+          },
+          "effects": [
+            {
+              "op": "requestSpecialPlay",
+              "params": {
+                "player": "$currentDuelPlayer",
+                "cardFamilyId": "basic.kill",
+                "timeoutPolicy": "pass"
+              }
+            }
+          ]
+        },
+        {
+          "op": "selectCards",
+          "params": {
+            "chooser": "$duelWinner",
+            "min": 0,
+            "max": 1,
+            "optional": true,
+            "selector": {
+              "owner": "$duelWinner",
+              "equipped": true,
+              "effective": true,
+              "category": "weapon"
+            },
+            "timeoutPolicy": "pass"
+          }
+        },
+        {
+          "op": "copyCard",
+          "target": "$selection.card",
+          "params": {
+            "ifSelected": true,
+            "temporary": true,
+            "chargeState": 0,
+            "preservesOriginalInstanceState": true,
+            "saveAs": "temporaryWeapon"
+          }
+        },
+        {
+          "op": "createAttack",
+          "params": {
+            "if": "$temporaryWeapon.exists",
+            "source": "$duelWinner",
+            "targets": [
+              "$duelLoser"
+            ],
+            "weaponRef": "$temporaryWeapon",
+            "killCost": 0,
+            "attackCountCost": 0,
+            "responsePolicy": {
+              "dodge": false,
+              "meleeBlock": false
+            },
+            "tags": [
+              "ignoreArmor"
+            ],
+            "modePolicy": "currentLegalActiveModeAndAutomaticRangeTier",
+            "rangePolicy": "ifNoTierCoversUseMaximumRangeTierAndProceed"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "statue.assassin",
+      "displayName": "刺客雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile",
+        "exitMoveKind": "discard"
+      },
+      "effects": [
+        {
+          "op": "createAttack",
+          "params": {
+            "source": "$controller",
+            "targets": {
+              "selector": "otherInPlayCharactersCounterclockwise"
+            },
+            "targetOrder": "counterclockwiseSerial",
+            "attackType": "ranged",
+            "range": "unlimited",
+            "killCost": 0,
+            "attackCountCost": 0,
+            "damageSegments": [
+              {
+                "segmentId": "dart",
+                "deliveryType": "attack",
+                "attackType": "ranged",
+                "damageType": "normal",
+                "element": "none",
+                "amount": 2,
+                "repeat": 1,
+                "isAdditional": false
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "statue.engineer",
+      "displayName": "工程师雕像",
+      "usageKind": "statueCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "successExit": "judgment",
+        "defaultExit": null
+      },
+      "targetRule": {
+        "selector": "inPlayCharacter",
+        "min": 1,
+        "max": 1,
+        "range": "unlimited"
+      },
+      "effects": [
+        {
+          "op": "moveCard",
+          "target": "$card",
+          "params": {
+            "to": "$target.judgment",
+            "moveKind": "use",
+            "position": "end",
+            "persistentSource": "$controller"
+          }
+        }
+      ],
+      "delayedTrigger": {
+        "event": "phase.body",
+        "filter": {
+          "phase": "judgment"
+        },
+        "controller": "currentZoneOwner",
+        "loopSafety": {
+          "mayCycle": true,
+          "endsOn": [
+            "matched",
+            "dismantled",
+            "game.end"
+          ]
+        },
+        "effects": [
+          {
+            "op": "judgeColor",
+            "params": {
+              "matchedColors": [
+                "green"
+              ],
+              "purpose": "branch",
+              "onMatched": [
+                {
+                  "op": "createDamage",
+                  "target": "$currentZoneOwner",
+                  "params": {
+                    "source": "$persistentSource",
+                    "deliveryType": "direct",
+                    "damageType": "hp",
+                    "amount": 3,
+                    "sourceEliminationDoesNotCancel": true
+                  }
+                },
+                {
+                  "op": "removeCard",
+                  "target": "$card",
+                  "params": {
+                    "destination": "discardPile"
+                  }
+                }
+              ],
+              "onUnmatched": {
+                "op": "moveCard",
+                "target": "$card",
+                "params": {
+                  "to": "$nextInPlayCharacterCounterclockwise.judgment",
+                  "position": "end",
+                  "moveKind": "systemMove",
+                  "preservePersistentSource": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "familyId": "special.sp01",
+      "displayName": "网瘾少年",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "effects": [
+        {
+          "op": "requestSpecialPlay",
+          "params": {
+            "requestId": "specialRequest.dodge",
+            "cardFamilyId": "basic.dodge",
+            "eligiblePlayers": {
+              "selector": "otherInPlayCharacters"
+            },
+            "order": "controllerThenCounterclockwise",
+            "collectAllBeforeConsequences": true,
+            "responseMayComeFrom": [
+              "handCard",
+              "ability",
+              "armor"
+            ],
+            "isAttack": false,
+            "saveNonRespondersAs": "nonResponders"
+          }
+        },
+        {
+          "op": "setVar",
+          "params": {
+            "name": "x",
+            "value": {
+              "count": "$nonResponders"
+            }
+          }
+        },
+        {
+          "op": "if",
+          "params": {
+            "condition": {
+              "gt": [
+                "$x",
+                0
+              ]
+            },
+            "then": {
+              "op": "forEach",
+              "params": {
+                "items": "$nonResponders.counterclockwise",
+                "mode": "serial",
+                "maxIterations": 25
+              },
+              "effects": [
+                {
+                  "op": "createDamage",
+                  "target": "$item",
+                  "params": {
+                    "source": "$controller",
+                    "deliveryType": "direct",
+                    "damageType": "normal",
+                    "element": "electric",
+                    "amount": "$x"
+                  }
+                },
+                {
+                  "op": "checkDying",
+                  "target": "$item",
+                  "mode": "completeNestedFirst"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp02",
+      "displayName": "网瘾少女",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "effects": [
+        {
+          "op": "requestSpecialPlay",
+          "params": {
+            "requestId": "specialRequest.dodge",
+            "cardFamilyId": "basic.dodge",
+            "eligiblePlayers": {
+              "selector": "otherInPlayCharacters"
+            },
+            "order": "controllerThenCounterclockwise",
+            "collectAllBeforeConsequences": true,
+            "responseMayComeFrom": [
+              "handCard",
+              "ability",
+              "armor"
+            ],
+            "isAttack": false,
+            "saveNonRespondersAs": "nonResponders"
+          }
+        },
+        {
+          "op": "setVar",
+          "params": {
+            "name": "x",
+            "value": {
+              "count": "$nonResponders"
+            }
+          }
+        },
+        {
+          "op": "if",
+          "params": {
+            "condition": {
+              "gt": [
+                "$x",
+                0
+              ]
+            },
+            "then": {
+              "op": "forEach",
+              "params": {
+                "items": "$nonResponders.counterclockwise",
+                "mode": "serial",
+                "maxIterations": 25
+              },
+              "effects": [
+                {
+                  "op": "createDamage",
+                  "target": "$item",
+                  "params": {
+                    "source": "$controller",
+                    "deliveryType": "direct",
+                    "damageType": "normal",
+                    "element": "electric",
+                    "amount": "$x"
+                  }
+                },
+                {
+                  "op": "checkDying",
+                  "target": "$item",
+                  "mode": "completeNestedFirst"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp03",
+      "displayName": "羊叫兽",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "outsideDeck"
+      },
+      "synthesis": {
+        "inputsFromHand": [
+          "special.sp01",
+          "special.sp02"
+        ],
+        "window": "owner.phase.play",
+        "inputMoveKind": "synthesizeConsume",
+        "inputsDestination": "discardPile",
+        "outputTo": "hand",
+        "attackCountCost": 0,
+        "generatedInstanceExitZone": "outsideDeck"
+      },
+      "effects": [
+        {
+          "op": "requestSpecialPlay",
+          "params": {
+            "requestId": "specialRequest.dodge",
+            "cardFamilyId": "basic.dodge",
+            "eligiblePlayers": {
+              "selector": "otherInPlayCharacters"
+            },
+            "order": "controllerThenCounterclockwise",
+            "collectAllBeforeConsequences": true,
+            "responseMayComeFrom": [
+              "handCard",
+              "ability",
+              "armor"
+            ],
+            "isAttack": false,
+            "saveNonRespondersAs": "nonResponders"
+          }
+        },
+        {
+          "op": "forEach",
+          "params": {
+            "items": "$nonResponders.counterclockwise",
+            "mode": "serial",
+            "maxIterations": 25
+          },
+          "effects": [
+            {
+              "op": "createDamage",
+              "target": "$item",
+              "params": {
+                "source": "$controller",
+                "deliveryType": "direct",
+                "damageType": "normal",
+                "element": "electric",
+                "amount": 2
+              }
+            },
+            {
+              "op": "applyRestriction",
+              "target": "$item",
+              "params": {
+                "restrictionId": "cannotDodge",
+                "appliesToAllDodgeMethods": true
+              }
+            },
+            {
+              "op": "checkDying",
+              "target": "$item",
+              "mode": "completeNestedFirst"
+            }
+          ]
+        },
+        {
+          "op": "resolveTriggerWindow",
+          "params": {
+            "barrier": "allPhaseOneResponsesAndConsequencesComplete",
+            "disallowUnrelatedOptionalWindowsBetweenPhases": true
+          }
+        },
+        {
+          "op": "createDuration",
+          "params": {
+            "durationId": "duration.sheepDodgeLocks",
+            "bindsExistingRestrictions": "cannotDodge"
+          },
+          "expiry": {
+            "point": "currentTurn.end",
+            "skipPolicy": "expireOnSkippedBoundary"
+          }
+        },
+        {
+          "op": "sequence",
+          "params": {
+            "invokeEffectFamily": "special.sp01",
+            "asNestedPhase": true,
+            "independentResponseCollection": true
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp04",
+      "displayName": "死亡笔记",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "targetRule": {
+        "selector": "inPlayCharacter",
+        "min": 1,
+        "max": 1,
+        "range": "unlimited"
+      },
+      "effects": [
+        {
+          "op": "if",
+          "params": {
+            "condition": {
+              "gt": [
+                "$target.shield",
+                0
+              ]
+            },
+            "then": {
+              "op": "setValue",
+              "params": {
+                "path": "$target.shield",
+                "value": 0,
+                "semantic": "modifyNotDamage"
+              }
+            },
+            "else": {
+              "op": "setValue",
+              "params": {
+                "path": "$target.hp",
+                "value": 1,
+                "semantic": "modifyNotDamage"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp05",
+      "displayName": "重铸熔炉",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "costs": [
+        {
+          "kind": "discardEquippedCard",
+          "selector": {
+            "category": "weapon",
+            "equipped": true
+          },
+          "count": 1,
+          "payBeforeReveal": true,
+          "saveAs": "discardedWeapon"
+        }
+      ],
+      "effects": [
+        {
+          "op": "repeat",
+          "maxIterations": 8,
+          "params": {
+            "stopWhen": {
+              "revealedWeaponColorRankAtLeast": "$discardedWeapon.colorRank"
+            },
+            "reshuffleImmediatelyIfExhausted": true,
+            "currentlyResolvingCardsExcludedFromReshuffle": true,
+            "saveAs": "revealedCards"
+          },
+          "effects": [
+            {
+              "op": "revealCards",
+              "params": {
+                "count": 1,
+                "from": "drawPile"
+              }
+            }
+          ]
+        },
+        {
+          "op": "selectCards",
+          "params": {
+            "chooser": "$controller",
+            "min": {
+              "if": {
+                "any": {
+                  "items": "$revealedCards",
+                  "category": "weapon"
+                }
+              },
+              "then": 1,
+              "else": 0
+            },
+            "max": 1,
+            "selector": {
+              "items": "$revealedCards",
+              "category": "weapon"
+            },
+            "timeoutPolicy": "randomLegal"
+          }
+        },
+        {
+          "op": "gainCard",
+          "target": "$selection.card",
+          "params": {
+            "ifSelected": true,
+            "to": "$controller.hand"
+          }
+        },
+        {
+          "op": "forEach",
+          "params": {
+            "items": "$revealedCards.remaining",
+            "mode": "serial",
+            "maxIterations": 8
+          },
+          "effects": [
+            {
+              "op": "discardCard",
+              "target": "$item"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp06",
+      "displayName": "起源熔炉",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "costs": [
+        {
+          "kind": "discardEquippedCard",
+          "selector": {
+            "category": "weapon",
+            "equipped": true
+          },
+          "count": 1,
+          "saveAs": "discardedWeapon"
+        }
+      ],
+      "effects": [
+        {
+          "op": "drawCards",
+          "target": "$controller",
+          "params": {
+            "count": {
+              "switch": {
+                "expression": "$discardedWeapon.printedColor",
+                "cases": {
+                  "white": 2,
+                  "green": 2,
+                  "blue": 3,
+                  "orange": 3,
+                  "red": 4
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp07",
+      "displayName": "号角小队",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "effects": [
+        {
+          "op": "createDuration",
+          "target": "$controller",
+          "params": {
+            "durationId": "duration.hornSquad",
+            "stackPolicy": "refresh",
+            "scope": "global",
+            "modifier": {
+              "query": "attack.attackCountCost",
+              "operation": {
+                "set": 0
+              },
+              "filter": {
+                "actualKillCardPaid": true,
+                "generalWeaponAttackFlow": true,
+                "excludesExplicitAttackCountAbilityOrMode": true
+              }
+            }
+          },
+          "expiry": {
+            "point": "owner.nextPhase.prepare.before",
+            "skipPolicy": "expireOnSkippedBoundary"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp08",
+      "displayName": "拆迁大队",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "effects": [
+        {
+          "op": "forEach",
+          "params": {
+            "items": {
+              "selector": "notEliminatedPlayersFromCurrentTurnPlayerCounterclockwise"
+            },
+            "mode": "serial",
+            "maxIterations": 25
+          },
+          "effects": [
+            {
+              "op": "selectCards",
+              "params": {
+                "chooser": "$item",
+                "min": 0,
+                "max": 1,
+                "optional": true,
+                "selector": {
+                  "owner": "$item",
+                  "equipped": true,
+                  "category": "weapon",
+                  "includesThirdWeapon": true
+                },
+                "timeoutPolicy": "pass"
+              }
+            },
+            {
+              "op": "discardCard",
+              "target": "$selection.card",
+              "params": {
+                "ifSelected": true
+              }
+            }
+          ]
+        },
+        {
+          "op": "saveSnapshot",
+          "params": {
+            "snapshotId": "remainingWeaponsByPlayer",
+            "selector": {
+              "equipped": true,
+              "category": "weapon",
+              "includesThirdWeapon": true
+            }
+          }
+        },
+        {
+          "op": "forEach",
+          "params": {
+            "items": "$remainingWeaponsByPlayer",
+            "mode": "simultaneousFromSnapshot",
+            "maxIterations": 100
+          },
+          "effects": [
+            {
+              "op": "giveCard",
+              "target": "$item.weapons",
+              "params": {
+                "to": "$item.counterclockwiseNextPlayer",
+                "preserveThirdWeaponClassification": true
+              }
+            }
+          ]
+        },
+        {
+          "op": "forEach",
+          "params": {
+            "items": {
+              "selector": "playersWithWeaponSlotOverflow"
+            },
+            "mode": "serial",
+            "maxIterations": 25
+          },
+          "effects": [
+            {
+              "op": "selectCards",
+              "params": {
+                "chooser": "$item",
+                "min": "$item.weaponOverflowCount",
+                "max": "$item.weaponOverflowCount",
+                "selector": {
+                  "owner": "$item",
+                  "equipped": true,
+                  "category": "weapon"
+                },
+                "timeoutPolicy": "randomLegal"
+              }
+            },
+            {
+              "op": "forEach",
+              "params": {
+                "items": "$selection.cards",
+                "maxIterations": 3
+              },
+              "effects": [
+                {
+                  "op": "discardCard",
+                  "target": "$item"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp09",
+      "displayName": "超级大宝贝儿",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "successExit": "judgment",
+        "defaultExit": null
+      },
+      "effects": [
+        {
+          "op": "moveCard",
+          "target": "$card",
+          "params": {
+            "to": "$controller.judgment",
+            "position": "end",
+            "persistentSource": "$controller"
+          }
+        }
+      ],
+      "delayedTrigger": {
+        "event": "phase.body",
+        "filter": {
+          "phase": "judgment"
+        },
+        "onlyWhileInJudgmentZone": true,
+        "effects": [
+          {
+            "op": "requestSpecialPlay",
+            "params": {
+              "requestId": "specialRequest.dodge",
+              "cardFamilyId": "basic.dodge",
+              "eligiblePlayers": {
+                "selector": "allInPlayCharacters"
+              },
+              "order": "controllerThenCounterclockwise",
+              "collectAllBeforeConsequences": true,
+              "responseMayComeFrom": [
+                "handCard",
+                "ability"
+              ],
+              "isAttack": false,
+              "saveNonRespondersAs": "nonResponders"
+            }
+          },
+          {
+            "op": "forEach",
+            "params": {
+              "items": "$nonResponders.counterclockwise",
+              "mode": "serial",
+              "maxIterations": 25
+            },
+            "effects": [
+              {
+                "op": "createDamage",
+                "target": "$item",
+                "params": {
+                  "source": "$persistentSource",
+                  "deliveryType": "direct",
+                  "damageType": "hp",
+                  "amount": 3
+                }
+              },
+              {
+                "op": "checkDying",
+                "target": "$item",
+                "mode": "completeNestedFirst"
+              }
+            ]
+          },
+          {
+            "op": "forEach",
+            "params": {
+              "items": {
+                "selector": "otherInPlayCharactersFromPersistentSourceCounterclockwise"
+              },
+              "mode": "serial",
+              "maxIterations": 25
+            },
+            "effects": [
+              {
+                "op": "createDamage",
+                "target": "$item",
+                "params": {
+                  "source": "$persistentSource",
+                  "deliveryType": "direct",
+                  "damageType": "normal",
+                  "element": "fire",
+                  "amount": 1
+                }
+              },
+              {
+                "op": "createDamage",
+                "target": "$item",
+                "params": {
+                  "source": "$persistentSource",
+                  "deliveryType": "direct",
+                  "damageType": "normal",
+                  "element": "poison",
+                  "amount": 1
+                }
+              },
+              {
+                "op": "checkDying",
+                "target": "$item",
+                "mode": "completeNestedFirst"
+              }
+            ]
+          },
+          {
+            "op": "discardCard",
+            "target": "$card"
+          }
+        ]
+      }
+    },
+    {
+      "familyId": "special.sp10",
+      "displayName": "奉献池",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "legality": {
+        "controllerHasEquippedWeapon": true
+      },
+      "costs": [
+        {
+          "kind": "discardEquippedCard",
+          "selector": {
+            "category": "weapon",
+            "equipped": true
+          },
+          "count": 1,
+          "uiConfirmWhenOnlyOneLegalWeapon": true
+        }
+      ],
+      "effects": [
+        {
+          "op": "randomChoice",
+          "params": {
+            "resultHasNoRulesEffect": true,
+            "optionsConfigKey": "special.sp10.flavorLines",
+            "logResult": true
+          }
+        },
+        {
+          "op": "noop"
+        }
+      ]
+    },
+    {
+      "familyId": "special.sp11",
+      "displayName": "鲜血祭坛",
+      "usageKind": "specialCard",
+      "defaultWindow": "owner.phase.play",
+      "attackCountCost": 0,
+      "useFlow": {
+        "enter": "resolving",
+        "defaultExit": "discardPile"
+      },
+      "effects": [
+        {
+          "op": "changeMaxHp",
+          "target": "$controller",
+          "params": {
+            "delta": -2,
+            "clampCurrentOnlyAboveNewMaximum": true
+          }
+        },
+        {
+          "op": "changeHp",
+          "target": "$controller",
+          "params": {
+            "delta": -2,
+            "semantic": "modifyNotDamage"
+          }
+        },
+        {
+          "op": "checkDying",
+          "target": "$controller"
+        },
+        {
+          "op": "modifyIronShield",
+          "target": "$controller",
+          "params": {
+            "setMinimum": 1
+          }
+        },
+        {
+          "op": "createDuration",
+          "target": "$controller",
+          "params": {
+            "durationId": "duration.bloodAltarIronShield",
+            "stackPolicy": "replaceByPriority",
+            "ironShieldValue": 1
+          },
+          "expiry": {
+            "point": "owner.nextPhase.prepare.before",
+            "skipPolicy": "expireOnSkippedBoundary"
+          },
+          "cleanupEffects": [
+            {
+              "op": "modifyIronShield",
+              "target": "$controller",
+              "params": {
+                "removeContributionFromDuration": true
+              }
+            },
+            {
+              "op": "if",
+              "params": {
+                "condition": {
+                  "characterInPlay": "$controller"
+                },
+                "then": {
+                  "op": "enableAbility",
+                  "target": "$controller",
+                  "params": {
+                    "abilityId": "ability.bloodCurse",
+                    "permanent": true
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "grantedAbility": {
+        "abilityId": "ability.bloodCurse",
+        "limit": {
+          "scope": "perTurnOwner",
+          "max": 1,
+          "resetAt": "owner.turn.start",
+          "consumeAt": "triggerCommitted"
+        },
+        "trigger": {
+          "event": "attack.costs.paid",
+          "timing": "afterLegalTargetAndKillPaymentBeforeKillInvalidation",
+          "filter": {
+            "sourceIsAbilityOwner": true,
+            "actualKillCardPaid": true
+          },
+          "effects": [
+            {
+              "op": "createDamage",
+              "target": "$firstLegallySpecifiedTarget",
+              "params": {
+                "source": "$controller",
+                "deliveryType": "direct",
+                "attackType": "field",
+                "damageType": "normal",
+                "amount": 2
+              }
+            },
+            {
+              "op": "checkDying",
+              "target": "$firstLegallySpecifiedTarget",
+              "mode": "completeNestedFirst"
+            },
+            {
+              "op": "if",
+              "params": {
+                "condition": {
+                  "targetNoLongerLegal": "$firstLegallySpecifiedTarget"
+                },
+                "then": {
+                  "op": "invalidateAttack",
+                  "params": {
+                    "result": "cancelledAfterPaidTargetBecameIllegal",
+                    "costsRemainPaid": true
+                  }
+                }
+              }
+            },
+            {
+              "op": "consumeLimit",
+              "params": {
+                "scope": "perTurnOwner"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "templates": [
+    {
+      "cardId": "basic.kill.white",
+      "displayName": "杀",
+      "category": "basic",
+      "color": "white",
+      "initialDeckCount": 16,
+      "effectFamilyId": "basic.kill",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.kill.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.kill.green",
+      "displayName": "杀",
+      "category": "basic",
+      "color": "green",
+      "initialDeckCount": 16,
+      "effectFamilyId": "basic.kill",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.kill.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.kill.blue",
+      "displayName": "杀",
+      "category": "basic",
+      "color": "blue",
+      "initialDeckCount": 16,
+      "effectFamilyId": "basic.kill",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.kill.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.kill.orange",
+      "displayName": "杀",
+      "category": "basic",
+      "color": "orange",
+      "initialDeckCount": 16,
+      "effectFamilyId": "basic.kill",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.kill.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.kill.red",
+      "displayName": "杀",
+      "category": "basic",
+      "color": "red",
+      "initialDeckCount": 16,
+      "effectFamilyId": "basic.kill",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.kill.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.dodge.white",
+      "displayName": "闪",
+      "category": "basic",
+      "color": "white",
+      "initialDeckCount": 7,
+      "effectFamilyId": "basic.dodge",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.dodge.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.dodge.green",
+      "displayName": "闪",
+      "category": "basic",
+      "color": "green",
+      "initialDeckCount": 7,
+      "effectFamilyId": "basic.dodge",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.dodge.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.dodge.blue",
+      "displayName": "闪",
+      "category": "basic",
+      "color": "blue",
+      "initialDeckCount": 7,
+      "effectFamilyId": "basic.dodge",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.dodge.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.dodge.orange",
+      "displayName": "闪",
+      "category": "basic",
+      "color": "orange",
+      "initialDeckCount": 7,
+      "effectFamilyId": "basic.dodge",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.dodge.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.dodge.red",
+      "displayName": "闪",
+      "category": "basic",
+      "color": "red",
+      "initialDeckCount": 7,
+      "effectFamilyId": "basic.dodge",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.dodge.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.potion.white",
+      "displayName": "药水",
+      "category": "basic",
+      "color": "white",
+      "initialDeckCount": 2,
+      "effectFamilyId": "basic.potion",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.potion.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.potion.green",
+      "displayName": "药水",
+      "category": "basic",
+      "color": "green",
+      "initialDeckCount": 2,
+      "effectFamilyId": "basic.potion",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.potion.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.potion.blue",
+      "displayName": "药水",
+      "category": "basic",
+      "color": "blue",
+      "initialDeckCount": 2,
+      "effectFamilyId": "basic.potion",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.potion.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.potion.orange",
+      "displayName": "药水",
+      "category": "basic",
+      "color": "orange",
+      "initialDeckCount": 2,
+      "effectFamilyId": "basic.potion",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.potion.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.potion.red",
+      "displayName": "药水",
+      "category": "basic",
+      "color": "red",
+      "initialDeckCount": 2,
+      "effectFamilyId": "basic.potion",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.potion.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.horn.white",
+      "displayName": "号角",
+      "category": "basic",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "basic.horn",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.horn.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.horn.green",
+      "displayName": "号角",
+      "category": "basic",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "basic.horn",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.horn.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.horn.blue",
+      "displayName": "号角",
+      "category": "basic",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "basic.horn",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.horn.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.horn.orange",
+      "displayName": "号角",
+      "category": "basic",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "basic.horn",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.horn.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.horn.red",
+      "displayName": "号角",
+      "category": "basic",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "basic.horn",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.horn.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.coin.white",
+      "displayName": "金币",
+      "category": "basic",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "basic.coin",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.coin.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "basic.coin.red",
+      "displayName": "金币",
+      "category": "basic",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "basic.coin",
+      "effectEncodingStatus": "basic_effect_encoded",
+      "resourceKey": "card.basic.coin.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a01",
+      "displayName": "双截棍",
+      "category": "armor",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "armor.a01",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a01",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a02",
+      "displayName": "箱子",
+      "category": "armor",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "armor.a02",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a02",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a03",
+      "displayName": "光剑土豪金",
+      "category": "armor",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "armor.a03",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a03",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a04",
+      "displayName": "盾牌",
+      "category": "armor",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "armor.a04",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a04",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a05",
+      "displayName": "幽灵王冠",
+      "category": "armor",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "armor.a05",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a05",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a06",
+      "displayName": "精致法杖",
+      "category": "armor",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "armor.a06",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a06",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a07",
+      "displayName": "斩首者",
+      "category": "armor",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "armor.a07",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a07",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a08",
+      "displayName": "圆盾",
+      "category": "armor",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "armor.a08",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a08",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "armor.a09",
+      "displayName": "陷阱箱",
+      "category": "armor",
+      "color": "green",
+      "initialDeckCount": 0,
+      "effectFamilyId": "armor.a09",
+      "effectEncodingStatus": "armor_effect_encoded",
+      "resourceKey": "card.armor.a09",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.strong_potion",
+      "displayName": "强力药水",
+      "category": "talent",
+      "color": "white",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.strong_potion",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.strong_potion",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.triple_wield",
+      "displayName": "三持",
+      "category": "talent",
+      "color": "white",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.triple_wield",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.triple_wield",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.max_hp_up",
+      "displayName": "血量上限增加",
+      "category": "talent",
+      "color": "white",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.max_hp_up",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.max_hp_up",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.max_shield_up",
+      "displayName": "护盾上限增加",
+      "category": "talent",
+      "color": "white",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.max_shield_up",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.max_shield_up",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.melee_counter",
+      "displayName": "近反",
+      "category": "talent",
+      "color": "white",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.melee_counter",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.melee_counter",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.poison_shield",
+      "displayName": "毒盾",
+      "category": "talent",
+      "color": "green",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.poison_shield",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.poison_shield",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.hand_limit_up",
+      "displayName": "能量上限增加",
+      "category": "talent",
+      "color": "green",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.hand_limit_up",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.hand_limit_up",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.shop_discount",
+      "displayName": "商店半价",
+      "category": "talent",
+      "color": "green",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.shop_discount",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.shop_discount",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.blood_box",
+      "displayName": "血箱",
+      "category": "talent",
+      "color": "green",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.blood_box",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.blood_box",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.life_steal",
+      "displayName": "吸血",
+      "category": "talent",
+      "color": "green",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.life_steal",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.life_steal",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.blue_shield",
+      "displayName": "蓝盾",
+      "category": "talent",
+      "color": "blue",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.blue_shield",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.blue_shield",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.ice_shield",
+      "displayName": "冰盾",
+      "category": "talent",
+      "color": "blue",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.ice_shield",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.ice_shield",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.mana_siphon",
+      "displayName": "吸蓝",
+      "category": "talent",
+      "color": "blue",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.mana_siphon",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.mana_siphon",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.electric_shield",
+      "displayName": "电盾",
+      "category": "talent",
+      "color": "blue",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.electric_shield",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.electric_shield",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.combo_up",
+      "displayName": "连击增加",
+      "category": "talent",
+      "color": "blue",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.combo_up",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.combo_up",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.fire_shield",
+      "displayName": "火盾",
+      "category": "talent",
+      "color": "red",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.fire_shield",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.fire_shield",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.spike_shield",
+      "displayName": "刺盾",
+      "category": "talent",
+      "color": "red",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.spike_shield",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.spike_shield",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.critical_penetration",
+      "displayName": "暴击穿透",
+      "category": "talent",
+      "color": "red",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.critical_penetration",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.critical_penetration",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.scatter_up",
+      "displayName": "散弹增加",
+      "category": "talent",
+      "color": "red",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.scatter_up",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.scatter_up",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.melee_range_up",
+      "displayName": "近战距离增加",
+      "category": "talent",
+      "color": "red",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.melee_range_up",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.melee_range_up",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.shield_breaker",
+      "displayName": "碎盾",
+      "category": "talent",
+      "color": "orange",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.shield_breaker",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.shield_breaker",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.precision_strike",
+      "displayName": "精确打击",
+      "category": "talent",
+      "color": "orange",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.precision_strike",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.precision_strike",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.charge_acceleration",
+      "displayName": "蓄力加快",
+      "category": "talent",
+      "color": "orange",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.charge_acceleration",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.charge_acceleration",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.statue_double_trigger",
+      "displayName": "雕像双触",
+      "category": "talent",
+      "color": "orange",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.statue_double_trigger",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.statue_double_trigger",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "talent.extra_gem",
+      "displayName": "额外宝石",
+      "category": "talent",
+      "color": "orange",
+      "initialDeckCount": 2,
+      "effectFamilyId": "talent.extra_gem",
+      "effectEncodingStatus": "talent_effect_encoded",
+      "resourceKey": "card.talent.extra_gem",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m01",
+      "displayName": "野猪",
+      "category": "mount",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m01",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m01",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m02",
+      "displayName": "温顺雪人",
+      "category": "mount",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m02",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m02",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m03",
+      "displayName": "暴走野猪",
+      "category": "mount",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m03",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m03",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m04",
+      "displayName": "水晶虫",
+      "category": "mount",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m04",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m04",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m05",
+      "displayName": "蜣螂",
+      "category": "mount",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m05",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m05",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m06",
+      "displayName": "蜘蛛",
+      "category": "mount",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m06",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m06",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m07",
+      "displayName": "白龙马",
+      "category": "mount",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m07",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m07",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m08",
+      "displayName": "浮游装置",
+      "category": "mount",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m08",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m08",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m09",
+      "displayName": "铁拳",
+      "category": "mount",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m09",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m09",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m10",
+      "displayName": "瓦克恩",
+      "category": "mount",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m10",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m10",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "mount.m11",
+      "displayName": "百变怪",
+      "category": "mount",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "mount.m11",
+      "effectEncodingStatus": "mount_effect_encoded",
+      "resourceKey": "card.mount.m11",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.wizard.white",
+      "displayName": "巫师雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.wizard",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.wizard.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.wizard.green",
+      "displayName": "巫师雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.wizard",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.wizard.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.wizard.blue",
+      "displayName": "巫师雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.wizard",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.wizard.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.wizard.orange",
+      "displayName": "巫师雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.wizard",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.wizard.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.wizard.red",
+      "displayName": "巫师雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.wizard",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.wizard.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.werewolf.white",
+      "displayName": "狼人雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.werewolf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.werewolf.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.werewolf.green",
+      "displayName": "狼人雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.werewolf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.werewolf.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.werewolf.blue",
+      "displayName": "狼人雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.werewolf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.werewolf.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.werewolf.orange",
+      "displayName": "狼人雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.werewolf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.werewolf.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.werewolf.red",
+      "displayName": "狼人雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.werewolf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.werewolf.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.elf.white",
+      "displayName": "珺之精灵雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.elf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.elf.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.elf.green",
+      "displayName": "珺之精灵雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.elf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.elf.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.elf.blue",
+      "displayName": "珺之精灵雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.elf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.elf.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.elf.orange",
+      "displayName": "珺之精灵雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.elf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.elf.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.elf.red",
+      "displayName": "珺之精灵雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.elf",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.elf.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.rogue.white",
+      "displayName": "盗贼雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.rogue",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.rogue.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.rogue.green",
+      "displayName": "盗贼雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.rogue",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.rogue.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.rogue.blue",
+      "displayName": "盗贼雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.rogue",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.rogue.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.rogue.orange",
+      "displayName": "盗贼雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.rogue",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.rogue.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.rogue.red",
+      "displayName": "盗贼雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.rogue",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.rogue.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.berserker.white",
+      "displayName": "狂战士雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.berserker",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.berserker.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.berserker.green",
+      "displayName": "狂战士雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.berserker",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.berserker.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.berserker.blue",
+      "displayName": "狂战士雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.berserker",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.berserker.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.berserker.orange",
+      "displayName": "狂战士雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.berserker",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.berserker.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.berserker.red",
+      "displayName": "狂战士雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.berserker",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.berserker.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.paladin.white",
+      "displayName": "圣骑士雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.paladin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.paladin.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.paladin.green",
+      "displayName": "圣骑士雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.paladin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.paladin.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.paladin.blue",
+      "displayName": "圣骑士雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.paladin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.paladin.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.paladin.orange",
+      "displayName": "圣骑士雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.paladin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.paladin.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.paladin.red",
+      "displayName": "圣骑士雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.paladin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.paladin.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.priest.white",
+      "displayName": "牧师雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.priest",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.priest.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.priest.green",
+      "displayName": "牧师雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.priest",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.priest.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.priest.blue",
+      "displayName": "牧师雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.priest",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.priest.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.priest.orange",
+      "displayName": "牧师雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.priest",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.priest.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.priest.red",
+      "displayName": "牧师雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.priest",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.priest.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.knight.white",
+      "displayName": "骑士雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.knight",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.knight.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.knight.green",
+      "displayName": "骑士雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.knight",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.knight.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.knight.blue",
+      "displayName": "骑士雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.knight",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.knight.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.knight.orange",
+      "displayName": "骑士雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.knight",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.knight.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.knight.red",
+      "displayName": "骑士雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.knight",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.knight.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.assassin.white",
+      "displayName": "刺客雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.assassin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.assassin.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.assassin.green",
+      "displayName": "刺客雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.assassin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.assassin.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.assassin.blue",
+      "displayName": "刺客雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.assassin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.assassin.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.assassin.orange",
+      "displayName": "刺客雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.assassin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.assassin.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.assassin.red",
+      "displayName": "刺客雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.assassin",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.assassin.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.engineer.white",
+      "displayName": "工程师雕像",
+      "category": "statue",
+      "color": "white",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.engineer",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.engineer.white",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.engineer.green",
+      "displayName": "工程师雕像",
+      "category": "statue",
+      "color": "green",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.engineer",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.engineer.green",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.engineer.blue",
+      "displayName": "工程师雕像",
+      "category": "statue",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.engineer",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.engineer.blue",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.engineer.orange",
+      "displayName": "工程师雕像",
+      "category": "statue",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.engineer",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.engineer.orange",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "statue.engineer.red",
+      "displayName": "工程师雕像",
+      "category": "statue",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "statue.engineer",
+      "effectEncodingStatus": "statue_effect_encoded",
+      "resourceKey": "card.statue.engineer.red",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp01",
+      "displayName": "网瘾少年",
+      "category": "special",
+      "color": "blue",
+      "initialDeckCount": 3,
+      "effectFamilyId": "special.sp01",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp01",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp02",
+      "displayName": "网瘾少女",
+      "category": "special",
+      "color": "green",
+      "initialDeckCount": 3,
+      "effectFamilyId": "special.sp02",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp02",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp03",
+      "displayName": "羊叫兽",
+      "category": "special",
+      "color": "orange",
+      "initialDeckCount": 0,
+      "effectFamilyId": "special.sp03",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp03",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp04",
+      "displayName": "死亡笔记",
+      "category": "special",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "special.sp04",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp04",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp05",
+      "displayName": "重铸熔炉",
+      "category": "special",
+      "color": "white",
+      "initialDeckCount": 2,
+      "effectFamilyId": "special.sp05",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp05",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp06",
+      "displayName": "起源熔炉",
+      "category": "special",
+      "color": "red",
+      "initialDeckCount": 2,
+      "effectFamilyId": "special.sp06",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp06",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp07",
+      "displayName": "号角小队",
+      "category": "special",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "special.sp07",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp07",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp08",
+      "displayName": "拆迁大队",
+      "category": "special",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "special.sp08",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp08",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp09",
+      "displayName": "超级大宝贝儿",
+      "category": "special",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "special.sp09",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp09",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp10",
+      "displayName": "奉献池",
+      "category": "special",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "effectFamilyId": "special.sp10",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp10",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "special.sp11",
+      "displayName": "鲜血祭坛",
+      "category": "special",
+      "color": "red",
+      "initialDeckCount": 1,
+      "effectFamilyId": "special.sp11",
+      "effectEncodingStatus": "special_effect_encoded",
+      "resourceKey": "card.special.sp11",
+      "ruleSource": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    }
+  ],
+  "rules": [
+    {
+      "ruleId": "nonboss.acceptance.p001",
+      "testIds": [
+        "P001"
+      ],
+      "relatedCardIds": [
+        "basic.coin.*"
+      ],
+      "scenario": "金币配置",
+      "assertion": "初始牌白、红各1；临时金币不进手牌",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p002",
+      "testIds": [
+        "P002"
+      ],
+      "relatedCardIds": [
+        "armor.*"
+      ],
+      "scenario": "防具数量",
+      "assertion": "A-01至A-08各1，A-09为0",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p003",
+      "testIds": [
+        "P003"
+      ],
+      "relatedCardIds": [
+        "armor.a09",
+        "special.sp03"
+      ],
+      "scenario": "非武器合成产物",
+      "assertion": "陷阱箱、羊叫兽离场返回牌库外",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p004",
+      "testIds": [
+        "P004"
+      ],
+      "relatedCardIds": [
+        "basic.*"
+      ],
+      "scenario": "基础牌分色",
+      "assertion": "杀16、闪7、药水2、号角1每色；数据配置读取",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p005",
+      "testIds": [
+        "P005"
+      ],
+      "relatedCardIds": [
+        "armor.*"
+      ],
+      "scenario": "防具生效",
+      "assertion": "已装备、有效、未破防时才响应/触发",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p006",
+      "testIds": [
+        "P006"
+      ],
+      "relatedCardIds": [
+        "armor.a02",
+        "armor.a09"
+      ],
+      "scenario": "防具耐久归零",
+      "assertion": "当前段与反击完成后离场",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p007",
+      "testIds": [
+        "P007"
+      ],
+      "relatedCardIds": [
+        "armor.a02"
+      ],
+      "scenario": "箱子多段",
+      "assertion": "每段独立耗耐久，中途耗尽后续正常伤害",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p008",
+      "testIds": [
+        "P008"
+      ],
+      "relatedCardIds": [
+        "armor.a01",
+        "armor.a03"
+      ],
+      "scenario": "双截棍/土豪金",
+      "assertion": "每攻击尝试一次，失败后仍可响应",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p009",
+      "testIds": [
+        "P009"
+      ],
+      "relatedCardIds": [
+        "armor.a04"
+      ],
+      "scenario": "盾牌颜色",
+      "assertion": "检查杀实例印刷颜色，转换牌保留原色",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p010",
+      "testIds": [
+        "P010"
+      ],
+      "relatedCardIds": [
+        "armor.a05"
+      ],
+      "scenario": "幽灵王冠",
+      "assertion": "未攻击且未蓄力触发，到下个准备阶段前",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p011",
+      "testIds": [
+        "P011"
+      ],
+      "relatedCardIds": [
+        "armor.a06"
+      ],
+      "scenario": "精致法杖",
+      "assertion": "每轮首个命中远程攻击首个正数段-2",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p012",
+      "testIds": [
+        "P012"
+      ],
+      "relatedCardIds": [
+        "armor.a07"
+      ],
+      "scenario": "斩首者",
+      "assertion": "手牌杀近战格挡整次远程，不耗次数",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p013",
+      "testIds": [
+        "P013"
+      ],
+      "relatedCardIds": [
+        "armor.a08"
+      ],
+      "scenario": "圆盾",
+      "assertion": "秘密颜色、全场无效、首次触发后公开",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p014",
+      "testIds": [
+        "P014"
+      ],
+      "relatedCardIds": [
+        "armor.a09"
+      ],
+      "scenario": "陷阱箱",
+      "assertion": "每耗耐久生成反击，原攻击后按序结算",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p015",
+      "testIds": [
+        "P015"
+      ],
+      "relatedCardIds": [
+        "talent.*"
+      ],
+      "scenario": "同名天赋",
+      "assertion": "操作非法、失去手牌并摸1，不算弃置",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p016",
+      "testIds": [
+        "P016"
+      ],
+      "relatedCardIds": [
+        "talent.triple_wield"
+      ],
+      "scenario": "三持失去",
+      "assertion": "超常规槽强制选择弃牌，超时随机",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p017",
+      "testIds": [
+        "P017"
+      ],
+      "relatedCardIds": [
+        "talent.poison_shield",
+        "talent.fire_shield"
+      ],
+      "scenario": "火毒盾加段",
+      "assertion": "每目标每攻击+1，附加元素也可增加",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p018",
+      "testIds": [
+        "P018"
+      ],
+      "relatedCardIds": [
+        "talent.life_steal",
+        "talent.mana_siphon"
+      ],
+      "scenario": "吸血/吸蓝",
+      "assertion": "每目标独立累计，每攻击每目标最多一次",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p019",
+      "testIds": [
+        "P019"
+      ],
+      "relatedCardIds": [
+        "talent.shop_discount"
+      ],
+      "scenario": "商店半价",
+      "assertion": "摸牌阶段锁定+1、CD=1、装备过晚下次触发",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p020",
+      "testIds": [
+        "P020"
+      ],
+      "relatedCardIds": [
+        "talent.ice_shield"
+      ],
+      "scenario": "冰盾",
+      "assertion": "实际冰冻才追加毒1，免疫冰冻不追加",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p021",
+      "testIds": [
+        "P021"
+      ],
+      "relatedCardIds": [
+        "talent.electric_shield"
+      ],
+      "scenario": "电盾",
+      "assertion": "每目标感电总伤+1，放入首个正数段",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p022",
+      "testIds": [
+        "P022"
+      ],
+      "relatedCardIds": [
+        "talent.spike_shield"
+      ],
+      "scenario": "刺盾",
+      "assertion": "仅第一个正数近战伤害段-1",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p023",
+      "testIds": [
+        "P023"
+      ],
+      "relatedCardIds": [
+        "talent.precision_strike"
+      ],
+      "scenario": "精确打击",
+      "assertion": "红/橙判中是暴击且禁普通手牌闪",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p024",
+      "testIds": [
+        "P024"
+      ],
+      "relatedCardIds": [
+        "talent.statue_double_trigger"
+      ],
+      "scenario": "雕像双触",
+      "assertion": "蓝判中返回，无效雕像仍返回",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p025",
+      "testIds": [
+        "P025"
+      ],
+      "relatedCardIds": [
+        "talent.extra_gem"
+      ],
+      "scenario": "额外宝石",
+      "assertion": "摸3后完成濒死；获救/死亡交牌后才移除",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p026",
+      "testIds": [
+        "P026"
+      ],
+      "relatedCardIds": [
+        "mount.*"
+      ],
+      "scenario": "坐骑对象",
+      "assertion": "只修正需要距离检查的操作",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p027",
+      "testIds": [
+        "P027"
+      ],
+      "relatedCardIds": [
+        "mount.m07",
+        "mount.m08",
+        "mount.m10",
+        "mount.m11"
+      ],
+      "scenario": "±坐骑替换",
+      "assertion": "同时占两槽，整张离场并释放两槽",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p028",
+      "testIds": [
+        "P028"
+      ],
+      "relatedCardIds": [
+        "mount.m11"
+      ],
+      "scenario": "百变怪",
+      "assertion": "距离计算时读有效盾天赋，初始天赋计入",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p029",
+      "testIds": [
+        "P029"
+      ],
+      "relatedCardIds": [
+        "mount.*"
+      ],
+      "scenario": "坐骑缺图",
+      "assertion": "专属→坐骑占位→通用占位",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p030",
+      "testIds": [
+        "P030"
+      ],
+      "relatedCardIds": [
+        "statue.*"
+      ],
+      "scenario": "雕像窗口",
+      "assertion": "除圣骑士外仅自己出牌阶段",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p031",
+      "testIds": [
+        "P031"
+      ],
+      "relatedCardIds": [
+        "statue.*"
+      ],
+      "scenario": "雕像去向",
+      "assertion": "结算区→弃牌堆；转换离场前恢复",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p032",
+      "testIds": [
+        "P032"
+      ],
+      "relatedCardIds": [
+        "statue.werewolf.*"
+      ],
+      "scenario": "狼人雕像",
+      "assertion": "盾/血二选一，按实际值回复，0伤不回",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p033",
+      "testIds": [
+        "P033"
+      ],
+      "relatedCardIds": [
+        "statue.rogue.*",
+        "statue.elf.*"
+      ],
+      "scenario": "盗贼/精灵雕像",
+      "assertion": "隐藏手牌牌背选择，初始天赋不可选",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p034",
+      "testIds": [
+        "P034"
+      ],
+      "relatedCardIds": [
+        "statue.paladin.*"
+      ],
+      "scenario": "圣骑士雕像",
+      "assertion": "只响应雕像，不响应特殊牌，后进先出",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p035",
+      "testIds": [
+        "P035"
+      ],
+      "relatedCardIds": [
+        "statue.priest.*"
+      ],
+      "scenario": "牧师雕像",
+      "assertion": "每人一次可拿可不拿，超时不拿，余牌弃置",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p036",
+      "testIds": [
+        "P036"
+      ],
+      "relatedCardIds": [
+        "statue.knight.*"
+      ],
+      "scenario": "骑士雕像",
+      "assertion": "蓄力0临时副本，不影响原进度",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p037",
+      "testIds": [
+        "P037"
+      ],
+      "relatedCardIds": [
+        "statue.assassin.*"
+      ],
+      "scenario": "刺客雕像",
+      "assertion": "使用者外所有在场角色逐个远程2",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p038",
+      "testIds": [
+        "P038"
+      ],
+      "relatedCardIds": [
+        "statue.engineer.*"
+      ],
+      "scenario": "工程师雕像",
+      "assertion": "最初使用者始终为来源，失败继续传递",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p039",
+      "testIds": [
+        "P039"
+      ],
+      "relatedCardIds": [
+        "special.*"
+      ],
+      "scenario": "特殊牌窗口",
+      "assertion": "默认自己出牌阶段，延时/响应除外",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p040",
+      "testIds": [
+        "P040"
+      ],
+      "relatedCardIds": [
+        "special.sp01",
+        "special.sp02",
+        "special.sp03",
+        "special.sp09"
+      ],
+      "scenario": "特殊出闪",
+      "assertion": "不是攻击，先收集响应再逐个伤害",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p041",
+      "testIds": [
+        "P041"
+      ],
+      "relatedCardIds": [
+        "special.sp01",
+        "special.sp02"
+      ],
+      "scenario": "网瘾少年/少女",
+      "assertion": "两者效果完全相同；均造成x点感电伤害，且x=0不创建伤害",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p042",
+      "testIds": [
+        "P042"
+      ],
+      "relatedCardIds": [
+        "special.sp03"
+      ],
+      "scenario": "羊叫兽",
+      "assertion": "阶段一全部完成后才发动阶段二",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p043",
+      "testIds": [
+        "P043"
+      ],
+      "relatedCardIds": [
+        "special.sp04"
+      ],
+      "scenario": "死亡笔记",
+      "assertion": "有盾改盾0，无盾改血1，修改不是伤害",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p044",
+      "testIds": [
+        "P044"
+      ],
+      "relatedCardIds": [
+        "special.sp05"
+      ],
+      "scenario": "重铸熔炉",
+      "assertion": "费用先弃，展示中可重洗并可能再翻到",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p045",
+      "testIds": [
+        "P045"
+      ],
+      "relatedCardIds": [
+        "special.sp07"
+      ],
+      "scenario": "号角小队",
+      "assertion": "仅出杀的一般攻击免次数，显式耗次仍耗",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p046",
+      "testIds": [
+        "P046"
+      ],
+      "relatedCardIds": [
+        "special.sp08"
+      ],
+      "scenario": "拆迁大队",
+      "assertion": "含第三武器，先可弃后同时传递并处理槽冲突",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p047",
+      "testIds": [
+        "P047"
+      ],
+      "relatedCardIds": [
+        "special.sp09"
+      ],
+      "scenario": "超级大宝贝儿",
+      "assertion": "收集闪→血量伤害与濒死→火毒阶段",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p048",
+      "testIds": [
+        "P048"
+      ],
+      "relatedCardIds": [
+        "special.sp10"
+      ],
+      "scenario": "奉献池",
+      "assertion": "必须弃已装备武器；随机文字无规则效果",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p049",
+      "testIds": [
+        "P049"
+      ],
+      "relatedCardIds": [
+        "special.sp11"
+      ],
+      "scenario": "鲜血祭坛",
+      "assertion": "上限-2及当前-2立即濒死，铁盾到下个准备前",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p050",
+      "testIds": [
+        "P050"
+      ],
+      "relatedCardIds": [
+        "special.sp11"
+      ],
+      "scenario": "鲜血诅咒",
+      "assertion": "每自己回合首次合法杀，场地2先于杀无效",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p051",
+      "testIds": [
+        "P051"
+      ],
+      "relatedCardIds": [
+        "*"
+      ],
+      "scenario": "非武器缺图",
+      "assertion": "专属→类别占位→通用占位",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "nonboss.acceptance.p052",
+      "testIds": [
+        "P052"
+      ],
+      "relatedCardIds": [
+        "*"
+      ],
+      "scenario": "数量合计",
+      "assertion": "本文267；全牌库加武器61、BOSS9为337",
+      "encodingStatus": "effect_dsl_encoded"
+    }
+  ]
+}

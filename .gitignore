@@ -1,0 +1,21 @@
+# Dependencies and generated build output
+node_modules/
+dist/
+coverage/
+.vite/
+*.tsbuildinfo
+
+# Runtime state and local configuration
+server/data/
+.env
+.env.*
+!.env.example
+*.log
+
+# Editor, OS, and Codex-local state
+.codex/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

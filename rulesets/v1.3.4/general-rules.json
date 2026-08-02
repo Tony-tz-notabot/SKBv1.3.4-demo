@@ -1,0 +1,353 @@
+{
+  "rulePackId": "skb.v1.3.4.general",
+  "dslVersion": "1.0.0",
+  "rulesetVersion": "1.3.4",
+  "source": "docs/整理/01-统一规则总纲.md",
+  "testSource": "docs/整理/15-v1.3.4通用规则测试清单.md",
+  "rules": [
+    {
+      "ruleId": "general.turn.counterclockwise",
+      "testIds": ["G001"],
+      "kind": "pipeline",
+      "listen": "turn.after",
+      "effects": [{"op": "advanceTurn", "params": {"seatOrder": [1, 2, 3, 4], "skipEliminated": true}}],
+      "assertions": ["next seat follows 1>2>3>4>1"]
+    },
+    {
+      "ruleId": "general.phase.skip",
+      "testIds": ["G002"],
+      "kind": "pipeline",
+      "listen": "phase.skip",
+      "effects": [{"op": "preventEvent", "params": {"events": ["phase.start", "phase.body", "phase.end.before", "phase.end"], "samePhaseInstance": true}}],
+      "assertions": ["skipped phase emits no start/body/end events"]
+    },
+    {
+      "ruleId": "general.phase.beforeReplacement",
+      "testIds": ["G003"],
+      "kind": "pipeline",
+      "listen": "phase.before",
+      "priority": "replacement",
+      "effects": [{"op": "openTriggerWindow", "params": {"allow": ["replacePhase", "skipPhase"], "beforeSkipCheck": true}}],
+      "assertions": ["before triggers precede skip decision"]
+    },
+    {
+      "ruleId": "general.multiTarget.serial",
+      "testIds": ["G004", "G033"],
+      "kind": "pipeline",
+      "listen": "action.resolve",
+      "effects": [{"op": "forEach", "params": {"items": "$targets.counterclockwise", "mode": "serial"}, "effects": [{"op": "resolveAttackTarget", "target": "$item"}, {"op": "checkDying", "target": "$item", "params": {"mode": "completeNestedFirst"}}], "maxIterations": 4}],
+      "assertions": ["each target including dying completes before next target"]
+    },
+    {
+      "ruleId": "general.triggerWindow.ordinary",
+      "testIds": ["G005"],
+      "kind": "pipeline",
+      "listen": "trigger.window.opened",
+      "effects": [{"op": "resolveTriggerWindow", "params": {"sameController": "controllerChoice", "differentControllers": "currentTurnThenCounterclockwise", "stack": false}}],
+      "assertions": ["ordinary simultaneous triggers do not use LIFO"]
+    },
+    {
+      "ruleId": "general.response.lifo",
+      "testIds": ["G006"],
+      "kind": "pipeline",
+      "listen": "response.window.closed",
+      "effects": [{"op": "resolveResponseStack", "params": {"order": "lifo", "reopenAfterResponse": true}}],
+      "assertions": ["explicit nested responses resolve LIFO"]
+    },
+    {
+      "ruleId": "general.deck.exhausted",
+      "testIds": ["G007"],
+      "kind": "trigger",
+      "listen": "deck.exhausted",
+      "mandatory": true,
+      "priority": "replacement",
+      "effects": [{"op": "shuffleDiscardIntoDeck", "params": {"excludeZones": ["resolving"], "continueParentOperation": true}}],
+      "assertions": ["resolving cards are excluded from reshuffle"]
+    },
+    {
+      "ruleId": "general.display.cleanup",
+      "testIds": ["G008"],
+      "kind": "trigger",
+      "listen": "deck.cards.displayed",
+      "timing": "resolve.after",
+      "effects": [{"op": "forEach", "params": {"items": "$display.remaining", "mode": "serial"}, "effects": [{"op": "moveCard", "target": "$item", "params": {"to": "discardPile", "moveKind": "systemMove"}}]}],
+      "assertions": ["already moved displayed cards keep destination"]
+    },
+    {
+      "ruleId": "general.cardSelection.visibility",
+      "testIds": ["G009"],
+      "kind": "viewPolicy",
+      "listen": "choice.requested",
+      "effects": [{"op": "filterView", "params": {"publicCards": "faceUpNamed", "otherHand": "serverShuffledCardBackOnly"}}],
+      "assertions": ["chooser never receives hidden hand identities"]
+    },
+    {
+      "ruleId": "general.judgment.replace",
+      "testIds": ["G010"],
+      "kind": "pipeline",
+      "listen": "judgment.replaced",
+      "effects": [{"op": "moveCard", "target": "$judgment.previousCard", "params": {"to": "discardPile", "moveKind": "discard"}}, {"op": "judgeColor", "params": {"drawRealCard": true, "reopenIntervention": true}}],
+      "assertions": ["old card discarded before new real card"]
+    },
+    {
+      "ruleId": "general.judgment.designate",
+      "testIds": ["G011"],
+      "kind": "pipeline",
+      "listen": "judgment.requested",
+      "priority": "replacement",
+      "effects": [{"op": "replaceEvent", "params": {"when": "$judgment.designatedResultExists", "resultSource": "designated", "consumeDeck": false}}],
+      "assertions": ["designated result consumes no card"]
+    },
+    {
+      "ruleId": "general.discardView",
+      "testIds": ["G012"],
+      "kind": "viewPolicy",
+      "listen": "view.projected",
+      "effects": [{"op": "filterView", "params": {"zone": "discardPile", "mode": "overlappedTail", "allowFullDetailRequest": false}}],
+      "assertions": ["full discard detail unavailable"]
+    },
+    {
+      "ruleId": "general.equipment.activeDiscard",
+      "testIds": ["G013"],
+      "kind": "invariant",
+      "listen": "action.commit",
+      "effects": [{"op": "assert", "params": {"when": "$action.kind=activeDiscardEquipment", "conditions": ["ownerPlayPhase", "cardDiscardable", "notExplicitlyForbidden"]}}, {"op": "loseCard", "target": "$card", "params": {"thenDefaultZone": "discardPile"}}],
+      "assertions": ["successful action emits card.lost"]
+    },
+    {
+      "ruleId": "general.equipment.disabled",
+      "testIds": ["G014"],
+      "kind": "invariant",
+      "listen": "status.applied",
+      "effects": [{"op": "disableEquipmentEffects", "target": "$status.owner", "params": {"retainCards": true, "retainState": true, "timersContinue": true, "exclude": ["bossSlot", "initialTalent"]}}],
+      "assertions": ["cards do not leave slots"]
+    },
+    {
+      "ruleId": "general.weaponSelector.includesThird",
+      "testIds": ["G015"],
+      "kind": "invariant",
+      "listen": "target.selection.requested",
+      "effects": [{"op": "modifyEvent", "params": {"when": "$selector.category=weapon", "includeZones": ["weaponSlot", "thirdWeaponSlot"]}}],
+      "assertions": ["generic weapon selector includes third weapon"]
+    },
+    {
+      "ruleId": "general.synthesis.consume",
+      "testIds": ["G016"],
+      "kind": "pipeline",
+      "listen": "card.synthesized",
+      "effects": [{"op": "loseCard", "params": {"cards": "$synthesis.materials", "moveKind": "synthesizeConsume", "emitDiscarded": false}}, {"op": "gainCard", "target": "$synthesis.product", "params": {"to": "hand"}}],
+      "assertions": ["equipment materials are lost but not discarded"]
+    },
+    {
+      "ruleId": "general.generated.exit",
+      "testIds": ["G017"],
+      "kind": "replacement",
+      "listen": "card.moved",
+      "priority": "replacement",
+      "effects": [{"op": "replaceEvent", "params": {"when": "$card.generatedBySynthesis && $card.leavingOwnedZones", "to": "outsideDeck"}}],
+      "assertions": ["all synthesized instances return outside deck"]
+    },
+    {
+      "ruleId": "general.boss.slotLegality",
+      "testIds": ["G018"],
+      "kind": "invariant",
+      "listen": "action.legality.check",
+      "effects": [{"op": "modifyEvent", "params": {"when": "$action.card.category=boss", "persistentLegalIf": "$bossSlot.empty || $bossSlot.card=boss.iron_pirate_king", "instantIgnoresSlot": true}}],
+      "assertions": ["ordinary persistent boss cannot replace occupied boss"]
+    },
+    {
+      "ruleId": "general.boss.ironReplace",
+      "testIds": ["G019"],
+      "kind": "pipeline",
+      "listen": "card.replaced",
+      "effects": [{"op": "moveCard", "target": "$oldCard", "params": {"from": "bossSlot", "to": "discardPile", "moveKind": "replace"}}, {"op": "moveCard", "target": "$newCard", "params": {"to": "bossSlot", "moveKind": "use"}}],
+      "assertions": ["replacement only legal in owner play phase before protected death state"]
+    },
+    {
+      "ruleId": "general.boss.genericDismantle",
+      "testIds": ["G020"],
+      "kind": "invariant",
+      "listen": "target.selection.requested",
+      "effects": [{"op": "modifyEvent", "params": {"when": "$selector.dismantle=genericPublicCard", "includeBossSlotFromSetting": "boss.allowGenericDismantle"}}],
+      "assertions": ["both setting branches are supported"]
+    },
+    {
+      "ruleId": "general.attack.preselectedWeapon",
+      "testIds": ["G021"],
+      "kind": "invariant",
+      "listen": "attack.weapon.resolve",
+      "effects": [{"op": "cancelEvent", "params": {"when": "!$preselectedWeapon.valid", "reason": "selectWeapon", "beforeCosts": true}}],
+      "assertions": ["no attack or cost event created"]
+    },
+    {
+      "ruleId": "general.attack.unarmed",
+      "testIds": ["G022"],
+      "kind": "invariant",
+      "listen": "attack.weapon.resolve",
+      "effects": [{"op": "modifyEvent", "params": {"unarmedLegalIf": "$allWeaponSlotsEmpty", "disabledWeaponStillOccupiesSlot": true}}],
+      "assertions": ["empty selected slot alone is insufficient"]
+    },
+    {
+      "ruleId": "general.kill.invalidation",
+      "testIds": ["G023"],
+      "kind": "pipeline",
+      "listen": "attack.killInvalidation.check",
+      "effects": [{"op": "invalidateAttack", "params": {"when": "$kill.invalid", "attackCommitted": false, "refundCosts": false, "clearCharge": false, "consumeHorn": false}}],
+      "assertions": ["kill and attack count remain paid"]
+    },
+    {
+      "ruleId": "general.response.dodgeAll",
+      "testIds": ["G024"],
+      "kind": "pipeline",
+      "listen": "response.resolved",
+      "effects": [{"op": "invalidateAttack", "params": {"when": "$response.kind=dodge && $response.success", "scope": "allSegmentsForTarget", "result": "miss"}}],
+      "assertions": ["one dodge cancels all combo/scatter segments"]
+    },
+    {
+      "ruleId": "general.response.meleeBlockAll",
+      "testIds": ["G025"],
+      "kind": "pipeline",
+      "listen": "response.resolved",
+      "effects": [{"op": "invalidateAttack", "params": {"when": "$response.kind=meleeBlock && $attack.ranged && !$attack.cannotMeleeBlock", "scope": "allSegmentsForTarget", "result": "miss"}}],
+      "assertions": ["one block cancels all ranged segments"]
+    },
+    {
+      "ruleId": "general.attack.laser",
+      "testIds": ["G026"],
+      "kind": "invariant",
+      "listen": "response.window.opened",
+      "effects": [{"op": "modifyEvent", "params": {"when": "$attack.type=laser", "allow": ["dodge", "armor"], "deny": ["meleeBlock"], "unlessTagsOverride": true}}],
+      "assertions": ["laser is not ranged for melee block"]
+    },
+    {
+      "ruleId": "general.attack.field",
+      "testIds": ["G027"],
+      "kind": "invariant",
+      "listen": "response.window.opened",
+      "effects": [{"op": "modifyEvent", "params": {"when": "$attack.type=field", "deny": ["dodge", "meleeBlock", "armor"], "allowNonArmorInvalidation": true}}],
+      "assertions": ["field ignores armor but not non-armor immunity"]
+    },
+    {
+      "ruleId": "general.damage.zeroHit",
+      "testIds": ["G028"],
+      "kind": "pipeline",
+      "listen": "damage.finalized",
+      "effects": [{"op": "preventEvent", "params": {"when": "$damage.actualDamage=0 && !$target.deadWithoutBars", "events": ["damage.received", "damage.applied", "health.hpLost", "shield.shieldLost"]}}],
+      "assertions": ["parent attack.hit remains"]
+    },
+    {
+      "ruleId": "general.critical.judgmentWeapon",
+      "testIds": ["G029"],
+      "kind": "pipeline",
+      "listen": "judgment.matched",
+      "effects": [{"op": "applyCritical", "params": {"when": "$judgment.purpose=critical", "designatedSuccessAllowed": "$attack.guaranteedCritical"}}],
+      "assertions": ["successful weapon critical judgment is critical"]
+    },
+    {
+      "ruleId": "general.critical.noJudgmentWeapon",
+      "testIds": ["G030"],
+      "kind": "pipeline",
+      "listen": "critical.applied",
+      "effects": [{"op": "forEach", "params": {"items": "$attack.damageSegments", "mode": "serial"}, "effects": [{"op": "modifyDamage", "target": "$item", "params": {"when": "!$item.isAdditional && !$item.effectDamage", "add": 1}}]}],
+      "assertions": ["segment count unchanged"]
+    },
+    {
+      "ruleId": "general.element.independent",
+      "testIds": ["G031"],
+      "kind": "invariant",
+      "listen": "damage.immunity.check",
+      "effects": [{"op": "modifyEvent", "params": {"evaluateElementsIndependently": ["fire", "poison"], "modifiersPerElementPerTarget": true}}],
+      "assertions": ["fire and poison never collapse into one element"]
+    },
+    {
+      "ruleId": "general.blueShield.perSegment",
+      "testIds": ["G032"],
+      "kind": "trigger",
+      "listen": "damage.proposed",
+      "priority": "mandatoryModifier",
+      "effects": [{"op": "modifyDamage", "params": {"when": "$target.hasTalent(talent.blue_shield) && $target.shieldAtSegmentStart>0 && $damage.type=normal", "overflowPolicy": "shieldOnly"}}],
+      "assertions": ["shield is reread at every segment start"]
+    },
+    {
+      "ruleId": "general.dying.nested",
+      "testIds": ["G034"],
+      "kind": "pipeline",
+      "listen": "dying.enter",
+      "effects": [{"op": "checkDying", "params": {"newDyingPolicy": "nestedFirst", "resumeParentAfter": true}}],
+      "assertions": ["new dying resolves before original"]
+    },
+    {
+      "ruleId": "general.deadWithoutBars.damage",
+      "testIds": ["G035"],
+      "kind": "replacement",
+      "listen": "damage.finalized",
+      "priority": "replacement",
+      "effects": [{"op": "modifyEvent", "params": {"when": "$target.deadWithoutBars", "emitReceived": true, "actualDamage": 0, "actualHpLoss": 0, "actualShieldLoss": 0, "allowHitAfterEffects": true}}],
+      "assertions": ["lifesteal and actual-damage benefits do not trigger"]
+    },
+    {
+      "ruleId": "general.selector.inPlay",
+      "testIds": ["G036"],
+      "kind": "invariant",
+      "listen": "target.selection.requested",
+      "effects": [{"op": "modifyEvent", "params": {"when": "$selector.inPlay", "predicate": "!eliminated && !leftPlay", "aliveNotRequired": true}}],
+      "assertions": ["dead non-eliminated remains in play"]
+    },
+    {
+      "ruleId": "general.timeout.optional",
+      "testIds": ["G037"],
+      "kind": "trigger",
+      "listen": "choice.timedOut",
+      "effects": [{"op": "return", "params": {"when": "$choice.optional || $choice.beneficial", "result": "pass"}}],
+      "assertions": ["optional timeout performs no action"]
+    },
+    {
+      "ruleId": "general.timeout.forced",
+      "testIds": ["G038"],
+      "kind": "trigger",
+      "listen": "choice.timedOut",
+      "effects": [{"op": "randomChoice", "params": {"when": "$choice.forced || $choice.harmful", "from": "$choice.legalOptions", "recordResult": true}}],
+      "assertions": ["server chooses only legal options"]
+    },
+    {
+      "ruleId": "general.timeout.discard",
+      "testIds": ["G039"],
+      "kind": "pipeline",
+      "listen": "choice.timedOut",
+      "effects": [{"op": "randomChoice", "params": {"when": "$choice.kind=forcedHandDiscard", "count": "$hand.count-$handLimit", "serverOnlyIdentities": true}}, {"op": "discardCard", "params": {"cards": "$randomResult"}}],
+      "assertions": ["public log reveals only cards after discard"]
+    },
+    {
+      "ruleId": "general.config.roomOverride",
+      "testIds": ["G040"],
+      "kind": "configuration",
+      "listen": "game.setup",
+      "effects": [{"op": "setVar", "params": {"path": "$game.parameters", "value": {"coalesce": ["$roomOverrides", "$rulesetDefaults"]}, "schemaValidated": true}}],
+      "assertions": ["business code contains no alternate numeric constants"]
+    },
+    {
+      "ruleId": "general.replay.deterministic",
+      "testIds": ["G041"],
+      "kind": "securityPolicy",
+      "listen": "random.requested",
+      "effects": [{"op": "recordRandom", "params": {"seeded": true, "recordResultId": true, "eventSequenceStable": true}}],
+      "assertions": ["same seed, deck and commands reproduce event log"]
+    },
+    {
+      "ruleId": "general.reconnect.restore",
+      "testIds": ["G042"],
+      "kind": "securityPolicy",
+      "listen": "player.reconnected",
+      "effects": [{"op": "restoreSnapshot", "params": {"latestAtOrBeforeSequence": "$client.lastSeenSequence", "replayFollowingEvents": true}}, {"op": "filterView", "params": {"viewer": "$player", "hideUnauthorized": true}}],
+      "assertions": ["event sequence resumes without hidden leak"]
+    },
+    {
+      "ruleId": "general.command.intentOnly",
+      "testIds": ["G043"],
+      "kind": "securityPolicy",
+      "listen": "command.received",
+      "effects": [{"op": "validateCommand", "params": {"allowPayloadClass": "intentOnly", "denyFields": ["finalHp", "finalShield", "judgmentResult", "randomResult", "damageResult"]}}, {"op": "rejectCommand", "params": {"when": "$validation.failed", "reason": "authoritativeField"}}],
+      "assertions": ["server computes all resulting state"]
+    }
+  ]
+}

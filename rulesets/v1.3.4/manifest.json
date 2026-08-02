@@ -1,0 +1,33 @@
+{
+  "rulesetId": "skb.v1.3.4",
+  "version": "1.3.4",
+  "status": "frozen_baseline",
+  "generatedBy": "tools/build-ruleset.mjs",
+  "sources": {
+    "general": "docs/整理/01-统一规则总纲.md",
+    "characters": "docs/整理/16-v1.3.4角色规则正文.md",
+    "weapons": "docs/整理/18-v1.3.4武器规则正文.md",
+    "cards": "docs/整理/20-v1.3.4非BOSS牌规则正文.md",
+    "bosses": "docs/整理/22-v1.3.4BOSS牌规则正文.md"
+  },
+  "files": {
+    "settings": "settings.json",
+    "characters": "characters.json",
+    "cards": "cards.json",
+    "deck": "deck.json",
+    "resources": "resources.json",
+    "resourceMapping": "resource-mapping.json",
+    "ontology": "ontology.json",
+    "dslSchema": "dsl.schema.json",
+    "coreRules": "core-rules.json",
+    "dslExamples": "dsl-examples.json",
+    "generalRules": "general-rules.json",
+    "characterRules": "character-rules.json",
+    "weaponRules": "weapon-rules.json",
+    "nonbossRules": "nonboss-rules.json",
+    "bossRules": "boss-rules.json",
+    "eventProduction": "event-production.json",
+    "pipelineGraph": "pipeline-graph.json",
+    "freeze": "freeze.json"
+  }
+}

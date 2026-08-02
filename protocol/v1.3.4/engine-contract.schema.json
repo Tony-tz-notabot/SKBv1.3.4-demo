@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skb.local/protocol/v1.3.4/engine-contract.schema.json",
+  "title": "SKB v1.3.4 authoritative engine contract",
+  "oneOf": [
+    { "$ref": "#/$defs/EngineRequest" },
+    { "$ref": "#/$defs/EngineResult" },
+    { "$ref": "#/$defs/AuthoritativeGameState" }
+  ],
+  "$defs": {
+    "JsonValue": {
+      "anyOf": [
+        { "type": "null" }, { "type": "boolean" }, { "type": "number" }, { "type": "string" },
+        { "type": "array", "items": { "$ref": "#/$defs/JsonValue" } },
+        { "type": "object", "additionalProperties": { "$ref": "#/$defs/JsonValue" } }
+      ]
+    },
+    "Seat": { "type": "integer", "enum": [1, 2, 3, 4] },
+    "Phase": { "type": "string", "enum": ["prepare", "judgment", "draw", "play", "discard", "end"] },
+    "Lifecycle": { "type": "string", "enum": ["setupRedraw", "inProgress", "ended"] },
+    "SetupLifecycleState": {
+      "type": ["object", "null"],
+      "required": ["firstSeat", "redrawDeadlineAt", "redrawBySeat"],
+      "properties": {
+        "firstSeat": { "$ref": "#/$defs/Seat" }, "redrawDeadlineAt": { "type": "integer" },
+        "redrawBySeat": { "type": "object", "required": ["1", "2", "3", "4"], "additionalProperties": false, "properties": {
+          "1": { "$ref": "#/$defs/RedrawDecisionState" }, "2": { "$ref": "#/$defs/RedrawDecisionState" }, "3": { "$ref": "#/$defs/RedrawDecisionState" }, "4": { "$ref": "#/$defs/RedrawDecisionState" }
+        } }
+      }, "additionalProperties": false
+    },
+    "RedrawDecisionState": { "type": "object", "required": ["decided", "used"], "properties": { "decided": { "type": "boolean" }, "used": { "type": "boolean" } }, "additionalProperties": false },
+    "ZoneState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["zoneRef", "zoneType", "ownerSeat", "orderedCardRefs"],
+      "properties": {
+        "zoneRef": { "type": "string" }, "zoneType": { "enum": ["drawPile", "discardPile", "hand", "resolving", "judgment", "weaponSlot", "thirdWeaponSlot", "armorSlot", "mountOffenseSlot", "mountDefenseSlot", "talentZone", "bossSlot", "outsideDeck", "removedFromGame"] },
+        "ownerSeat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] },
+        "orderedCardRefs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "CardInstanceState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cardRef", "templateId", "zoneRef", "faceUp", "ownerSeat", "controllerSeat", "runtime"],
+      "properties": {
+        "cardRef": { "type": "string" }, "templateId": { "type": "string" }, "zoneRef": { "type": "string" },
+        "faceUp": { "type": "boolean" },
+        "ownerSeat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] },
+        "controllerSeat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] },
+        "runtime": { "type": "object", "additionalProperties": { "$ref": "#/$defs/JsonValue" } }
+      }
+    },
+    "CharacterRuntimeState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["seat", "userId", "team", "characterId", "presence", "lifeState", "hp", "maxHp", "shield", "maxShield", "ironShield", "initialTalentIds", "skillIds", "statuses", "markers", "limits"],
+      "properties": {
+        "seat": { "$ref": "#/$defs/Seat" }, "userId": { "type": "string" }, "team": { "enum": ["A", "B"] }, "characterId": { "type": ["string", "null"] },
+        "presence": { "enum": ["inPlay", "leftPlay"] }, "lifeState": { "enum": ["alive", "dying", "deadNotEliminated", "eliminated"] },
+        "hp": { "type": ["integer", "null"] }, "maxHp": { "type": ["integer", "null"] }, "shield": { "type": ["integer", "null"] }, "maxShield": { "type": ["integer", "null"] },
+        "ironShield": { "type": "integer" },
+        "initialTalentIds": { "type": "array", "items": { "type": "string" } }, "skillIds": { "type": "array", "items": { "type": "string" } },
+        "statuses": { "type": "array", "items": { "$ref": "#/$defs/StatusInstanceState" } },
+        "markers": { "type": "object", "additionalProperties": { "$ref": "#/$defs/JsonValue" } },
+        "limits": { "type": "object", "additionalProperties": { "$ref": "#/$defs/JsonValue" } }
+      }
+    },
+    "StatusInstanceState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["statusRef", "statusId", "ownerSeat", "sourceRef", "stackPolicy", "stacks", "priority", "durationId", "skipPhases", "metadata"],
+      "properties": {
+        "statusRef": { "type": "string" }, "statusId": { "type": "string" }, "ownerSeat": { "$ref": "#/$defs/Seat" }, "sourceRef": { "type": ["string", "null"] },
+        "stackPolicy": { "enum": ["uniqueRefresh", "uniqueIgnore", "stackCount", "stackInstances", "replaceByPriority"] },
+        "stacks": { "type": "integer", "minimum": 1 }, "priority": { "type": "integer" }, "durationId": { "type": ["string", "null"] },
+        "skipPhases": { "type": "array", "items": { "$ref": "#/$defs/Phase" }, "uniqueItems": true },
+        "metadata": { "type": "object", "additionalProperties": { "$ref": "#/$defs/JsonValue" } }
+      }
+    },
+    "PendingWindow": {
+      "type": "object", "additionalProperties": false,
+      "required": ["promptId", "kind", "prioritySeat", "mandatory", "deadlineAt", "timeoutPolicy", "legalOfferIds"],
+      "properties": {
+        "promptId": { "type": "string" }, "kind": { "type": "string" }, "prioritySeat": { "$ref": "#/$defs/Seat" },
+        "mandatory": { "type": "boolean" }, "deadlineAt": { "type": "integer" },
+        "timeoutPolicy": { "enum": ["pass", "randomLegal", "useDefault", "abortRemaining"] },
+        "legalOfferIds": { "type": "array", "items": { "type": "string" } },
+        "context": { "type": "object", "additionalProperties": { "$ref": "#/$defs/JsonValue" } }
+      }
+    },
+    "DomainEvent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["eventSeq", "stateRevision", "eventType", "payload"],
+      "properties": {
+        "eventSeq": { "type": "integer", "minimum": 1 }, "stateRevision": { "type": "integer", "minimum": 0 },
+        "eventType": { "type": "string" }, "payload": { "$ref": "#/$defs/JsonValue" }
+      }
+    },
+    "RandomRecord": {
+      "type": "object", "additionalProperties": false,
+      "required": ["randomSeq", "purpose", "candidateRefs", "resultRefs"],
+      "properties": {
+        "randomSeq": { "type": "integer", "minimum": 1 }, "purpose": { "type": "string" },
+        "candidateRefs": { "type": "array", "items": { "type": "string" } }, "resultRefs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "RandomSourceState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["seed", "state", "nextRandomSeq"],
+      "properties": {
+        "seed": { "type": "integer", "minimum": 0 },
+        "state": { "type": "integer", "minimum": 0 },
+        "nextRandomSeq": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "ResolutionFrame": { "type": "object", "additionalProperties": false, "required": ["frameId", "frameType", "sourceRef", "controllerSeat", "context"], "properties": {
+      "frameId": { "type": "string" }, "frameType": { "type": "string" }, "sourceRef": { "type": ["string", "null"] }, "controllerSeat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] }, "context": { "type": "object", "additionalProperties": { "$ref": "#/$defs/JsonValue" } }
+    } },
+    "DurationState": { "type": "object", "additionalProperties": false, "required": ["durationId", "sourceRef", "ownerRef", "anchorEventId", "activationPoint", "expiryPoint", "remainingCount", "countScope", "skipPolicy", "sourceLeavePolicy", "ownerEliminatedPolicy", "cleanupEffects"], "properties": {
+      "durationId": { "type": "string" }, "sourceRef": { "type": ["string", "null"] }, "ownerRef": { "type": "string" }, "anchorEventId": { "type": ["string", "null"] }, "activationPoint": { "type": "string" }, "expiryPoint": { "type": "string" }, "remainingCount": { "type": ["integer", "null"] }, "countScope": { "type": "string" }, "skipPolicy": { "type": "string" }, "sourceLeavePolicy": { "type": "string" }, "ownerEliminatedPolicy": { "type": "string" }, "cleanupEffects": { "type": "array", "items": { "$ref": "#/$defs/JsonValue" } }
+    } },
+    "ScheduledEffectState": { "type": "object", "additionalProperties": false, "required": ["scheduledId", "sourceRef", "controllerSeat", "executeAt", "effect", "cancelled"], "properties": {
+      "scheduledId": { "type": "string" }, "sourceRef": { "type": ["string", "null"] }, "controllerSeat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] }, "executeAt": { "type": "string" }, "effect": { "$ref": "#/$defs/JsonValue" }, "cancelled": { "type": "boolean" }
+    } },
+    "CombatState": { "type": "object", "additionalProperties": false, "required": ["attack", "targetQueue", "currentTargetRef", "responseStack", "damageSegment", "dyingStack"], "properties": {
+      "attack": { "$ref": "#/$defs/JsonValue" }, "targetQueue": { "type": "array", "items": { "type": "string" } }, "currentTargetRef": { "type": ["string", "null"] }, "responseStack": { "type": "array", "items": { "$ref": "#/$defs/JsonValue" } }, "damageSegment": { "$ref": "#/$defs/JsonValue" }, "dyingStack": { "type": "array", "items": { "type": "string" } }
+    } },
+    "PreselectionState": { "type": "object", "additionalProperties": false, "required": ["weaponSlot", "modeId"], "properties": { "weaponSlot": { "type": ["string", "null"] }, "modeId": { "type": ["string", "null"] } } },
+    "AuthoritativeGameState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "gameId", "rulesetVersion", "stateRevision", "lastEventSeq", "lifecycle", "setup", "round", "activeSeat", "phase", "phaseBoundary", "phaseMode", "phaseBodyResolved", "players", "cards", "zones", "pendingWindows", "resolutionStack", "combat", "durations", "scheduledEffects", "randomHistory", "randomSource", "preselection", "history", "winnerTeam"],
+      "properties": {
+        "kind": { "const": "AUTHORITATIVE_GAME_STATE" }, "gameId": { "type": "string" }, "rulesetVersion": { "const": "1.3.4" },
+        "stateRevision": { "type": "integer", "minimum": 0 }, "lastEventSeq": { "type": "integer", "minimum": 0 },
+        "lifecycle": { "$ref": "#/$defs/Lifecycle" }, "setup": { "$ref": "#/$defs/SetupLifecycleState" },
+        "round": { "type": "integer", "minimum": 0 },
+        "activeSeat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] }, "phase": { "anyOf": [{ "$ref": "#/$defs/Phase" }, { "type": "null" }] },
+        "phaseBoundary": { "type": ["string", "null"], "enum": ["body", "after", null] }, "phaseMode": { "type": ["string", "null"], "enum": ["automatic", "manual", null] }, "phaseBodyResolved": { "type": ["boolean", "null"] },
+        "players": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/CharacterRuntimeState" } },
+        "cards": { "type": "object", "additionalProperties": { "$ref": "#/$defs/CardInstanceState" } },
+        "zones": { "type": "object", "additionalProperties": { "$ref": "#/$defs/ZoneState" } },
+        "pendingWindows": { "type": "array", "items": { "$ref": "#/$defs/PendingWindow" } },
+        "resolutionStack": { "type": "array", "items": { "$ref": "#/$defs/ResolutionFrame" } }, "combat": { "$ref": "#/$defs/CombatState" },
+        "durations": { "type": "array", "items": { "$ref": "#/$defs/DurationState" } },
+        "scheduledEffects": { "type": "array", "items": { "$ref": "#/$defs/ScheduledEffectState" } },
+        "randomHistory": { "type": "array", "items": { "$ref": "#/$defs/RandomRecord" } },
+        "randomSource": { "$ref": "#/$defs/RandomSourceState" },
+        "preselection": { "type": "object", "required": ["1", "2", "3", "4"], "additionalProperties": false, "properties": { "1": { "$ref": "#/$defs/PreselectionState" }, "2": { "$ref": "#/$defs/PreselectionState" }, "3": { "$ref": "#/$defs/PreselectionState" }, "4": { "$ref": "#/$defs/PreselectionState" } } },
+        "history": { "type": "object", "additionalProperties": false, "required": ["domainEvents"], "properties": { "domainEvents": { "type": "array", "items": { "$ref": "#/$defs/DomainEvent" } } } },
+        "winnerTeam": { "type": ["string", "null"], "enum": ["A", "B", null] }
+      }
+    },
+    "EngineRequest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "requestId", "operation", "rulesetVersion", "gameId", "expectedStateRevision", "actorUserId", "payload"],
+      "properties": {
+        "kind": { "const": "ENGINE_REQUEST" }, "requestId": { "type": "string" },
+        "operation": { "enum": ["createGame", "handleCommand", "handleTimeout", "projectViews", "restoreSnapshot"] },
+        "rulesetVersion": { "const": "1.3.4" }, "gameId": { "type": ["string", "null"] }, "expectedStateRevision": { "type": ["integer", "null"], "minimum": 0 },
+        "actorUserId": { "type": ["string", "null"] }, "payload": { "$ref": "#/$defs/JsonValue" }
+      }
+    },
+    "AudienceProjection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["audienceKey", "protocolMessage"],
+      "properties": { "audienceKey": { "type": "string" }, "protocolMessage": { "$ref": "#/$defs/JsonValue" } }
+    },
+    "EngineResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "requestId", "accepted", "gameId", "previousRevision", "stateRevision", "events", "projections", "rejection"],
+      "properties": {
+        "kind": { "const": "ENGINE_RESULT" }, "requestId": { "type": "string" }, "accepted": { "type": "boolean" }, "gameId": { "type": "string" },
+        "previousRevision": { "type": "integer", "minimum": 0 }, "stateRevision": { "type": "integer", "minimum": 0 },
+        "events": { "type": "array", "items": { "$ref": "#/$defs/DomainEvent" } }, "projections": { "type": "array", "items": { "$ref": "#/$defs/AudienceProjection" } },
+        "rejection": { "anyOf": [{ "type": "null" }, { "type": "object", "additionalProperties": false, "required": ["reasonCode", "messageKey", "refreshRequired"], "properties": { "reasonCode": { "type": "string" }, "messageKey": { "type": "string" }, "refreshRequired": { "type": "boolean" } } }] }
+      }
+    }
+  }
+}

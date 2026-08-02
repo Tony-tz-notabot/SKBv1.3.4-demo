@@ -1,0 +1,29 @@
+{
+  "rulesetVersion": "1.3.4",
+  "matchPolicy": "exact_display_name",
+  "categoryDirectories": {
+    "basic": "基础牌",
+    "armor": "防具",
+    "talent": "天赋",
+    "mount": "坐骑",
+    "statue": "雕像",
+    "special": "特殊",
+    "weapon": "武器",
+    "boss": "BOSS",
+    "character": "角色"
+  },
+  "allowedExtensions": [".png", ".jpg", ".jpeg", ".webp"],
+  "displayNameOverrides": {
+    "card.armor.a01": "双节棍"
+  },
+  "fallbackPolicy": ["specific", "category_placeholder", "generic_placeholder"],
+  "allowedMissingSpecificAssets": [
+    "character.character.general",
+    "card.basic.coin.white",
+    "card.basic.coin.red",
+    "card.talent.fire_shield",
+    "card.mount.m06",
+    "card.special.sp08",
+    "card.special.sp11"
+  ]
+}

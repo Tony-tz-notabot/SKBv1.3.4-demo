@@ -1,0 +1,56 @@
+{
+  "rulesetVersion": "1.3.4",
+  "description": "Static production paths for every event referenced by executable rules.",
+  "producers": [
+    {
+      "producerId": "engine.gameTurnPhaseLoop",
+      "kind": "corePipeline",
+      "events": ["game.setup", "turn.before", "turn.start", "turn.after", "phase.before", "phase.start", "phase.body", "phase.skip", "phase.after"]
+    },
+    {
+      "producerId": "engine.actionPipeline",
+      "kind": "corePipeline",
+      "events": ["action.legality.check", "action.commit", "action.resolve", "target.selection.requested", "cost.calculate"]
+    },
+    {
+      "producerId": "engine.cardLifecycle",
+      "kind": "corePipeline",
+      "events": ["card.use.committed", "card.used", "card.played", "card.moved", "card.lost", "card.unequipped", "card.replaced", "card.synthesized"]
+    },
+    {
+      "producerId": "engine.attackPipeline",
+      "kind": "corePipeline",
+      "events": ["attack.weapon.resolve", "attack.costs.paid", "attack.killInvalidation.check", "attack.commit", "attack.targeted", "attack.hit", "attack.miss", "attack.target.after", "attack.after", "attack.resolved"]
+    },
+    {
+      "producerId": "engine.responsePipeline",
+      "kind": "corePipeline",
+      "events": ["response.window.opened", "response.committed", "response.resolved", "response.window.closed"]
+    },
+    {
+      "producerId": "engine.judgmentPipeline",
+      "kind": "corePipeline",
+      "events": ["judgment.requested", "judgment.replaced", "judgment.matched"]
+    },
+    {
+      "producerId": "engine.damagePipeline",
+      "kind": "corePipeline",
+      "events": ["damage.proposed", "damage.immunity.check", "damage.replacement.before", "damage.modified", "damage.finalized", "damage.applied", "shield.broken"]
+    },
+    {
+      "producerId": "engine.dyingEliminationPipeline",
+      "kind": "corePipeline",
+      "events": ["dying.enter", "elimination.before"]
+    },
+    {
+      "producerId": "engine.effectOperationResults",
+      "kind": "effectOperation",
+      "events": ["ability.activation.committed", "critical.applied", "status.applied", "layer.depleted", "limit.changed", "deck.cards.displayed", "deck.exhausted", "choice.requested", "choice.timedOut", "trigger.window.opened"]
+    },
+    {
+      "producerId": "server.commandAndProjectionBoundary",
+      "kind": "serverBoundary",
+      "events": ["command.received", "player.reconnected", "random.requested", "view.projected"]
+    }
+  ]
+}

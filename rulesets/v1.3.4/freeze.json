@@ -1,0 +1,85 @@
+{
+  "rulesetId": "skb.v1.3.4",
+  "version": "1.3.4",
+  "status": "frozen_baseline",
+  "hashAlgorithm": "sha256",
+  "files": [
+    {
+      "filename": "boss-rules.json",
+      "sha256": "6c28c460fdb2a4772c126ad106b5e5201858e1474a967f778c8f32c1468ec1d8"
+    },
+    {
+      "filename": "cards.json",
+      "sha256": "3f9d0b8b7c9ae4c19b20fa575716a265af0cfbb2f78a3f4ff4515755439b3710"
+    },
+    {
+      "filename": "character-rules.json",
+      "sha256": "74d93c9153db805b0f6402830b785842d2c839c13df0fd8ea2ba502cb0974260"
+    },
+    {
+      "filename": "characters.json",
+      "sha256": "9a6d9f31625d6f104aa05b8eb5bf9e6ec8cebc98be59801fc454dde5a370d65d"
+    },
+    {
+      "filename": "core-rules.json",
+      "sha256": "5845b30e4fb5428ac075564065365eb2501b715e472e4df15d7760e79d2e497c"
+    },
+    {
+      "filename": "deck.json",
+      "sha256": "53722dde18eba07e3389c2c263e92fd24d7f35860c58822f575c763df9427362"
+    },
+    {
+      "filename": "dsl-examples.json",
+      "sha256": "32c60ed018e863fd7d30349895d90e31b41184860853cab4e430ce85a66e9768"
+    },
+    {
+      "filename": "dsl.schema.json",
+      "sha256": "b3ffac91b76feee7290be4e8c58ad88287269ace1a0a49ffa9005d8417281169"
+    },
+    {
+      "filename": "event-production.json",
+      "sha256": "b95e7bf13895e0e5f56b400f7f2167d259ce3f6ff5cbbd850c54b6cd6bfb1126"
+    },
+    {
+      "filename": "general-rules.json",
+      "sha256": "3b9314aa45a30e24ea3e4bca1e592527da423d7f9c7d79155d11a8c314e46f00"
+    },
+    {
+      "filename": "nonboss-rules.json",
+      "sha256": "3ae48f50d65a93b3f74b589165dc4e9366fa67e68a61de6d90a397f891aa0860"
+    },
+    {
+      "filename": "ontology.json",
+      "sha256": "ddc314c1d068e53281c76728e50d557fce343a73b0b3d62988410b282de70667"
+    },
+    {
+      "filename": "pipeline-graph.json",
+      "sha256": "918849986130c84e85f9196032c3db7d098c59bc85a7435f62a7eb4dbd28dcb9"
+    },
+    {
+      "filename": "resource-mapping.json",
+      "sha256": "51418b8303dd9de2574e02ea0420b284a24119e6e40b5172da618e0f778b2af0"
+    },
+    {
+      "filename": "resources.json",
+      "sha256": "2bc46035b81fac1d6829d14d616f691e924cfe6db8ced3258f6fe53c1b68525f"
+    },
+    {
+      "filename": "settings.json",
+      "sha256": "731ef0d7bc60bafdfe73f83919582c802b3c368a737dccdda8f51378f52cb213"
+    },
+    {
+      "filename": "weapon-rules.json",
+      "sha256": "a83e284c00af1ba027053f4fe79e9148e576c42a652fe0e92be9aa2ca9f166a8"
+    }
+  ],
+  "allowedMissingSpecificAssets": [
+    "character.character.general",
+    "card.basic.coin.white",
+    "card.basic.coin.red",
+    "card.talent.fire_shield",
+    "card.mount.m06",
+    "card.special.sp08",
+    "card.special.sp11"
+  ]
+}

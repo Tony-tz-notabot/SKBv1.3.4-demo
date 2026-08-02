@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "skb://rulesets/v1.3.4/dsl.schema.json",
+  "title": "SKB Effect DSL",
+  "type": "object",
+  "$defs": {
+    "ref": {
+      "anyOf": [
+        { "type": "string", "pattern": "^\\$[A-Za-z][A-Za-z0-9_.]*$" },
+        {
+          "type": "object",
+          "required": ["kind", "id"],
+          "properties": {
+            "kind": { "type": "string" },
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "expression": {
+      "oneOf": [
+        { "type": ["string", "number", "integer", "boolean", "null"] },
+        { "$ref": "#/$defs/ref" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/expression" }
+        },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "oneOf": [
+              { "$ref": "#/$defs/expression" },
+              {
+                "type": "array",
+                "items": { "$ref": "#/$defs/expression" }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "selector": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["character", "card", "player", "attack", "event", "zone"] },
+        "from": { "$ref": "#/$defs/expression" },
+        "filters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/expression" }
+        },
+        "order": { "enum": ["counterclockwise", "clockwise", "zoneOrder", "random", "none"] },
+        "visibility": { "enum": ["public", "ownerOnly", "cardBackOnly", "serverOnly"] }
+      },
+      "additionalProperties": false
+    },
+    "duration": {
+      "type": "object",
+      "required": ["point", "skipPolicy"],
+      "properties": {
+        "point": { "type": "string", "minLength": 1 },
+        "count": { "type": "integer", "minimum": 0 },
+        "scope": { "type": "string" },
+        "skipPolicy": {
+          "enum": ["expireOnSkippedBoundary", "waitForActualPhase", "ignoreSkip", "fireAtAfterEvenIfSkipped"]
+        },
+        "sourceLeavePolicy": { "enum": ["expire", "persist", "finishCommittedOnly"] },
+        "ownerEliminatedPolicy": { "enum": ["expire", "persist", "finishCommittedOnly"] }
+      },
+      "additionalProperties": false
+    },
+    "damageSegment": {
+      "type": "object",
+      "required": ["segmentId", "deliveryType", "attackType", "damageType", "element", "amount", "repeat", "isAdditional"],
+      "properties": {
+        "segmentId": { "type": "string", "minLength": 1 },
+        "deliveryType": { "enum": ["attack", "direct"] },
+        "attackType": { "enum": ["melee", "ranged", "laser", "field", "none"] },
+        "damageType": { "enum": ["normal", "hp", "shield", "true", "modify"] },
+        "element": { "enum": ["none", "fire", "poison", "electric", "ice"] },
+        "amount": { "$ref": "#/$defs/expression" },
+        "repeat": { "$ref": "#/$defs/expression" },
+        "isAdditional": { "type": "boolean" },
+        "ignores": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "overflowPolicy": { "enum": ["normal", "noOverflow", "shieldOnly", "hpOnly"] }
+      },
+      "additionalProperties": false
+    },
+    "choice": {
+      "type": "object",
+      "required": ["chooser", "min", "max", "optional", "timeoutPolicy"],
+      "properties": {
+        "chooser": { "$ref": "#/$defs/expression" },
+        "min": { "$ref": "#/$defs/expression" },
+        "max": { "$ref": "#/$defs/expression" },
+        "distinct": { "type": "boolean" },
+        "selector": { "$ref": "#/$defs/selector" },
+        "visibility": { "enum": ["public", "ownerOnly", "cardBackOnly", "serverOnly"] },
+        "optional": { "type": "boolean" },
+        "timeoutPolicy": { "enum": ["pass", "randomLegal", "useDefault", "abortRemaining"] },
+        "revalidateAtCommit": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "effect": {
+      "type": "object",
+      "required": ["op"],
+      "properties": {
+        "op": {
+          "enum": [
+            "sequence", "forEach", "if", "switch", "repeat", "whileBounded", "break", "continue", "return", "noop", "setVar", "assert", "skipPhase", "replacePhase", "endPhase", "checkVictory", "setPresenceState", "eliminateCharacter",
+            "requestChoice", "selectTargets", "selectCards", "selectOption", "selectNumber", "selectColor", "selectWeaponMode", "randomChoice", "shuffle",
+            "calculate", "setValue", "modifyValue", "clampValue", "payValue", "recoverHp", "recoverShield", "changeHp", "changeShield", "changeMaxHp", "changeMaxShield", "modifyIronShield", "modifyHandLimit", "modifyAttackCount", "modifyDistance",
+            "createCard", "copyCard", "moveCard", "drawCards", "revealCards", "displayCards", "searchCards", "shuffleDiscardIntoDeck", "useCard", "playCard", "respondCard", "discardCard", "loseCard", "gainCard", "giveCard", "equipCard", "replaceEquipment", "dismantleCard", "synthesizeCards", "transformCard", "removeCard",
+            "createAttack", "resolveAttackTarget", "invalidateAttack", "setAttackTag", "openResponseWindow", "requestSpecialPlay", "resolveHit", "createDamage", "modifyDamage", "preventDamage", "redirectDamage", "judgeColor", "replaceJudgment", "applyCritical", "checkDying",
+            "applyStatus", "refreshStatus", "stackStatus", "removeStatus", "applyRestriction", "removeRestriction", "addMarker", "modifyMarker", "consumeMarker", "resetMarker", "consumeLimit", "resetLimit", "startCooldown", "tickCooldown", "createDuration", "expireDuration", "createSpecialLayer", "removeSpecialLayer", "enableAbility", "disableAbility", "enableEquipmentEffects", "disableEquipmentEffects", "scheduleEffect", "cancelScheduledEffect",
+            "emitEvent", "listenEvent", "replaceEvent", "cancelEvent", "preventEvent", "modifyEvent", "enqueueTrigger", "openTriggerWindow",
+            "advanceTurn", "resolveTriggerWindow", "resolveResponseStack", "validateCommand", "rejectCommand", "recordRandom", "saveSnapshot", "restoreSnapshot", "filterView"
+          ]
+        },
+        "effectId": { "type": "string" },
+        "when": { "$ref": "#/$defs/expression" },
+        "target": { "$ref": "#/$defs/expression" },
+        "source": { "$ref": "#/$defs/expression" },
+        "value": { "$ref": "#/$defs/expression" },
+        "selector": { "$ref": "#/$defs/selector" },
+        "choice": { "$ref": "#/$defs/choice" },
+        "duration": { "$ref": "#/$defs/duration" },
+        "expiry": { "$ref": "#/$defs/duration" },
+        "damageSegments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/damageSegment" }
+        },
+        "effects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/effect" }
+        },
+        "then": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/effect" }
+        },
+        "else": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/effect" }
+        },
+        "maxIterations": { "type": "integer", "minimum": 1, "maximum": 1000 },
+        "maxChainDepth": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "params": { "type": "object" },
+        "tags": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["dslVersion", "rulesetVersion", "effects"],
+  "properties": {
+    "dslVersion": { "const": "1.0.0" },
+    "rulesetVersion": { "const": "1.3.4" },
+    "effects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/effect" }
+    }
+  },
+  "additionalProperties": false
+}

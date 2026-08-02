@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skb.local/protocol/v1.3.4/room-protocol.schema.json",
+  "title": "SKB v1.3.4 Lobby and Room Protocol",
+  "oneOf": [
+    { "$ref": "#/$defs/LobbySnapshot" },
+    { "$ref": "#/$defs/RoomPreview" },
+    { "$ref": "#/$defs/RoomSnapshot" },
+    { "$ref": "#/$defs/RoomCommand" },
+    { "$ref": "#/$defs/RoomCommandAccepted" },
+    { "$ref": "#/$defs/RoomCommandRejected" }
+  ],
+  "$defs": {
+    "Seat": { "type": "integer", "enum": [1, 2, 3, 4] },
+    "Team": { "type": "string", "enum": ["A", "B"] },
+    "RoomCode": { "type": "string", "pattern": "^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$" },
+    "ConnectionState": { "type": "string", "enum": ["online", "reconnecting", "offline"] },
+    "RoomPhase": { "type": "string", "enum": ["waiting", "characterSelection", "starting", "inGame", "closed"] },
+    "RoomSettings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["roomName", "allowGuests", "allowSpectators", "turnTimeSeconds", "responseTimeSeconds", "reserveTimeSeconds", "rulesetVersion", "dismantleBossEnabled"],
+      "properties": {
+        "roomName": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "allowGuests": { "type": "boolean" }, "allowSpectators": { "type": "boolean" },
+        "turnTimeSeconds": { "type": "integer", "minimum": 1 }, "responseTimeSeconds": { "type": "integer", "minimum": 1 },
+        "reserveTimeSeconds": { "type": "integer", "minimum": 0 }, "rulesetVersion": { "const": "1.3.4" },
+        "dismantleBossEnabled": { "type": "boolean" }
+      }
+    },
+    "LobbyUser": {
+      "type": "object", "additionalProperties": false, "required": ["userId", "displayName", "latencyMs"],
+      "properties": { "userId": { "type": "string" }, "displayName": { "type": "string" }, "latencyMs": { "type": ["integer", "null"], "minimum": 0 } }
+    },
+    "ResumableGame": {
+      "type": "object", "additionalProperties": false, "required": ["gameId", "roomCode", "round", "statusText"],
+      "properties": { "gameId": { "type": "string" }, "roomCode": { "$ref": "#/$defs/RoomCode" }, "round": { "type": "integer", "minimum": 1 }, "statusText": { "type": "string" } }
+    },
+    "LobbySnapshot": {
+      "type": "object", "additionalProperties": false, "required": ["type", "serverTime", "user", "rulesetVersions", "resumableGames"],
+      "properties": {
+        "type": { "const": "LOBBY_SNAPSHOT" }, "serverTime": { "type": "integer" }, "user": { "$ref": "#/$defs/LobbyUser" },
+        "rulesetVersions": { "type": "array", "items": { "type": "string" } }, "resumableGames": { "type": "array", "items": { "$ref": "#/$defs/ResumableGame" } }
+      }
+    },
+    "RoomPreview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "roomCode", "roomName", "hostDisplayName", "occupiedSeats", "capacity", "rulesetVersion", "phase", "passwordRequired", "spectatingAllowed"],
+      "properties": {
+        "type": { "const": "ROOM_PREVIEW" }, "roomCode": { "$ref": "#/$defs/RoomCode" }, "roomName": { "type": "string" },
+        "hostDisplayName": { "type": "string" }, "occupiedSeats": { "type": "integer", "minimum": 0, "maximum": 4 }, "capacity": { "const": 4 },
+        "rulesetVersion": { "const": "1.3.4" }, "phase": { "$ref": "#/$defs/RoomPhase" }, "passwordRequired": { "type": "boolean" }, "spectatingAllowed": { "type": "boolean" }
+      }
+    },
+    "RoomPlayerView": {
+      "type": "object", "additionalProperties": false,
+      "required": ["userId", "displayName", "seat", "team", "isHost", "ready", "connection", "latencyMs", "selectionState"],
+      "properties": {
+        "userId": { "type": "string" }, "displayName": { "type": "string" }, "seat": { "$ref": "#/$defs/Seat" }, "team": { "$ref": "#/$defs/Team" },
+        "isHost": { "type": "boolean" }, "ready": { "type": "boolean" }, "connection": { "$ref": "#/$defs/ConnectionState" },
+        "latencyMs": { "type": ["integer", "null"], "minimum": 0 }, "selectionState": { "type": "string", "enum": ["notStarted", "choosing", "locked", "revealed"] },
+        "revealedCharacterId": { "type": ["string", "null"] }
+      }
+    },
+    "CharacterCandidateView": {
+      "type": "object", "additionalProperties": false,
+      "required": ["characterId", "displayName", "portraitResourceKey", "initialHp", "initialShield", "initialTalentId", "abilityIds", "difficulty"],
+      "properties": {
+        "characterId": { "type": "string" }, "displayName": { "type": "string" }, "portraitResourceKey": { "type": "string" },
+        "initialHp": { "type": "integer" }, "initialShield": { "type": "integer" }, "initialTalentId": { "type": "string" },
+        "abilityIds": { "type": "array", "items": { "type": "string" } }, "difficulty": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "PrivateCharacterSelection": {
+      "type": "object", "additionalProperties": false, "required": ["candidates", "preselectedCharacterId", "lockedCharacterId", "deadlineAt"],
+      "properties": {
+        "candidates": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/CharacterCandidateView" } },
+        "preselectedCharacterId": { "type": ["string", "null"] }, "lockedCharacterId": { "type": ["string", "null"] }, "deadlineAt": { "type": ["integer", "null"] }
+      }
+    },
+    "RoomChatMessage": {
+      "type": "object", "additionalProperties": false, "required": ["messageId", "channel", "senderSeat", "senderDisplayName", "sentAt", "text"],
+      "properties": {
+        "messageId": { "type": "string" }, "channel": { "type": "string", "enum": ["all", "team"] }, "senderSeat": { "$ref": "#/$defs/Seat" },
+        "senderDisplayName": { "type": "string" }, "sentAt": { "type": "integer" }, "text": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "RoomPermissions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canChangeSeat", "canUpdateSettings", "canKick", "canTransferHost", "canStartGame", "canCloseRoom"],
+      "properties": {
+        "canChangeSeat": { "type": "boolean" }, "canUpdateSettings": { "type": "boolean" }, "canKick": { "type": "boolean" },
+        "canTransferHost": { "type": "boolean" }, "canStartGame": { "type": "boolean" }, "canCloseRoom": { "type": "boolean" }
+      }
+    },
+    "RoomSnapshot": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "roomId", "roomCode", "roomRevision", "serverTime", "phase", "settings", "players", "viewerUserId", "viewerSeat", "permissions", "characterSelection", "chat"],
+      "properties": {
+        "type": { "const": "ROOM_SNAPSHOT" }, "roomId": { "type": "string" }, "roomCode": { "$ref": "#/$defs/RoomCode" },
+        "roomRevision": { "type": "integer", "minimum": 0 }, "serverTime": { "type": "integer" }, "phase": { "$ref": "#/$defs/RoomPhase" },
+        "settings": { "$ref": "#/$defs/RoomSettings" }, "players": { "type": "array", "maxItems": 4, "items": { "$ref": "#/$defs/RoomPlayerView" } },
+        "viewerUserId": { "type": "string" }, "viewerSeat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] },
+        "permissions": { "$ref": "#/$defs/RoomPermissions" }, "characterSelection": { "anyOf": [{ "$ref": "#/$defs/PrivateCharacterSelection" }, { "type": "null" }] },
+        "chat": { "type": "array", "items": { "$ref": "#/$defs/RoomChatMessage" } }
+      }
+    },
+    "CreateRoomPayload": { "type": "object", "additionalProperties": false, "required": ["settings", "password"], "properties": { "settings": { "$ref": "#/$defs/RoomSettings" }, "password": { "type": ["string", "null"], "maxLength": 100 } } },
+    "JoinRoomPayload": { "type": "object", "additionalProperties": false, "required": ["roomCode", "password", "asSpectator"], "properties": { "roomCode": { "$ref": "#/$defs/RoomCode" }, "password": { "type": ["string", "null"], "maxLength": 100 }, "asSpectator": { "type": "boolean" } } },
+    "SetReadyPayload": { "type": "object", "additionalProperties": false, "required": ["ready"], "properties": { "ready": { "type": "boolean" } } },
+    "ChangeSeatPayload": { "type": "object", "additionalProperties": false, "required": ["userId", "seat"], "properties": { "userId": { "type": "string" }, "seat": { "$ref": "#/$defs/Seat" } } },
+    "UpdateRoomSettingsPayload": { "type": "object", "additionalProperties": false, "required": ["settings"], "properties": { "settings": { "$ref": "#/$defs/RoomSettings" } } },
+    "TargetUserPayload": { "type": "object", "additionalProperties": false, "required": ["userId"], "properties": { "userId": { "type": "string" } } },
+    "PreselectCharacterPayload": { "type": "object", "additionalProperties": false, "required": ["characterId"], "properties": { "characterId": { "type": ["string", "null"] } } },
+    "LockCharacterPayload": { "type": "object", "additionalProperties": false, "required": ["characterId"], "properties": { "characterId": { "type": "string" } } },
+    "RoomSendChatPayload": { "type": "object", "additionalProperties": false, "required": ["channel", "clientMessageId", "text"], "properties": { "channel": { "type": "string", "enum": ["all", "team"] }, "clientMessageId": { "type": "string" }, "text": { "type": "string", "minLength": 1, "maxLength": 500 } } },
+    "EmptyPayload": { "type": "object", "additionalProperties": false, "properties": {} },
+    "RoomCommand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "commandId", "command", "payload"],
+      "properties": {
+        "type": { "const": "ROOM_COMMAND" }, "commandId": { "type": "string" }, "roomId": { "type": ["string", "null"] },
+        "expectedRoomRevision": { "type": ["integer", "null"], "minimum": 0 },
+        "command": { "type": "string", "enum": ["CREATE_ROOM", "JOIN_ROOM", "LEAVE_ROOM", "SET_READY", "CHANGE_SEAT", "UPDATE_ROOM_SETTINGS", "KICK_PLAYER", "TRANSFER_HOST", "START_GAME", "CLOSE_ROOM", "PRESELECT_CHARACTER", "LOCK_CHARACTER", "SEND_CHAT"] },
+        "payload": { "oneOf": [
+          { "$ref": "#/$defs/CreateRoomPayload" }, { "$ref": "#/$defs/JoinRoomPayload" }, { "$ref": "#/$defs/SetReadyPayload" },
+          { "$ref": "#/$defs/ChangeSeatPayload" }, { "$ref": "#/$defs/UpdateRoomSettingsPayload" }, { "$ref": "#/$defs/TargetUserPayload" },
+          { "$ref": "#/$defs/PreselectCharacterPayload" }, { "$ref": "#/$defs/LockCharacterPayload" }, { "$ref": "#/$defs/RoomSendChatPayload" }, { "$ref": "#/$defs/EmptyPayload" }
+        ] }
+      },
+      "x-commandPayloadMap": {
+        "CREATE_ROOM": "CreateRoomPayload", "JOIN_ROOM": "JoinRoomPayload", "LEAVE_ROOM": "EmptyPayload", "SET_READY": "SetReadyPayload",
+        "CHANGE_SEAT": "ChangeSeatPayload", "UPDATE_ROOM_SETTINGS": "UpdateRoomSettingsPayload", "KICK_PLAYER": "TargetUserPayload",
+        "TRANSFER_HOST": "TargetUserPayload", "START_GAME": "EmptyPayload", "CLOSE_ROOM": "EmptyPayload",
+        "PRESELECT_CHARACTER": "PreselectCharacterPayload", "LOCK_CHARACTER": "LockCharacterPayload", "SEND_CHAT": "RoomSendChatPayload"
+      }
+    },
+    "RoomCommandAccepted": {
+      "type": "object", "additionalProperties": false, "required": ["type", "commandId", "roomRevision"],
+      "properties": { "type": { "const": "ROOM_COMMAND_ACCEPTED" }, "commandId": { "type": "string" }, "roomRevision": { "type": "integer", "minimum": 0 }, "roomId": { "type": ["string", "null"] } }
+    },
+    "RoomCommandRejected": {
+      "type": "object", "additionalProperties": false, "required": ["type", "commandId", "reasonCode", "messageKey", "roomRevision", "refreshRequired"],
+      "properties": {
+        "type": { "const": "ROOM_COMMAND_REJECTED" }, "commandId": { "type": "string" }, "reasonCode": { "type": "string" }, "messageKey": { "type": "string" },
+        "roomRevision": { "type": ["integer", "null"] }, "refreshRequired": { "type": "boolean" }
+      }
+    }
+  }
+}

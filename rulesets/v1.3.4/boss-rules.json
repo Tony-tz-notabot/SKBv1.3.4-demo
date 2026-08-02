@@ -1,0 +1,2168 @@
+{
+  "rulePackId": "skb.v1.3.4.boss",
+  "dslVersion": "1.0.0",
+  "rulesetVersion": "1.3.4",
+  "source": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+  "testSource": "docs/整理/23-v1.3.4BOSS牌测试清单.md",
+  "commonPolicy": {
+    "policyId": "boss.common.v1.3.4",
+    "perPlayerUseLimit": {
+      "scope": "perTurnAny",
+      "max": 1,
+      "consumeAt": "card.use.committed",
+      "offTurnUseCountsAgainstCurrentTurnOnly": true
+    },
+    "slot": {
+      "slotId": "bossSlot",
+      "capacity": 1,
+      "isEquipmentZone": false,
+      "unaffectedByEquipmentDisable": true,
+      "persistentBossRequiresEmptyOrLegallyReplaceableSlot": true,
+      "instantBossDoesNotOccupySlot": true
+    },
+    "replacement": {
+      "defaultActiveDiscard": "forbidden",
+      "defaultActiveReplace": "forbidden",
+      "exceptionCardId": "boss.iron_pirate_king",
+      "exceptionOnlyBeforeDeath": true
+    },
+    "genericDismantle": {
+      "settingKey": "rules.boss.allowGenericDismantle",
+      "default": true,
+      "trueAllowsGenericPublicCardDismantle": true,
+      "categoryRestrictedDismantleStillRespectsCategory": true
+    },
+    "exit": {
+      "defaultDestination": "discardPile",
+      "cancelUncreatedEffects": true,
+      "committedAttacksDamageAndTriggersContinue": true,
+      "holderEliminationCausesExit": true
+    },
+    "attackDefaults": {
+      "killCost": 0,
+      "attackCountCost": 0,
+      "stillUsesNormalAttackResponseHitDamageAndDyingPipeline": true
+    },
+    "specialWindow": {
+      "availableInOriginalPrepareTimingOfStasisTurnOnlyWhenCardExplicitlyAllows": true,
+      "isNotPhase": true,
+      "doesNotEmitPhaseEvents": true,
+      "disallowsUnrelatedActions": true
+    },
+    "controlImmunity": {
+      "preventsExternalControl": true,
+      "doesNotPreventSelfGrantedStasisOrPhaseReplacement": true
+    },
+    "timeout": {
+      "optionalOrBeneficial": "pass",
+      "forcedOrHarmful": "randomLegal",
+      "cardSpecificPolicyOverrides": true
+    }
+  },
+  "templates": [
+    {
+      "cardId": "boss.purple_lord",
+      "displayName": "紫爵士",
+      "color": "red",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.purple_lord",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.purple_lord",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "boss.red_lord",
+      "displayName": "红爵士",
+      "color": "red",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.red_lord",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.red_lord",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "boss.iron_pirate_king",
+      "displayName": "钢铁破浪者号",
+      "color": "white",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.iron_pirate_king",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.iron_pirate_king",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "boss.crystal_crab",
+      "displayName": "水晶巨蟹",
+      "color": "blue",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.crystal_crab",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.crystal_crab",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "boss.c6h8o6",
+      "displayName": "C6H8O6",
+      "color": "green",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.c6h8o6",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.c6h8o6",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "boss.dark_grand_knight",
+      "displayName": "暗黑大骑士",
+      "color": "orange",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.dark_grand_knight",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.dark_grand_knight",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "boss.giant_slime",
+      "displayName": "大史莱姆",
+      "color": "white",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.giant_slime",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.giant_slime",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "boss.golden_mask",
+      "displayName": "金面猴王",
+      "color": "green",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.golden_mask",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.golden_mask",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    },
+    {
+      "cardId": "boss.valkyrie",
+      "displayName": "瓦尔基里",
+      "color": "white",
+      "initialDeckCount": 1,
+      "resourceKey": "card.boss.valkyrie",
+      "commonPolicyId": "boss.common.v1.3.4",
+      "effectFamilyId": "boss.valkyrie",
+      "effectEncodingStatus": "boss_effect_encoded",
+      "ruleSource": "docs/整理/22-v1.3.4BOSS牌规则正文.md",
+      "rulesetVersion": "1.3.4"
+    }
+  ],
+  "effectFamilies": [
+    {
+      "familyId": "boss.purple_lord",
+      "displayName": "紫爵士",
+      "bossType": "persistent",
+      "activation": {
+        "point": "owner.currentPhase.end.start",
+        "anchorTurn": "useTurnN"
+      },
+      "duration": {
+        "from": "activation",
+        "expiry": "owner.nthTurn.1.phase.end.start",
+        "earlyExitCancelsUncreatedEffects": true
+      },
+      "activeState": {
+        "ironShield": 1,
+        "statuses": [
+          "status.stasis"
+        ],
+        "equipmentEffectsEnabled": false,
+        "controlImmunity": "externalOnly"
+      },
+      "specialWindows": [
+        {
+          "windowId": "purpleLord.heroBlade",
+          "point": "owner.nthTurn.1.originalPrepareTiming",
+          "maxUses": 1,
+          "optional": true,
+          "timeoutPolicy": "pass",
+          "noMakeupIfPassed": true,
+          "effects": [
+            {
+              "op": "selectTargets",
+              "params": {
+                "min": 1,
+                "max": 1,
+                "optional": true,
+                "selector": {
+                  "inPlay": true,
+                  "withinRange": 4
+                },
+                "timeoutPolicy": "pass"
+              }
+            },
+            {
+              "op": "createAttack",
+              "params": {
+                "ifTargetSelected": true,
+                "source": "$controller",
+                "targets": [
+                  "$selection.target"
+                ],
+                "range": 4,
+                "attackType": "melee",
+                "killCost": 0,
+                "attackCountCost": 0,
+                "responsePolicy": {
+                  "dodge": true,
+                  "armor": true,
+                  "meleeBlock": false
+                },
+                "damageSegments": [
+                  {
+                    "segmentId": "heroBlade",
+                    "deliveryType": "attack",
+                    "attackType": "melee",
+                    "damageType": "normal",
+                    "element": "none",
+                    "amount": 4,
+                    "repeat": 1,
+                    "isAdditional": false
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "triggerId": "purpleLord.demonBlade",
+          "event": "phase.before",
+          "mandatory": true,
+          "filter": {
+            "phase": "prepare",
+            "actorIsOtherInPlayCharacter": true,
+            "bossActive": true
+          },
+          "effects": [
+            {
+              "op": "createAttack",
+              "params": {
+                "source": "$controller",
+                "targets": [
+                  "$phase.actor"
+                ],
+                "range": "unlimited",
+                "attackType": "melee",
+                "killCost": 0,
+                "attackCountCost": 0,
+                "triggerEvenIfPhaseWillBeSkipped": true,
+                "damageSegments": [
+                  {
+                    "segmentId": "demonBlade",
+                    "deliveryType": "attack",
+                    "attackType": "melee",
+                    "damageType": "normal",
+                    "element": "none",
+                    "amount": 2,
+                    "repeat": 1,
+                    "isAdditional": false
+                  }
+                ],
+                "onHit": [
+                  {
+                    "op": "judgeColor",
+                    "params": {
+                      "matchedColors": [
+                        "white",
+                        "blue"
+                      ],
+                      "purpose": "status",
+                      "triggerOnHitEvenWhenActualDamageZero": true,
+                      "onMatched": {
+                        "op": "applyStatus",
+                        "target": "$phase.actor",
+                        "params": {
+                          "statusId": "status.frozen",
+                          "stackPolicy": "uniqueRefresh"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "cleanup": [
+        {
+          "op": "modifyIronShield",
+          "target": "$controller",
+          "params": {
+            "removeBossContribution": true
+          }
+        },
+        {
+          "op": "removeStatus",
+          "target": "$controller",
+          "params": {
+            "statusId": "status.stasis",
+            "sourceRef": "$card"
+          }
+        },
+        {
+          "op": "enableEquipmentEffects",
+          "target": "$controller",
+          "params": {
+            "removeSourceDisable": "$card"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "boss.red_lord",
+      "displayName": "红爵士",
+      "bossType": "persistent",
+      "activation": {
+        "point": "owner.currentPhase.end.start",
+        "anchorTurn": "useTurnN"
+      },
+      "duration": {
+        "from": "activation",
+        "expiry": "owner.nthTurn.2.phase.end.start",
+        "naturalExpiryDoesNotApplyBacklash": true
+      },
+      "activeState": {
+        "ironShield": 1,
+        "statuses": [
+          "status.stasis"
+        ],
+        "equipmentEffectsEnabled": false,
+        "controlImmunity": "externalOnly",
+        "counters": [
+          {
+            "counterId": "redLord.actualPositiveDamageCount",
+            "initial": 0,
+            "max": 4
+          }
+        ]
+      },
+      "replacements": [
+        {
+          "event": "damage.finalized",
+          "priority": "mandatoryModifier",
+          "filter": {
+            "targetIsController": true,
+            "bossActive": true,
+            "finalizedAmountPositive": true,
+            "afterImmunityPreventionArmorReductionAndIronShield": true
+          },
+          "effects": [
+            {
+              "op": "modifyDamage",
+              "params": {
+                "setAmount": 1
+              }
+            },
+            {
+              "op": "modifyMarker",
+              "params": {
+                "markerId": "redLord.actualPositiveDamageCount",
+                "deltaAfterActualDeduction": 1
+              }
+            },
+            {
+              "op": "if",
+              "params": {
+                "condition": {
+                  "equals": [
+                    "$marker.redLord.actualPositiveDamageCount",
+                    4
+                  ]
+                },
+                "then": {
+                  "op": "sequence",
+                  "effects": [
+                    {
+                      "op": "expireDuration",
+                      "params": {
+                        "bossRef": "$card",
+                        "reason": "fourthDamage"
+                      }
+                    },
+                    {
+                      "op": "applyStatus",
+                      "target": "$controller",
+                      "params": {
+                        "statusId": "status.frozen",
+                        "stackPolicy": "uniqueRefresh"
+                      }
+                    },
+                    {
+                      "op": "applyStatus",
+                      "target": "$controller",
+                      "params": {
+                        "statusId": "status.electrified",
+                        "stackPolicy": "uniqueRefresh"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "specialWindows": [
+        {
+          "windowId": "redLord.sealingHammer",
+          "points": [
+            "owner.nthTurn.1.originalPrepareTiming",
+            "owner.nthTurn.2.originalPrepareTiming"
+          ],
+          "maxUsesPerPoint": 1,
+          "optional": true,
+          "timeoutPolicy": "pass",
+          "effects": [
+            {
+              "op": "selectTargets",
+              "params": {
+                "chooser": "$controller",
+                "min": 0,
+                "max": 1,
+                "optional": true,
+                "selector": {
+                  "inPlay": true,
+                  "withinRange": 4
+                },
+                "saveAs": "meleeTarget",
+                "timeoutPolicy": "pass"
+              }
+            },
+            {
+              "op": "selectTargets",
+              "params": {
+                "chooser": "$controller",
+                "min": 0,
+                "max": 1,
+                "optional": true,
+                "distinctFrom": "$meleeTarget",
+                "selector": {
+                  "inPlay": true,
+                  "withinRange": 4
+                },
+                "saveAs": "laserTarget",
+                "timeoutPolicy": "pass"
+              }
+            },
+            {
+              "op": "createAttack",
+              "params": {
+                "attackObject": "singleCompositeMultiTargetAttack",
+                "source": "$controller",
+                "killCost": 0,
+                "attackCountCost": 0,
+                "targetGroups": [
+                  {
+                    "ifSelected": "$meleeTarget",
+                    "target": "$meleeTarget",
+                    "independentResponse": true,
+                    "attackType": "melee",
+                    "range": 4,
+                    "damage": 3,
+                    "dodge": true
+                  },
+                  {
+                    "ifSelected": "$laserTarget",
+                    "target": "$laserTarget",
+                    "independentResponse": true,
+                    "attackType": "laser",
+                    "range": 4,
+                    "damage": 3,
+                    "dodge": true,
+                    "meleeBlock": false
+                  }
+                ],
+                "emptyGroupsCreateNoTargetEffect": true,
+                "targetOrder": "counterclockwiseSerial"
+              }
+            }
+          ]
+        }
+      ],
+      "cleanup": [
+        {
+          "op": "modifyIronShield",
+          "target": "$controller",
+          "params": {
+            "removeBossContribution": true
+          }
+        },
+        {
+          "op": "removeStatus",
+          "target": "$controller",
+          "params": {
+            "statusId": "status.stasis",
+            "sourceRef": "$card"
+          }
+        },
+        {
+          "op": "enableEquipmentEffects",
+          "target": "$controller",
+          "params": {
+            "removeSourceDisable": "$card"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "boss.iron_pirate_king",
+      "displayName": "钢铁破浪者号",
+      "bossType": "persistent",
+      "duration": {
+        "expiry": "permanentUntilExitOrHolderElimination"
+      },
+      "replacementPolicy": {
+        "activeDiscardOrReplaceBeforeDeath": true,
+        "activeDiscardOrReplaceAfterDeath": false,
+        "externalDismantleAllowedByGlobalSetting": true
+      },
+      "deathReplacement": {
+        "event": "elimination.before",
+        "filter": {
+          "ownerDeathOccurred": true,
+          "bossInSlot": true
+        },
+        "effects": [
+          {
+            "op": "preventEvent",
+            "params": {
+              "event": "$elimination"
+            }
+          },
+          {
+            "op": "setValue",
+            "params": {
+              "path": "$controller.lifeState",
+              "value": "deadNotEliminated"
+            }
+          },
+          {
+            "op": "setValue",
+            "params": {
+              "path": "$controller.hpBar",
+              "value": null
+            }
+          },
+          {
+            "op": "setValue",
+            "params": {
+              "path": "$controller.shieldBar",
+              "value": null
+            }
+          },
+          {
+            "op": "removeStatus",
+            "target": "$controller",
+            "params": {
+              "statusId": "status.dying"
+            }
+          },
+          {
+            "op": "disableAbility",
+            "target": "$controller",
+            "params": {
+              "selector": "allNonLockedAbilities"
+            }
+          },
+          {
+            "op": "setValue",
+            "params": {
+              "path": "$card.postDeathOwnTurnCount",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "deadNotEliminatedRules": {
+        "inPlay": true,
+        "occupiesDistance": true,
+        "countsAsTeamNotEliminated": true,
+        "retains": [
+          "seat",
+          "turns",
+          "hand",
+          "equipment",
+          "lockedAbilities"
+        ],
+        "healthShieldOperations": {
+          "actualDamage": 0,
+          "actualHpLoss": 0,
+          "actualShieldLoss": 0,
+          "recovery": "prevented",
+          "modifyHpShield": "prevented",
+          "payHpShieldCost": "illegal"
+        },
+        "damageEvent": {
+          "stillCreateReceivedEvent": true,
+          "attacksCanHit": true,
+          "hitAndReceivedFollowupsStillTrigger": true,
+          "actualDamageBenefitsDoNotTrigger": true
+        }
+      },
+      "triggers": [
+        {
+          "event": "turn.start",
+          "mandatory": true,
+          "filter": {
+            "actorIsController": true,
+            "lifeState": "deadNotEliminated",
+            "excludesTurnContainingDeath": true
+          },
+          "effects": [
+            {
+              "op": "modifyValue",
+              "params": {
+                "path": "$card.postDeathOwnTurnCount",
+                "delta": 1
+              }
+            }
+          ]
+        },
+        {
+          "event": "phase.start",
+          "mandatory": true,
+          "filter": {
+            "phase": "end",
+            "actorIsController": true,
+            "lifeState": "deadNotEliminated",
+            "postDeathOwnTurnCount": 2
+          },
+          "effects": [
+            {
+              "op": "eliminateCharacter",
+              "target": "$controller",
+              "params": {
+                "reason": "ironPirateTwoTurnsElapsed"
+              }
+            }
+          ]
+        },
+        {
+          "event": "card.lost",
+          "mandatory": true,
+          "filter": {
+            "cardIsThisBoss": true,
+            "ownerLifeState": "deadNotEliminated"
+          },
+          "effects": [
+            {
+              "op": "eliminateCharacter",
+              "target": "$controller",
+              "params": {
+                "reason": "ironPirateLostAfterDeath",
+                "atomicWithCardLoss": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "familyId": "boss.crystal_crab",
+      "displayName": "水晶巨蟹",
+      "bossType": "persistent",
+      "activation": {
+        "point": "owner.currentTurn.end"
+      },
+      "duration": {
+        "expiry": "owner.nthTurn.2.end",
+        "includesBoundaryUntilEnd": true
+      },
+      "activeState": {
+        "ironShield": 1,
+        "statuses": [
+          "status.stasis"
+        ],
+        "equipmentEffectsEnabled": false
+      },
+      "offTurnWindow": {
+        "from": "owner.previousTurn.end",
+        "to": "owner.nextTurn.before",
+        "state": {
+          "actualPassivePincerAttacksLaunched": 0
+        }
+      },
+      "phaseReplacement": {
+        "points": [
+          "owner.nthTurn.1",
+          "owner.nthTurn.2"
+        ],
+        "replaceWholeTurn": true,
+        "effects": [
+          {
+            "op": "recoverHp",
+            "target": "$controller",
+            "params": {
+              "amount": 1
+            }
+          }
+        ]
+      },
+      "pincerAttack": {
+        "range": "unlimited",
+        "attackType": "melee",
+        "damage": 1,
+        "killCost": 0,
+        "attackCountCost": 0,
+        "onHit": [
+          {
+            "op": "judgeColor",
+            "params": {
+              "matchedColors": [
+                "white",
+                "blue"
+              ],
+              "purpose": "status",
+              "onMatched": {
+                "op": "applyStatus",
+                "target": "$pincerTarget",
+                "params": {
+                  "statusId": "status.frozen",
+                  "stackPolicy": "uniqueRefresh"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "triggers": [
+        {
+          "event": "attack.resolved",
+          "mandatory": true,
+          "filter": {
+            "inOwnerOffTurnWindow": true,
+            "ownerWasTarget": true,
+            "aggregateActualDamageToOwnerPositive": true,
+            "firstTriggerForThisAttack": true
+          },
+          "effects": [
+            {
+              "op": "scheduleEffect",
+              "params": {
+                "point": "rootAttackAndOwnerDyingFlow.after",
+                "effect": {
+                  "op": "if",
+                  "params": {
+                    "condition": {
+                      "and": [
+                        {
+                          "notEliminated": "$controller"
+                        },
+                        {
+                          "legalAttackSource": "$attack.source"
+                        }
+                      ]
+                    },
+                    "then": {
+                      "op": "sequence",
+                      "effects": [
+                        {
+                          "op": "createAttack",
+                          "params": {
+                            "templateRef": "$family.pincerAttack",
+                            "source": "$controller",
+                            "targets": [
+                              "$attack.source"
+                            ]
+                          }
+                        },
+                        {
+                          "op": "modifyValue",
+                          "params": {
+                            "path": "$window.actualPassivePincerAttacksLaunched",
+                            "delta": 1,
+                            "onlyIfAttackCommitted": true
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "specialWindows": [
+        {
+          "point": "owner.nextTurn.originalPrepareTiming",
+          "optional": true,
+          "filter": {
+            "actualPassivePincerAttacksLaunched": 0
+          },
+          "timeoutPolicy": "pass",
+          "effects": [
+            {
+              "op": "selectTargets",
+              "params": {
+                "min": 0,
+                "max": 1,
+                "optional": true,
+                "selector": {
+                  "inPlay": true,
+                  "legalForAttackTemplate": "$family.pincerAttack"
+                },
+                "timeoutPolicy": "pass"
+              }
+            },
+            {
+              "op": "createAttack",
+              "params": {
+                "ifTargetSelected": true,
+                "templateRef": "$family.pincerAttack",
+                "source": "$controller",
+                "targets": [
+                  "$selection.target"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "cleanup": [
+        {
+          "op": "modifyIronShield",
+          "target": "$controller",
+          "params": {
+            "removeBossContribution": true
+          }
+        },
+        {
+          "op": "removeStatus",
+          "target": "$controller",
+          "params": {
+            "statusId": "status.stasis",
+            "sourceRef": "$card"
+          }
+        },
+        {
+          "op": "enableEquipmentEffects",
+          "target": "$controller",
+          "params": {
+            "removeSourceDisable": "$card"
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "boss.c6h8o6",
+      "displayName": "C6H8O6",
+      "bossType": "hybrid",
+      "declaration": {
+        "chooseBranchBeforeLegalityAndPayment": true,
+        "sharedCost": {
+          "kind": "attackCount",
+          "amount": 1,
+          "payOnlyAfterAllBranchLegalityPasses": true
+        }
+      },
+      "modes": [
+        {
+          "modeId": "laserSweep",
+          "occupiesBossSlot": false,
+          "choices": [
+            {
+              "kind": "cardFamily",
+              "options": [
+                "basic.kill",
+                "basic.dodge"
+              ],
+              "saveAs": "requestedFamily"
+            }
+          ],
+          "effects": [
+            {
+              "op": "requestSpecialPlay",
+              "params": {
+                "eligiblePlayers": {
+                  "selector": "otherInPlayCharactersCounterclockwise"
+                },
+                "requestedFamily": "$requestedFamily",
+                "allowedMethods": [
+                  "handCard",
+                  "explicitPlayAsAbility",
+                  "explicitPlayAsEquipment"
+                ],
+                "discardDoesNotCount": true,
+                "opportunitiesPerPlayer": 1,
+                "collectAllBeforeConsequences": true,
+                "saveNonRespondersAs": "nonResponders"
+              }
+            },
+            {
+              "op": "setVar",
+              "params": {
+                "name": "x",
+                "value": {
+                  "count": "$nonResponders"
+                }
+              }
+            },
+            {
+              "op": "if",
+              "params": {
+                "condition": {
+                  "gt": [
+                    "$x",
+                    0
+                  ]
+                },
+                "then": {
+                  "op": "forEach",
+                  "params": {
+                    "items": "$nonResponders.counterclockwise",
+                    "mode": "serial",
+                    "maxIterations": 25
+                  },
+                  "effects": [
+                    {
+                      "op": "createDamage",
+                      "target": "$item",
+                      "params": {
+                        "source": "$controller",
+                        "deliveryType": "direct",
+                        "attackType": "laser",
+                        "damageType": "normal",
+                        "amount": {
+                          "switch": {
+                            "expression": "$x",
+                            "cases": {
+                              "1": 5,
+                              "2": 3,
+                              "3": 2
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "op": "checkDying",
+                      "target": "$item",
+                      "mode": "completeNestedFirst"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "modeId": "focusedBombardment",
+          "occupiesBossSlot": true,
+          "legality": {
+            "bossSlotEmptyOrPreDeathIronPirateReplaceable": true
+          },
+          "targetRule": {
+            "selector": "inPlayCharacter",
+            "range": 1,
+            "min": 1,
+            "max": 1
+          },
+          "choices": [
+            {
+              "kind": "cardFamily",
+              "options": [
+                "basic.kill",
+                "basic.dodge"
+              ],
+              "saveAs": "requestedFamily"
+            }
+          ],
+          "delayed": {
+            "point": "target.nextPhase.play.after",
+            "fireWhenPhaseSkipped": true,
+            "cancelIfTargetEliminatedOrLeftPlay": true,
+            "deadNotEliminatedStillTriggers": true,
+            "effects": [
+              {
+                "op": "repeat",
+                "maxIterations": 2,
+                "params": {
+                  "exactly": 2
+                },
+                "effects": [
+                  {
+                    "op": "requestSpecialPlay",
+                    "params": {
+                      "eligiblePlayers": [
+                        "$target"
+                      ],
+                      "requestedFamily": "$requestedFamily",
+                      "opportunitiesPerPlayer": 1,
+                      "saveSuccessCountAs": "playedCount"
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "switch",
+                "params": {
+                  "expression": "$playedCount",
+                  "cases": {
+                    "0": {
+                      "effects": [
+                        {
+                          "op": "createDamage",
+                          "target": "$target",
+                          "params": {
+                            "source": "$controller",
+                            "deliveryType": "direct",
+                            "attackType": "field",
+                            "damageType": "normal",
+                            "amount": 5
+                          }
+                        }
+                      ]
+                    },
+                    "1": {
+                      "effects": [
+                        {
+                          "op": "createDamage",
+                          "target": "$target",
+                          "params": {
+                            "source": "$controller",
+                            "deliveryType": "direct",
+                            "attackType": "field",
+                            "damageType": "normal",
+                            "amount": 2
+                          }
+                        }
+                      ]
+                    },
+                    "2": {
+                      "effects": [
+                        {
+                          "op": "noop"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "op": "discardCard",
+                "target": "$card"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "boss.dark_grand_knight",
+      "displayName": "暗黑大骑士",
+      "bossType": "persistent",
+      "activation": {
+        "point": "owner.currentPhase.end.start"
+      },
+      "duration": {
+        "expiry": "owner.nthTurn.2.phase.end.start"
+      },
+      "activeState": {
+        "ironShieldDelta": -1,
+        "equipmentEffectsEnabled": false,
+        "disableAbilities": "nonLockedOnly",
+        "attackCountSet": 0,
+        "preventAllHpShieldRecovery": true,
+        "stillAllowsLegalCardsAndResponses": true
+      },
+      "blackSword": {
+        "objectKind": "marker",
+        "max": 2,
+        "dismantlable": false,
+        "createAction": {
+          "window": "owner.phase.play",
+          "maxUsesPerPhase": 2,
+          "illegalAtMaximumWithoutCosts": true,
+          "effects": [
+            {
+              "op": "changeHp",
+              "target": "$controller",
+              "params": {
+                "delta": -1,
+                "semantic": "modifyNotDamage"
+              }
+            },
+            {
+              "op": "changeMaxHp",
+              "target": "$controller",
+              "params": {
+                "delta": -1,
+                "clampCurrentOnlyAboveNewMaximum": true
+              }
+            },
+            {
+              "op": "checkDying",
+              "target": "$controller"
+            },
+            {
+              "op": "addMarker",
+              "params": {
+                "markerId": "darkKnight.blackSword",
+                "amount": 1
+              }
+            }
+          ]
+        }
+      },
+      "attackModes": [
+        {
+          "modeId": "thrust",
+          "costMarker": 1,
+          "range": 4,
+          "attackType": "ranged",
+          "tags": [
+            "scatter",
+            "ignoreArmor",
+            "cannotMeleeBlock"
+          ],
+          "damage": {
+            "amount": 2,
+            "repeat": 2
+          },
+          "dodge": true
+        },
+        {
+          "modeId": "slash",
+          "costMarker": 1,
+          "range": 2,
+          "attackType": "melee",
+          "tags": [
+            "ignoreArmor"
+          ],
+          "damage": {
+            "amount": 4,
+            "repeat": 1
+          },
+          "dodge": true
+        },
+        {
+          "modeId": "hammer",
+          "costMarker": 1,
+          "range": 2,
+          "attackType": "field",
+          "tags": [
+            "ignoreArmor"
+          ],
+          "damage": {
+            "amount": 2,
+            "repeat": 1
+          },
+          "dodge": false,
+          "onHit": [
+            {
+              "op": "applyStatus",
+              "target": "$target",
+              "params": {
+                "statusId": "status.electrified",
+                "stackPolicy": "uniqueRefresh"
+              }
+            }
+          ]
+        }
+      ],
+      "deathReplacement": {
+        "event": "elimination.before",
+        "effects": [
+          {
+            "op": "preventEvent",
+            "params": {
+              "event": "$elimination",
+              "untilFinalStrikeEnds": true
+            }
+          },
+          {
+            "op": "repeat",
+            "maxIterations": 2,
+            "params": {
+              "whileMarkerAvailable": "darkKnight.blackSword",
+              "optionalEachIteration": true,
+              "timeoutPolicy": "abortRemaining"
+            },
+            "effects": [
+              {
+                "op": "selectTargets",
+                "params": {
+                  "min": 0,
+                  "max": 1,
+                  "selector": {
+                    "inPlay": true
+                  },
+                  "timeoutPolicy": "abortRemaining"
+                }
+              },
+              {
+                "op": "consumeMarker",
+                "params": {
+                  "markerId": "darkKnight.blackSword",
+                  "amount": 1,
+                  "ifTargetSelected": true
+                }
+              },
+              {
+                "op": "createAttack",
+                "params": {
+                  "ifTargetSelected": true,
+                  "source": "$controller",
+                  "targets": [
+                    "$selection.target"
+                  ],
+                  "range": "unlimited",
+                  "attackType": "melee",
+                  "damage": 3,
+                  "killCost": 0,
+                  "attackCountCost": 0,
+                  "tags": [
+                    "ignoreArmor",
+                    "cannotMeleeBlock"
+                  ],
+                  "completeTargetAndDyingBeforeNextIteration": true
+                }
+              }
+            ]
+          },
+          {
+            "op": "eliminateCharacter",
+            "target": "$controller",
+            "params": {
+              "afterCommittedFinalStrikesAndDyingComplete": true
+            }
+          }
+        ]
+      },
+      "earlyExit": [
+        {
+          "op": "resetMarker",
+          "params": {
+            "markerId": "darkKnight.blackSword"
+          }
+        },
+        {
+          "op": "eliminateCharacter",
+          "target": "$controller",
+          "params": {
+            "ifFinalStrikePending": true,
+            "cancelUncommittedOnly": true
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "boss.giant_slime",
+      "displayName": "大史莱姆",
+      "bossType": "persistent",
+      "activation": {
+        "point": "card.use.committed",
+        "immediate": true
+      },
+      "duration": {
+        "expiry": "owner.nthTurn.2.phase.end.start"
+      },
+      "specialLayer": {
+        "layerId": "giantSlime.temporaryHp",
+        "initial": 5,
+        "recoverable": false,
+        "routingPriority": "afterBoxAndIronShieldBeforeShieldAndHp",
+        "acceptsDamageTypes": [
+          "normal",
+          "hp",
+          "true"
+        ],
+        "excludes": [
+          "shield",
+          "modify"
+        ],
+        "countsAsActualHpLoss": false,
+        "overflowPolicyOnDepletion": "stopCurrentSegment"
+      },
+      "triggers": [
+        {
+          "event": "layer.depleted",
+          "mandatory": true,
+          "filter": {
+            "layerId": "giantSlime.temporaryHp"
+          },
+          "effects": [
+            {
+              "op": "expireDuration",
+              "params": {
+                "bossRef": "$card",
+                "reason": "temporaryLayerDepleted"
+              }
+            },
+            {
+              "op": "createDamage",
+              "target": "$controller",
+              "params": {
+                "source": "$controller",
+                "deliveryType": "direct",
+                "attackType": "field",
+                "damageType": "normal",
+                "amount": 5
+              }
+            },
+            {
+              "op": "checkDying",
+              "target": "$controller",
+              "mode": "completeNestedFirst"
+            },
+            {
+              "op": "return",
+              "params": {
+                "to": "originalAttackNextDamageSegment"
+              }
+            }
+          ]
+        }
+      ],
+      "cleanup": [
+        {
+          "op": "removeSpecialLayer",
+          "target": "$controller",
+          "params": {
+            "layerId": "giantSlime.temporaryHp",
+            "noBacklashUnlessDepletedByDamage": true
+          }
+        }
+      ]
+    },
+    {
+      "familyId": "boss.golden_mask",
+      "displayName": "金面猴王",
+      "bossType": "persistent",
+      "activation": {
+        "point": "owner.nthTurn.1.before"
+      },
+      "duration": {
+        "expiry": "owner.nthTurn.2.phase.end.start"
+      },
+      "phaseReplacement": {
+        "ownerTurns": [
+          1,
+          2
+        ],
+        "phases": [
+          "draw",
+          "play"
+        ],
+        "onlyIfPhaseWouldActuallyOccur": true,
+        "skippedPhaseDoesNotTrigger": true,
+        "replacementEffect": [
+          {
+            "op": "judgeColor",
+            "params": {
+              "purpose": "branch",
+              "isCritical": false,
+              "branches": {
+                "white": {
+                  "action": "noAttack"
+                },
+                "green": {
+                  "template": "pineapple"
+                },
+                "blue": {
+                  "template": "stoneCrab"
+                },
+                "orange": {
+                  "template": "explosivePack"
+                },
+                "red": {
+                  "template": "airSupport"
+                }
+              }
+            }
+          },
+          {
+            "op": "selectTargets",
+            "params": {
+              "min": 0,
+              "max": 1,
+              "optional": true,
+              "selector": {
+                "inPlay": true,
+                "withinRangeOfSelectedTemplate": true
+              },
+              "timeoutPolicy": "pass",
+              "skipForWhite": true
+            }
+          },
+          {
+            "op": "createAttack",
+            "params": {
+              "ifTargetSelected": true,
+              "templateRef": "$judgment.branch.template",
+              "source": "$controller",
+              "targets": [
+                "$selection.target"
+              ],
+              "killCost": 0,
+              "attackCountCost": 0,
+              "isWeaponAttack": false
+            }
+          }
+        ]
+      },
+      "attackTemplates": {
+        "pineapple": {
+          "range": 3,
+          "attackType": "ranged",
+          "dimensions": {
+            "combo": 3
+          },
+          "ignoresWeaponDimensionTalents": true,
+          "damage": {
+            "amount": 1,
+            "repeat": 3
+          }
+        },
+        "stoneCrab": {
+          "range": 2,
+          "attackType": "melee",
+          "dimensions": {
+            "combo": 3
+          },
+          "ignoresWeaponDimensionTalents": true,
+          "damage": {
+            "amount": 1,
+            "repeat": 3
+          }
+        },
+        "explosivePack": {
+          "range": 1,
+          "attackType": "field",
+          "damage": {
+            "amount": 2,
+            "repeat": 1
+          },
+          "onHit": [
+            {
+              "op": "judgeColor",
+              "params": {
+                "matchedColors": [
+                  "red",
+                  "orange"
+                ],
+                "purpose": "additionalEffect",
+                "isCritical": false,
+                "triggerOnHitEvenWhenActualDamageZero": true,
+                "onMatched": {
+                  "op": "createDamage",
+                  "target": "$target",
+                  "params": {
+                    "deliveryType": "attack",
+                    "attackType": "field",
+                    "damageType": "normal",
+                    "element": "fire",
+                    "amount": 1,
+                    "isAdditional": true
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "airSupport": {
+          "range": 4,
+          "attackType": "field",
+          "damage": {
+            "amount": 2,
+            "repeat": 1
+          },
+          "onHit": [
+            {
+              "op": "applyStatus",
+              "target": "$target",
+              "params": {
+                "statusId": "status.electrified",
+                "stackPolicy": "uniqueRefresh"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "familyId": "boss.valkyrie",
+      "displayName": "瓦尔基里",
+      "bossType": "instantResponse",
+      "occupiesBossSlot": false,
+      "response": {
+        "event": "card.use.committed",
+        "timing": "afterCostsBeforeResolution",
+        "filter": {
+          "cardCategory": "boss",
+          "cardFamilyNot": "boss.valkyrie",
+          "originalControllerIsOtherPlayer": true,
+          "responderBossUseLimitAvailable": true
+        },
+        "responseOrder": "normalPriorityLastInFirstOut",
+        "multipleRespondersAllowed": true,
+        "originalBossContinuesAfterResponses": true
+      },
+      "effects": [
+        {
+          "op": "copyCard",
+          "target": "$respondedBoss.template",
+          "params": {
+            "copyTemplateOnly": true,
+            "exclude": [
+              "paidCosts",
+              "choices",
+              "targets",
+              "progress",
+              "markers"
+            ],
+            "createPhysicalInstance": true,
+            "generatedInstanceExitZone": "outsideDeck",
+            "retainAllTemplateRulesIncludingIronPirate": true,
+            "saveAs": "bossCopy"
+          }
+        },
+        {
+          "op": "gainCard",
+          "target": "$bossCopy",
+          "params": {
+            "to": "$controller.hand"
+          }
+        }
+      ],
+      "copiedInstancePolicy": {
+        "mayBeUsedGainedOrLostNormally": true,
+        "revalidateAndRepayAllCostsOnUse": true,
+        "anyZoneExitGoesToOutsideDeck": true,
+        "neverEntersDiscardOrReshuffle": true,
+        "instancesIndependent": true
+      }
+    }
+  ],
+  "rules": [
+    {
+      "ruleId": "boss.acceptance.b001",
+      "testIds": [
+        "B001"
+      ],
+      "relatedCardIds": [
+        "boss.*"
+      ],
+      "scenario": "BOSS使用额度",
+      "assertion": "每玩家每回合至多1张；回合外额度按当前回合记录",
+      "encodingStatus": "common_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b002",
+      "testIds": [
+        "B002"
+      ],
+      "relatedCardIds": [
+        "boss.*"
+      ],
+      "scenario": "槽占用",
+      "assertion": "不可替换BOSS阻止新持续型；即时分支仍合法",
+      "encodingStatus": "common_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b003",
+      "testIds": [
+        "B003"
+      ],
+      "relatedCardIds": [
+        "boss.iron_pirate_king"
+      ],
+      "scenario": "钢铁破浪者主动离场",
+      "assertion": "仅死亡前可在自己出牌阶段丢弃/替换",
+      "encodingStatus": "common_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b004",
+      "testIds": [
+        "B004"
+      ],
+      "relatedCardIds": [
+        "boss.*"
+      ],
+      "scenario": "泛称拆除开关",
+      "assertion": "`true/false`均实现，当前默认`true`",
+      "encodingStatus": "common_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b005",
+      "testIds": [
+        "B005"
+      ],
+      "relatedCardIds": [
+        "boss.*"
+      ],
+      "scenario": "持续BOSS离场",
+      "assertion": "未创建效果结束，已进入结算者继续",
+      "encodingStatus": "common_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b006",
+      "testIds": [
+        "B006"
+      ],
+      "relatedCardIds": [
+        "boss.purple_lord",
+        "boss.red_lord"
+      ],
+      "scenario": "控制免疫",
+      "assertion": "外部控制无效，自身静滞/阶段替换保留",
+      "encodingStatus": "common_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b007",
+      "testIds": [
+        "B007"
+      ],
+      "relatedCardIds": [
+        "boss.purple_lord",
+        "boss.red_lord"
+      ],
+      "scenario": "特殊窗口",
+      "assertion": "只准正文动作，不触发完整阶段",
+      "encodingStatus": "common_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b008",
+      "testIds": [
+        "B008"
+      ],
+      "relatedCardIds": [
+        "boss.*"
+      ],
+      "scenario": "BOSS攻击费用",
+      "assertion": "默认不付杀/次数，明确费用除外",
+      "encodingStatus": "common_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b009",
+      "testIds": [
+        "B009"
+      ],
+      "relatedCardIds": [
+        "boss.purple_lord"
+      ],
+      "scenario": "紫爵士节点",
+      "assertion": "N结束生效，N+1结束开始前到期",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b010",
+      "testIds": [
+        "B010"
+      ],
+      "relatedCardIds": [
+        "boss.purple_lord"
+      ],
+      "scenario": "魂刀·英刃",
+      "assertion": "N+1特殊窗口可选一次，超时不补发",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b011",
+      "testIds": [
+        "B011"
+      ],
+      "relatedCardIds": [
+        "boss.purple_lord"
+      ],
+      "scenario": "魂刀·魔刃",
+      "assertion": "每名其他在场角色准备前触发，0伤命中仍判定",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b012",
+      "testIds": [
+        "B012"
+      ],
+      "relatedCardIds": [
+        "boss.red_lord"
+      ],
+      "scenario": "红爵士持续",
+      "assertion": "跳过两个自己回合，自然到期不施加冰电",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b013",
+      "testIds": [
+        "B013"
+      ],
+      "relatedCardIds": [
+        "boss.red_lord"
+      ],
+      "scenario": "红爵士伤害计数",
+      "assertion": "正数结果改1并计数；第四次后先结束再冰电",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b014",
+      "testIds": [
+        "B014"
+      ],
+      "relatedCardIds": [
+        "boss.red_lord"
+      ],
+      "scenario": "封灵战锤目标",
+      "assertion": "两段目标不同且均可空选；单选不叠加",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b015",
+      "testIds": [
+        "B015"
+      ],
+      "relatedCardIds": [
+        "boss.red_lord"
+      ],
+      "scenario": "封灵战锤响应",
+      "assertion": "两目标独立响应；激光可闪但不可近战格挡",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b016",
+      "testIds": [
+        "B016"
+      ],
+      "relatedCardIds": [
+        "boss.iron_pirate_king"
+      ],
+      "scenario": "死亡未淘汰状态",
+      "assertion": "无血盾条但仍收到伤害事件、可命中并受控制",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b017",
+      "testIds": [
+        "B017"
+      ],
+      "relatedCardIds": [
+        "boss.iron_pirate_king"
+      ],
+      "scenario": "钢铁破浪者计时",
+      "assertion": "死亡后的两个后续自己回合，第2结束时淘汰",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b018",
+      "testIds": [
+        "B018"
+      ],
+      "relatedCardIds": [
+        "boss.iron_pirate_king"
+      ],
+      "scenario": "死亡后离场原子性",
+      "assertion": "主动丢弃/替换非法；外部拆除立即淘汰",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b019",
+      "testIds": [
+        "B019"
+      ],
+      "relatedCardIds": [
+        "boss.iron_pirate_king"
+      ],
+      "scenario": "阵营与在场",
+      "assertion": "死亡未淘汰仍在场且不触发全灭",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b020",
+      "testIds": [
+        "B020"
+      ],
+      "relatedCardIds": [
+        "boss.crystal_crab"
+      ],
+      "scenario": "晶蟹被动反击",
+      "assertion": "每次整次攻击后反击，同攻击多段只一次",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b021",
+      "testIds": [
+        "B021"
+      ],
+      "relatedCardIds": [
+        "boss.crystal_crab"
+      ],
+      "scenario": "晶蟹无来源",
+      "assertion": "未实际发起反击不记录窗口额度",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b022",
+      "testIds": [
+        "B022"
+      ],
+      "relatedCardIds": [
+        "boss.crystal_crab"
+      ],
+      "scenario": "晶蟹主动攻击",
+      "assertion": "整窗口零被动反击才可选一次，超时放弃",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b023",
+      "testIds": [
+        "B023"
+      ],
+      "relatedCardIds": [
+        "boss.crystal_crab"
+      ],
+      "scenario": "晶蟹濒死顺序",
+      "assertion": "原攻击和自身濒死完成、仍未淘汰才反击",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b024",
+      "testIds": [
+        "B024"
+      ],
+      "relatedCardIds": [
+        "boss.c6h8o6"
+      ],
+      "scenario": "C6H8O6分支合法性",
+      "assertion": "先验目标/槽位，再消耗1攻击次数",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b025",
+      "testIds": [
+        "B025"
+      ],
+      "relatedCardIds": [
+        "boss.c6h8o6"
+      ],
+      "scenario": "激光扫射",
+      "assertion": "先收集响应，再按未出人数造成2/3/5",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b026",
+      "testIds": [
+        "B026"
+      ],
+      "relatedCardIds": [
+        "boss.c6h8o6"
+      ],
+      "scenario": "以任何方式打出",
+      "assertion": "手牌和明确转换合法，弃置不合法，每人一次",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b027",
+      "testIds": [
+        "B027"
+      ],
+      "relatedCardIds": [
+        "boss.c6h8o6"
+      ],
+      "scenario": "定点轰击",
+      "assertion": "两次请求；0/1/2张对应5/2/0场地伤害",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b028",
+      "testIds": [
+        "B028"
+      ],
+      "relatedCardIds": [
+        "boss.c6h8o6"
+      ],
+      "scenario": "定点目标离场",
+      "assertion": "淘汰/离场取消；死亡未淘汰仍触发",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b029",
+      "testIds": [
+        "B029"
+      ],
+      "relatedCardIds": [
+        "boss.dark_grand_knight"
+      ],
+      "scenario": "暗黑大骑士边界",
+      "assertion": "可用合法手牌和响应，仅正文限制关闭",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b030",
+      "testIds": [
+        "B030"
+      ],
+      "relatedCardIds": [
+        "boss.dark_grand_knight"
+      ],
+      "scenario": "制造黑剑",
+      "assertion": "先血量-1再上限-1；满2时非法且不扣值",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b031",
+      "testIds": [
+        "B031"
+      ],
+      "relatedCardIds": [
+        "boss.dark_grand_knight"
+      ],
+      "scenario": "黑剑攻击",
+      "assertion": "攻击次数0仍可耗黑剑；三种模板标签正确",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b032",
+      "testIds": [
+        "B032"
+      ],
+      "relatedCardIds": [
+        "boss.dark_grand_knight"
+      ],
+      "scenario": "最后一击",
+      "assertion": "逐剑逐攻击结算；超时放弃剩余并淘汰",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b033",
+      "testIds": [
+        "B033"
+      ],
+      "relatedCardIds": [
+        "boss.dark_grand_knight"
+      ],
+      "scenario": "最后一击中途拆除",
+      "assertion": "未发起取消，已发起继续，黑剑清空",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b034",
+      "testIds": [
+        "B034"
+      ],
+      "relatedCardIds": [
+        "boss.giant_slime"
+      ],
+      "scenario": "大史莱姆持续",
+      "assertion": "使用即获5临时血，到N+2结束前",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b035",
+      "testIds": [
+        "B035"
+      ],
+      "relatedCardIds": [
+        "boss.giant_slime"
+      ],
+      "scenario": "临时血量范围",
+      "assertion": "普通/血量/真实优先扣；盾伤、修改绕过",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b036",
+      "testIds": [
+        "B036"
+      ],
+      "relatedCardIds": [
+        "boss.giant_slime"
+      ],
+      "scenario": "临时血量击穿",
+      "assertion": "当前段不溢出，反噬及濒死后继续后续段",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b037",
+      "testIds": [
+        "B037"
+      ],
+      "relatedCardIds": [
+        "boss.giant_slime"
+      ],
+      "scenario": "大史莱姆反噬",
+      "assertion": "来源是持有者本人，直接场地普通伤害5",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b038",
+      "testIds": [
+        "B038"
+      ],
+      "relatedCardIds": [
+        "boss.golden_mask"
+      ],
+      "scenario": "猴王白色",
+      "assertion": "阶段已被替换，但不发动攻击",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b039",
+      "testIds": [
+        "B039"
+      ],
+      "relatedCardIds": [
+        "boss.golden_mask"
+      ],
+      "scenario": "猴王阶段跳过",
+      "assertion": "被跳过的摸牌/出牌阶段不触发混乱打击",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b040",
+      "testIds": [
+        "B040"
+      ],
+      "relatedCardIds": [
+        "boss.golden_mask"
+      ],
+      "scenario": "猴王目标选择",
+      "assertion": "可主动放弃；超时放弃；发动时须合法目标",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b041",
+      "testIds": [
+        "B041"
+      ],
+      "relatedCardIds": [
+        "boss.golden_mask"
+      ],
+      "scenario": "炸药包追加",
+      "assertion": "命中即判定，0伤也判定并可能追加火伤",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b042",
+      "testIds": [
+        "B042"
+      ],
+      "relatedCardIds": [
+        "boss.golden_mask"
+      ],
+      "scenario": "混乱打击暴击",
+      "assertion": "两种判定均非暴击，不套武器专属增益",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b043",
+      "testIds": [
+        "B043"
+      ],
+      "relatedCardIds": [
+        "boss.valkyrie"
+      ],
+      "scenario": "瓦尔基里对象",
+      "assertion": "只响应他人非瓦尔基里BOSS",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b044",
+      "testIds": [
+        "B044"
+      ],
+      "relatedCardIds": [
+        "boss.valkyrie"
+      ],
+      "scenario": "多张瓦尔基里",
+      "assertion": "响应权与后进先出正确，不形成复制递归",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b045",
+      "testIds": [
+        "B045"
+      ],
+      "relatedCardIds": [
+        "boss.valkyrie"
+      ],
+      "scenario": "复制实例离场",
+      "assertion": "任意区域离场最终返回牌库外",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b046",
+      "testIds": [
+        "B046"
+      ],
+      "relatedCardIds": [
+        "boss.valkyrie",
+        "boss.iron_pirate_king"
+      ],
+      "scenario": "复制钢铁破浪者",
+      "assertion": "保留模板规则，实例相互独立",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b047",
+      "testIds": [
+        "B047"
+      ],
+      "relatedCardIds": [
+        "boss.valkyrie"
+      ],
+      "scenario": "回合外使用额度",
+      "assertion": "占响应者当前他人回合额度，不占下个自己回合",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b048",
+      "testIds": [
+        "B048"
+      ],
+      "relatedCardIds": [
+        "boss.valkyrie"
+      ],
+      "scenario": "复制内容与费用",
+      "assertion": "不复制选择/进度/支付；以后使用重新支付",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b049",
+      "testIds": [
+        "B049"
+      ],
+      "relatedCardIds": [
+        "boss.*"
+      ],
+      "scenario": "BOSS资源",
+      "assertion": "9个稳定资源键；专图→BOSS占位→通用占位",
+      "encodingStatus": "effect_dsl_encoded"
+    },
+    {
+      "ruleId": "boss.acceptance.b050",
+      "testIds": [
+        "B050"
+      ],
+      "relatedCardIds": [
+        "boss.*"
+      ],
+      "scenario": "配置化",
+      "assertion": "节点、数值、颜色、开关和超时均不散落硬编码",
+      "encodingStatus": "effect_dsl_encoded"
+    }
+  ]
+}
