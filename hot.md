@@ -121,6 +121,7 @@
 - 2026-08-02阶段二进行中：协议已允许观战`GAME_SNAPSHOT`；已接入`/api/session`、会话token哈希、房间/对局命令持久化幂等、断线宽限与房间清理、静态托管、观战投影和`PRESENTATION_EVENT`广播。新增`stage2.test.ts` 5项通过；真实WS E2E已推进到正式对局与手刀攻击报价，但响应pass仍报`OFFER_HANDLER_NOT_REGISTERED`，正在排查，未完成。转接详见文档124。
 - 2026-08-02阶段二完成：真实WS四玩家E2E从建房到`winnerTeam="A"`连续30次通过。修复四个真实引擎缺陷：地狱火即时伤害等攻击结算完成后执行（`combatScheduler.ts`，原`DIRECT_DAMAGE_NOT_STABLE`）；`druid.ts processVineAfter`、`trapMaster.ts grantBombsAfterAttack`、`laserFishWeapon.ts clearInvalidLaserFishAim`三处commit漏push领域事件（原偶发`STATE_EVENT_SEQUENCE_GAP`）。E2E新增窗口排干循环、权威状态驱动的快照匹配、选角避开拳击柱/超界者；新增`reconnect.test.ts`断线重连与静态托管断言；协议工具全部通过并重新生成`room-protocol.ts`。服务端102文件/427项、客户端3文件/10项、两端构建全部通过，详见文档125。
 - 2026-08-02阶段3.1演示事件全映射完成：`projection.ts`新增10类演示事件（`CARD_DRAWN/CARD_PLAYED/CARD_DISCARDED/ATTACK_DECLARED/ATTACK_RESOLVED/DAMAGE_PREVENTED/HEALTH_CHANGED/STATUS_PREVENTED/TRIGGER_RESOLVED/DECK_RESHUFFLED`）并补齐`judgment.finalized→JUDGMENT_RESULT_CHANGED`；`client-protocol.schema.json`演示事件从18扩至28类（新增10个payload定义并挂入`PresentationEvent.payload.oneOf`）；客户端`serverProjection.ts`按`eventSeq`去重（快照重置队列+忽略过期事件）；新增`presentationEvents.test.ts`表驱动映射/隐私/全覆盖测试与`serverProjection.test.ts`去重测试，E2E加广播事件`eventSeq`单调不重复断言。服务端104文件/433项、客户端4文件/12项、两端构建与全部协议工具通过。
+- 2026-08-02阶段3.2逐窗口投影规格审计完成：`projection.ts::windowOffer`重构为按offer类型细分合法卡集（dodge/meleeBlock/armorKillBlock/prayer/resurrectionCross/rescue各自独立spec，修复攻击响应与濒死救援客户端高亮错误卡牌的问题），并支持`context.minimum/maximum`（修复triggerCardSelection的min=max=1硬编码）；判定指定/重铸熔炉/拆迁溢出/雕像隐藏经核验无缺陷。新增`windowSpec.test.ts`5项表驱动测试。服务端105文件/438项全过、构建通过。
 
 ## 最近文档
 
