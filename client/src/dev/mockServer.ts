@@ -124,7 +124,7 @@ export function createMockServer() {
           next.interaction.offers=offerId==="offer_end"?[]:next.interaction.offers.filter(x=>x.offerId!==offerId);
         }
         if(command.command==="SET_PRESELECTION") { const payload=command.payload as {weaponSlot:string|null;modeId:string|null}; if(next.privateView.preselectableWeaponSlots.includes(payload.weaponSlot??"")){next.privateView.preselectedWeaponSlot=payload.weaponSlot;next.privateView.preselectedModeId=payload.modeId;} }
-        if(command.command==="SEND_CHAT") {const payload=command.payload as {channel:"all"|"team";text:string};next.chat.push({messageId:`game_chat_${Date.now()}`,channel:payload.channel,senderSeat:next.viewer.seat,sentAt:Date.now(),text:payload.text});}
+        if(command.command==="SEND_CHAT") {const payload=command.payload as {channel:"all"|"team";text:string};next.chat.push({messageId:`game_chat_${Date.now()}`,channel:payload.channel,senderSeat:next.viewer.seat!,sentAt:Date.now(),text:payload.text});}
         if(presentation)next.lastEventSeq=presentation.eventSeq;
         store.resetProjection(); gateway.receive("game",next); if(presentation)gateway.receive("game",presentation); feedback.accepted(command.commandId);
       },180);

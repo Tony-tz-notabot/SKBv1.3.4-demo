@@ -5,6 +5,12 @@
   font-synthesis: none;
 }
 
+.concealed-choices { min-height:54px;padding:10px 6px;display:flex;gap:8px; }
+.concealed-choice { min-width:74px;padding:10px;border:1px solid #36556a;border-radius:6px;color:#8297a3;background:#0a1720;cursor:pointer; }
+.concealed-choice--legal { border-color:#65dd9a;color:#dff7e7; }
+.concealed-choice--selected { border-color:#efd27b;color:#fff2c9; }
+.choice-buttons strong { margin-right:2px;color:#718895;font-size:.65rem; }
+
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(circle at 70% 10%, #17344a 0, transparent 35%), #081018; }
 button, input, textarea { font: inherit; }

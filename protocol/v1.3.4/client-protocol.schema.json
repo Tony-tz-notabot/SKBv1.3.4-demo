@@ -207,7 +207,7 @@
       "properties": {
         "type": { "const": "GAME_SNAPSHOT" }, "gameId": { "type": "string" }, "rulesetVersion": { "const": "1.3.4" },
         "stateRevision": { "type": "integer", "minimum": 0 }, "lastEventSeq": { "type": "integer", "minimum": 0 }, "serverTime": { "type": "integer" },
-        "viewer": { "type": "object", "additionalProperties": false, "required": ["userId", "seat", "team"], "properties": { "userId": { "type": "string" }, "seat": { "$ref": "#/$defs/Seat" }, "team": { "$ref": "#/$defs/Team" } } },
+        "viewer": { "type": "object", "additionalProperties": false, "required": ["userId", "seat", "team"], "properties": { "userId": { "type": "string" }, "seat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] }, "team": { "anyOf": [{ "$ref": "#/$defs/Team" }, { "type": "null" }] } } },
         "publicView": { "$ref": "#/$defs/PublicView" }, "privateView": { "$ref": "#/$defs/PrivateView" },
         "interaction": { "$ref": "#/$defs/InteractionView" }, "chat": { "type": "array", "items": { "$ref": "#/$defs/ChatMessage" } }
       }

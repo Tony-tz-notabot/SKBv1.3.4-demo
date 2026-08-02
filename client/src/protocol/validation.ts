@@ -43,6 +43,11 @@ const gameSemantics = (message: ClientProtocolMessage): string[] => {
     const seats = message.publicView.players.map((player) => player.seat);
     const errors = new Set(seats).size === seats.length ? [] : ["对局快照存在重复座位"];
     if (message.privateView.concealedChoices.some((ref) => !ref.startsWith("concealed:"))) errors.push("隐藏候选必须使用concealed引用");
+    if (message.viewer.seat === null || message.viewer.team === null) {
+      if (message.privateView.hand.length) errors.push("观战者不得收到私有手牌");
+      if (message.interaction.offers.length) errors.push("观战者不得收到操作报价");
+      if (message.privateView.preselectedWeaponSlot !== null || message.privateView.preselectedModeId !== null) errors.push("观战者不得收到武器预选");
+    }
     return errors;
   }
   if (message.type === "SETUP_SNAPSHOT") {

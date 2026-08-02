@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, type DeepReadonly } from "vue";
 import type { PromptView, Seat } from "@skb-protocol/client-protocol";
-const props=defineProps<{prompt:DeepReadonly<PromptView>|null|undefined;viewerSeat:Seat;serverTime:number}>();
+const props=defineProps<{prompt:DeepReadonly<PromptView>|null|undefined;viewerSeat:Seat|null;serverTime:number}>();
 const now=ref(Date.now());const receivedAt=Date.now();
 const timer=window.setInterval(()=>{now.value=Date.now();},250);onBeforeUnmount(()=>window.clearInterval(timer));
 const estimatedServerNow=computed(()=>props.serverTime+(now.value-receivedAt));

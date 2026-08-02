@@ -34,9 +34,10 @@ onMounted(async () => {
     connectionStore.setState("online"); connectionStore.setLatency(24); return;
   }
   let userId=localStorage.getItem("skb.userId"); if(!userId){userId=crypto.randomUUID();localStorage.setItem("skb.userId",userId);}
-  const displayName=localStorage.getItem("skb.displayName")||`玩家${userId.slice(0,4)}`,scheme=location.protocol==="https:"?"wss":"ws";
+  let displayName=localStorage.getItem("skb.displayName")||`玩家${userId.slice(0,4)}`;let token=localStorage.getItem("skb.token");
+  try{if(!token){const response=await fetch("/api/session",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({displayName})});if(response.ok){const session=await response.json() as {token:string;userId:string;displayName:string};token=session.token;userId=session.userId;displayName=session.displayName;localStorage.setItem("skb.token",token);localStorage.setItem("skb.userId",userId);localStorage.setItem("skb.displayName",displayName);}}}catch{/* fall back to legacy query identity */}const scheme=location.protocol==="https:"?"wss":"ws";
   const base=import.meta.env.VITE_WS_URL||`${scheme}://${location.hostname}:${import.meta.env.DEV?"8787":location.port}/ws`,url=new URL(base);
-  url.searchParams.set("userId",userId);url.searchParams.set("displayName",displayName);
+  if(token)url.searchParams.set("token",token);else{url.searchParams.set("userId",userId);url.searchParams.set("displayName",displayName);}
   const realtime=createRealtimeService(url.toString());configureRoomCommandSender(realtime.sendRoomCommand);configureGameCommandSender(realtime.sendGameCommand);realtime.connect();
 });
 

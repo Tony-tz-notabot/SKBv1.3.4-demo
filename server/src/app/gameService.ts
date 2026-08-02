@@ -10,7 +10,7 @@ import {JudgmentInterventionSession} from "../engine/judgmentIntervention.js";
 import {PreJudgmentSession} from "../engine/preJudgment.js";
 import {OptionalTriggerSession,TriggerOrderingSession} from "../engine/triggerWindows.js";
 import type {AppRoom,AppUser,JsonObject} from "./types.js";
-import {internalRef} from "./projection.js";
+import {internalRef,resolveWindowSelectionValues} from "./projection.js";
 import {executePlayOffer} from "./playRegistry.js";
 import {executeWindow,timeoutWindow} from "./windowRegistry.js";
 
@@ -20,6 +20,8 @@ export type GameResult={accepted:true;commandId:string;stateRevision:number;firs
 export class GameService{
  private results=new Map<string,GameResult>();
  constructor(private ruleset:LoadedRuleset,private clock:()=>number=Date.now){}
+ restore(results:Record<string,Record<string,unknown>>){for(const entries of Object.values(results))for(const [commandId,result] of Object.entries(entries))this.results.set(commandId,result as GameResult);}
+ persistedResults(){return{__game:Object.fromEntries([...this.results].slice(-5000))};}
  handle(room:AppRoom,user:AppUser,command:Command):GameResult{
   const previous=this.results.get(command.commandId);if(previous)return structuredClone(previous);
   const reject=(reasonCode:string,refreshRequired=false):GameResult=>{const result={accepted:false as const,commandId:command.commandId,reasonCode,messageKey:`command.${reasonCode.toLowerCase()}`,stateRevision:room.game?.stateRevision??0,refreshRequired};this.results.set(command.commandId,result);return result};
@@ -39,9 +41,10 @@ export class GameService{
    }
    const window=room.game.pendingWindows.find(x=>x.promptId===command.promptId);
    if(window?.kind==="playPhaseAction"&&!command.offerId.includes("finish")){
-    const normalized=Object.fromEntries(Object.entries(selections??{}).map(([key,values])=>[key,values.map(value=>typeof value==="string"?internalRef(value):value)])),executed=executePlayOffer(room.game,this.ruleset,user.userId,()=>this.clock()+room.settings.responseTimeSeconds*1000,{commandId:command.commandId,gameId:command.gameId,expectedStateRevision:command.expectedStateRevision,promptId:command.promptId,offerId:command.offerId,selections:normalized});if(executed){if(!executed.result.accepted)return reject(executed.result.reasonCode,executed.result.refreshRequired);room.game=executed.session.state;this.stabilize(room);return this.accept(command,room,executed.result.events?.[0]?.eventSeq??room.game!.lastEventSeq);}
+    const normalized=Object.fromEntries(Object.entries(selections??{}).map(([key,values])=>[key,resolveWindowSelectionValues(window!,values).map(value=>typeof value==="string"?internalRef(value):value)])),executed=executePlayOffer(room.game,this.ruleset,user.userId,()=>this.clock()+room.settings.responseTimeSeconds*1000,{commandId:command.commandId,gameId:command.gameId,expectedStateRevision:command.expectedStateRevision,promptId:command.promptId,offerId:command.offerId,selections:normalized});if(executed){if(!executed.result.accepted)return reject(executed.result.reasonCode,executed.result.refreshRequired);room.game=executed.session.state;this.stabilize(room);return this.accept(command,room,executed.result.events?.[0]?.eventSeq??room.game!.lastEventSeq);}
    }
    if(window){const normalized=Object.fromEntries(Object.entries(selections??{}).map(([key,values])=>[key,values.map(value=>typeof value==="string"?internalRef(value):value)])),executed=executeWindow(room.game,this.ruleset,user.userId,()=>this.clock()+room.settings.responseTimeSeconds*1000,{commandId:command.commandId,gameId:command.gameId,expectedStateRevision:command.expectedStateRevision,promptId:command.promptId,offerId:command.offerId,selections:normalized});if(executed){if(!executed.result.accepted)return reject(executed.result.reasonCode,executed.result.refreshRequired);room.game=executed.session.state;this.stabilize(room);return this.accept(command,room,executed.result.events?.[0]?.eventSeq??room.game!.lastEventSeq);}}
+    if(window){const normalized=Object.fromEntries(Object.entries(selections??{}).map(([key,values])=>[key,resolveWindowSelectionValues(window,values).map(value=>typeof value==="string"?internalRef(value):value)])),executed=executeWindow(room.game,this.ruleset,user.userId,()=>this.clock()+room.settings.responseTimeSeconds*1000,{commandId:command.commandId,gameId:command.gameId,expectedStateRevision:command.expectedStateRevision,promptId:command.promptId,offerId:command.offerId,selections:normalized});if(executed){if(!executed.result.accepted)return reject(executed.result.reasonCode,executed.result.refreshRequired);room.game=executed.session.state;this.stabilize(room);return this.accept(command,room,executed.result.events?.[0]?.eventSeq??room.game!.lastEventSeq);}}
    if(window){
     const cards=(selections?.cards??[]).filter((x):x is string=>typeof x==="string").map(internalRef),base={commandId:command.commandId,gameId:command.gameId,expectedStateRevision:command.expectedStateRevision,actorUserId:user.userId,promptId:command.promptId,offerId:command.offerId},session=
      window.kind==="attackResponse"?new AttackResponseSession(room.game,this.ruleset):

@@ -208,8 +208,8 @@ export type GameSnapshot = {
   "serverTime": number;
   "viewer": {
   "userId": string;
-  "seat": Seat;
-  "team": Team;
+  "seat": Seat | null;
+  "team": Team | null;
 };
   "publicView": PublicView;
   "privateView": PrivateView;

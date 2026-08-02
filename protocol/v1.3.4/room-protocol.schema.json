@@ -121,11 +121,7 @@
         "type": { "const": "ROOM_COMMAND" }, "commandId": { "type": "string" }, "roomId": { "type": ["string", "null"] },
         "expectedRoomRevision": { "type": ["integer", "null"], "minimum": 0 },
         "command": { "type": "string", "enum": ["CREATE_ROOM", "JOIN_ROOM", "LEAVE_ROOM", "SET_READY", "CHANGE_SEAT", "UPDATE_ROOM_SETTINGS", "KICK_PLAYER", "TRANSFER_HOST", "START_GAME", "CLOSE_ROOM", "PRESELECT_CHARACTER", "LOCK_CHARACTER", "SEND_CHAT"] },
-        "payload": { "oneOf": [
-          { "$ref": "#/$defs/CreateRoomPayload" }, { "$ref": "#/$defs/JoinRoomPayload" }, { "$ref": "#/$defs/SetReadyPayload" },
-          { "$ref": "#/$defs/ChangeSeatPayload" }, { "$ref": "#/$defs/UpdateRoomSettingsPayload" }, { "$ref": "#/$defs/TargetUserPayload" },
-          { "$ref": "#/$defs/PreselectCharacterPayload" }, { "$ref": "#/$defs/LockCharacterPayload" }, { "$ref": "#/$defs/RoomSendChatPayload" }, { "$ref": "#/$defs/EmptyPayload" }
-        ] }
+        "payload": { "type": "object" }
       },
       "x-commandPayloadMap": {
         "CREATE_ROOM": "CreateRoomPayload", "JOIN_ROOM": "JoinRoomPayload", "LEAVE_ROOM": "EmptyPayload", "SET_READY": "SetReadyPayload",
