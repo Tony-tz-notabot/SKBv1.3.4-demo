@@ -14,6 +14,8 @@ server/data/
 
 # Editor, OS, and Codex-local state
 .codex/
+.reasonix/
+reasonix.toml
 .vscode/
 .idea/
 .DS_Store
