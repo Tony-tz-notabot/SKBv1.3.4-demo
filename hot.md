@@ -125,6 +125,7 @@
 - 2026-08-02阶段3.3注册表逐项端到端验收完成：`playRegistryFull.test.ts`增至29项（mount/talent装备弃置、死亡笔记/号角/鲜血祭坛/牧师/奉献池/刺客信条/气宗/死灵/机器人/元素使/网瘾/大宝贝/雕像/狼人/将军/起源与重铸熔炉/炸弹/机甲进出/拆迁/藤蔓/恶魔恶灵/神圣屏障/羊叫兽合成等）；修复适配缺陷（buildPlayCommand补confirmOnlyWeapon、playOffer生成confirm spec）。服务端106文件/467项全过、构建通过。剩余记录：暗黑大骑士BOSS生命周期、羊叫兽直接使用、网瘾sp02（与sp01共用执行器）由引擎专项测试覆盖，注册表适配未单独验收。
 - 2026-08-02阶段3.4浏览器层Vue操作联调完成：新增@vue/test-utils+jsdom组件测试环境，`gameInteractions.test.ts`5项（GameCard合法高亮/禁用/详情/选择、ResourceImage图片fallback、GamePlayerPanel合法装备卡与合法目标高亮及选择事件）+`gameChat.test.ts`2项（聊天发送/频道切换/空输入拦截）。客户端6文件/19项全过、构建通过。座位旋转公式（`positions[(seat-viewerSeat+4)%4]`）已在GameView实现并由E2E验证viewer.seat正确。
 - 2026-08-02阶段3.5身份与运维硬化完成：会话token改为`盐.密钥`格式（salt=randomBytes(12)+secret=randomBytes(24)，存储sha256(salt.secret)+salt，兼容旧无盐token解析），sessions容量上限2000（超限删最旧）；新增`hardening.test.ts`验证游戏命令幂等结果容量5000与同commandId重放一致；新增根目录`README.md`生产启动说明（构建/启动/环境变量/开发）。服务端106文件/470项全过、客户端6文件/19项全过、两端构建通过。
+- 2026-08-02阶段3.6按122清单逐条审计完成：产出`docs/整理/126-真实可玩链路Goal审计表.md`。完全满足：应用层主体、命令路由零污染、受众投影与隐私、协议schema、Vue主要操作、部署链路、E2E到胜负。记录边界：逐kind窗口超时全量断言未穷举、低频领域事件回退ACTION_COMMITTED（关键动作已独立映射）、颜色/模式/数值选择器组件测试未逐类、阶段超时未入E2E剧本。武器W01—W66总验收与跨规则组合审计继续后置。
 
 ## 最近文档
 
