@@ -77,7 +77,7 @@ export function runCombatUntilBlocked(
       };
     if (current.resolutionStack.length)
       return { state: current, events, steps, stoppedReason: "judgment" };
-    if (isPendingHellfireDamage(current)) {
+    if (isPendingHellfireDamage(current) && !current.combat.attack) {
       const applied = executeNextImmediateDamageEffect(current, ruleset);
       current = applied.state;
       events.push(...applied.events);
