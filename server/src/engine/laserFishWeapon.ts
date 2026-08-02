@@ -172,5 +172,8 @@ export function clearInvalidLaserFishAim(
     after: null,
     reason: "targetUnavailable",
   });
-  return tx.commit();
+  const out = tx.commit();
+  out.state.history.domainEvents.push(...out.events);
+  validateAuthoritativeState(out.state);
+  return out;
 }

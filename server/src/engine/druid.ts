@@ -158,6 +158,8 @@ export function processVineAfter(c: TransactionCommit<AuthoritativeGameState>) {
           remainingAffectedDraws: 1,
         });
         const out = tx.commit();
+        out.state.history.domainEvents.push(...out.events);
+        validateAuthoritativeState(out.state);
         s = out.state;
         extra.push(...out.events);
       }

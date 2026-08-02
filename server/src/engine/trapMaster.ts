@@ -284,6 +284,8 @@ export function grantBombsAfterAttack(
           });
         }
         const o = tx.commit();
+        o.state.history.domainEvents.push(...o.events);
+        validateAuthoritativeState(o.state);
         s = o.state;
         extra.push(...o.events);
       }
