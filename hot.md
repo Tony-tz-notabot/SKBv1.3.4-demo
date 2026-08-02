@@ -123,6 +123,7 @@
 - 2026-08-02阶段3.1演示事件全映射完成：`projection.ts`新增10类演示事件（`CARD_DRAWN/CARD_PLAYED/CARD_DISCARDED/ATTACK_DECLARED/ATTACK_RESOLVED/DAMAGE_PREVENTED/HEALTH_CHANGED/STATUS_PREVENTED/TRIGGER_RESOLVED/DECK_RESHUFFLED`）并补齐`judgment.finalized→JUDGMENT_RESULT_CHANGED`；`client-protocol.schema.json`演示事件从18扩至28类（新增10个payload定义并挂入`PresentationEvent.payload.oneOf`）；客户端`serverProjection.ts`按`eventSeq`去重（快照重置队列+忽略过期事件）；新增`presentationEvents.test.ts`表驱动映射/隐私/全覆盖测试与`serverProjection.test.ts`去重测试，E2E加广播事件`eventSeq`单调不重复断言。服务端104文件/433项、客户端4文件/12项、两端构建与全部协议工具通过。
 - 2026-08-02阶段3.2逐窗口投影规格审计完成：`projection.ts::windowOffer`重构为按offer类型细分合法卡集（dodge/meleeBlock/armorKillBlock/prayer/resurrectionCross/rescue各自独立spec，修复攻击响应与濒死救援客户端高亮错误卡牌的问题），并支持`context.minimum/maximum`（修复triggerCardSelection的min=max=1硬编码）；判定指定/重铸熔炉/拆迁溢出/雕像隐藏经核验无缺陷。新增`windowSpec.test.ts`5项表驱动测试。服务端105文件/438项全过、构建通过。
 - 2026-08-02阶段3.3注册表逐项端到端验收完成：`playRegistryFull.test.ts`增至29项（mount/talent装备弃置、死亡笔记/号角/鲜血祭坛/牧师/奉献池/刺客信条/气宗/死灵/机器人/元素使/网瘾/大宝贝/雕像/狼人/将军/起源与重铸熔炉/炸弹/机甲进出/拆迁/藤蔓/恶魔恶灵/神圣屏障/羊叫兽合成等）；修复适配缺陷（buildPlayCommand补confirmOnlyWeapon、playOffer生成confirm spec）。服务端106文件/467项全过、构建通过。剩余记录：暗黑大骑士BOSS生命周期、羊叫兽直接使用、网瘾sp02（与sp01共用执行器）由引擎专项测试覆盖，注册表适配未单独验收。
+- 2026-08-02阶段3.4浏览器层Vue操作联调完成：新增@vue/test-utils+jsdom组件测试环境，`gameInteractions.test.ts`5项（GameCard合法高亮/禁用/详情/选择、ResourceImage图片fallback、GamePlayerPanel合法装备卡与合法目标高亮及选择事件）+`gameChat.test.ts`2项（聊天发送/频道切换/空输入拦截）。客户端6文件/19项全过、构建通过。座位旋转公式（`positions[(seat-viewerSeat+4)%4]`）已在GameView实现并由E2E验证viewer.seat正确。
 
 ## 最近文档
 
