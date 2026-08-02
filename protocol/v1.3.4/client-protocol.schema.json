@@ -3,282 +3,1909 @@
   "$id": "skb://protocol/v1.3.4/client-protocol.schema.json",
   "title": "SKB v1.3.4 Client Protocol",
   "oneOf": [
-    { "$ref": "#/$defs/SetupSnapshot" },
-    { "$ref": "#/$defs/GameSnapshot" },
-    { "$ref": "#/$defs/GameCommand" },
-    { "$ref": "#/$defs/CommandAccepted" },
-    { "$ref": "#/$defs/CommandRejected" },
-    { "$ref": "#/$defs/PresentationEvent" }
+    {
+      "$ref": "#/$defs/SetupSnapshot"
+    },
+    {
+      "$ref": "#/$defs/GameSnapshot"
+    },
+    {
+      "$ref": "#/$defs/GameCommand"
+    },
+    {
+      "$ref": "#/$defs/CommandAccepted"
+    },
+    {
+      "$ref": "#/$defs/CommandRejected"
+    },
+    {
+      "$ref": "#/$defs/PresentationEvent"
+    }
   ],
   "$defs": {
-    "Seat": { "type": "integer", "enum": [1, 2, 3, 4] },
-    "Team": { "type": "string", "enum": ["A", "B"] },
-    "Phase": { "type": "string", "enum": ["prepare", "judgment", "draw", "play", "discard", "end"] },
-    "ObjectRef": { "type": "string", "pattern": "^(public|private|concealed):" },
-    "CardCategory": { "type": "string", "enum": ["basic", "weapon", "armor", "talent", "mount", "statue", "special", "boss"] },
-    "CardColor": { "type": "string", "enum": ["white", "red", "orange", "blue", "green", "none"] },
-    "LifeState": { "type": "string", "enum": ["inPlay", "leftPlay", "deadNotEliminated", "dead", "eliminated"] },
+    "Seat": {
+      "type": "integer",
+      "enum": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "Team": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B"
+      ]
+    },
+    "Phase": {
+      "type": "string",
+      "enum": [
+        "prepare",
+        "judgment",
+        "draw",
+        "play",
+        "discard",
+        "end"
+      ]
+    },
+    "ObjectRef": {
+      "type": "string",
+      "pattern": "^(public|private|concealed):"
+    },
+    "CardCategory": {
+      "type": "string",
+      "enum": [
+        "basic",
+        "weapon",
+        "armor",
+        "talent",
+        "mount",
+        "statue",
+        "special",
+        "boss"
+      ]
+    },
+    "CardColor": {
+      "type": "string",
+      "enum": [
+        "white",
+        "red",
+        "orange",
+        "blue",
+        "green",
+        "none"
+      ]
+    },
+    "LifeState": {
+      "type": "string",
+      "enum": [
+        "inPlay",
+        "leftPlay",
+        "deadNotEliminated",
+        "dead",
+        "eliminated"
+      ]
+    },
     "CoreStat": {
-      "type": "object", "additionalProperties": false,
-      "required": ["key", "label", "value"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "label",
+        "value"
+      ],
       "properties": {
-        "key": { "type": "string" }, "label": { "type": "string" },
-        "value": { "type": ["string", "number", "boolean", "null"] }
+        "key": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        }
       }
     },
     "CardStateView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["effective", "selected"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "effective",
+        "selected"
+      ],
       "properties": {
-        "effective": { "type": "boolean" }, "selected": { "type": "boolean" },
-        "modeId": { "type": ["string", "null"] }, "charge": { "type": ["integer", "null"] },
-        "durability": { "type": ["integer", "null"] }, "cooldown": { "type": ["integer", "null"] }
+        "effective": {
+          "type": "boolean"
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "modeId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "charge": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "durability": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "cooldown": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
       }
     },
     "CardView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["ref", "displayName", "category", "printedColor", "resourceKey", "summary", "coreStats", "badges", "state", "detailAvailable"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "displayName",
+        "category",
+        "printedColor",
+        "resourceKey",
+        "summary",
+        "coreStats",
+        "badges",
+        "state",
+        "detailAvailable"
+      ],
       "properties": {
-        "ref": { "$ref": "#/$defs/ObjectRef" }, "templateId": { "type": "string" },
-        "displayName": { "type": "string" }, "category": { "$ref": "#/$defs/CardCategory" },
-        "printedColor": { "$ref": "#/$defs/CardColor" }, "resourceKey": { "type": "string" },
-        "summary": { "type": "string" }, "coreStats": { "type": "array", "items": { "$ref": "#/$defs/CoreStat" } },
-        "badges": { "type": "array", "items": { "type": "string" } },
-        "state": { "$ref": "#/$defs/CardStateView" }, "detailAvailable": { "type": "boolean" }
+        "ref": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "templateId": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "category": {
+          "$ref": "#/$defs/CardCategory"
+        },
+        "printedColor": {
+          "$ref": "#/$defs/CardColor"
+        },
+        "resourceKey": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "coreStats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CoreStat"
+          }
+        },
+        "badges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "$ref": "#/$defs/CardStateView"
+        },
+        "detailAvailable": {
+          "type": "boolean"
+        }
       }
     },
     "EquipmentSlotsView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["weapon1", "weapon2", "thirdWeapon", "armor", "mountOffense", "mountDefense", "talents", "boss"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weapon1",
+        "weapon2",
+        "thirdWeapon",
+        "armor",
+        "mountOffense",
+        "mountDefense",
+        "talents",
+        "boss"
+      ],
       "properties": {
-        "weapon1": { "anyOf": [{ "$ref": "#/$defs/CardView" }, { "type": "null" }] },
-        "weapon2": { "anyOf": [{ "$ref": "#/$defs/CardView" }, { "type": "null" }] },
-        "thirdWeapon": { "anyOf": [{ "$ref": "#/$defs/CardView" }, { "type": "null" }] },
-        "armor": { "anyOf": [{ "$ref": "#/$defs/CardView" }, { "type": "null" }] },
-        "mountOffense": { "anyOf": [{ "$ref": "#/$defs/CardView" }, { "type": "null" }] },
-        "mountDefense": { "anyOf": [{ "$ref": "#/$defs/CardView" }, { "type": "null" }] },
-        "talents": { "type": "array", "items": { "$ref": "#/$defs/CardView" } },
-        "boss": { "anyOf": [{ "$ref": "#/$defs/CardView" }, { "type": "null" }] }
+        "weapon1": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "weapon2": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "thirdWeapon": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "armor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mountOffense": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mountDefense": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "talents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CardView"
+          }
+        },
+        "boss": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       }
     },
     "PlayerView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["seat", "team", "nickname", "connected", "lifeState", "handCount", "equipment", "equipmentSlots", "judgmentZone", "statuses"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "team",
+        "nickname",
+        "connected",
+        "lifeState",
+        "handCount",
+        "equipment",
+        "equipmentSlots",
+        "judgmentZone",
+        "statuses"
+      ],
       "properties": {
-        "seat": { "$ref": "#/$defs/Seat" }, "team": { "$ref": "#/$defs/Team" },
-        "nickname": { "type": "string" }, "connected": { "type": "boolean" },
-        "characterId": { "type": ["string", "null"] }, "lifeState": { "$ref": "#/$defs/LifeState" },
-        "hp": { "type": ["integer", "null"] }, "maxHp": { "type": ["integer", "null"] },
-        "shield": { "type": ["integer", "null"] }, "maxShield": { "type": ["integer", "null"] },
-        "ironShield": { "type": "integer" }, "handCount": { "type": "integer", "minimum": 0 },
-        "equipment": { "type": "array", "items": { "$ref": "#/$defs/CardView" } },
-        "equipmentSlots": { "$ref": "#/$defs/EquipmentSlotsView" },
-        "judgmentZone": { "type": "array", "items": { "$ref": "#/$defs/CardView" } },
-        "statuses": { "type": "array", "items": { "type": "string" } }
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "team": {
+          "$ref": "#/$defs/Team"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "connected": {
+          "type": "boolean"
+        },
+        "characterId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lifeState": {
+          "$ref": "#/$defs/LifeState"
+        },
+        "hp": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "maxHp": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "shield": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "maxShield": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "ironShield": {
+          "type": "integer"
+        },
+        "handCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "equipment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CardView"
+          }
+        },
+        "equipmentSlots": {
+          "$ref": "#/$defs/EquipmentSlotsView"
+        },
+        "judgmentZone": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CardView"
+          }
+        },
+        "statuses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "PublicView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["round", "activeSeat", "phase", "players", "drawPileCount", "discardTop", "centralCards"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "round",
+        "activeSeat",
+        "phase",
+        "players",
+        "drawPileCount",
+        "discardTop",
+        "centralCards"
+      ],
       "properties": {
-        "round": { "type": "integer", "minimum": 0 }, "activeSeat": { "$ref": "#/$defs/Seat" },
-        "phase": { "$ref": "#/$defs/Phase" }, "players": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/PlayerView" } },
-        "drawPileCount": { "type": "integer", "minimum": 0 },
-        "discardTop": { "type": "array", "items": { "$ref": "#/$defs/CardView" } },
-        "centralCards": { "type": "array", "items": { "$ref": "#/$defs/CardView" } },
-        "headline": { "type": "string" }, "winnerTeam": { "anyOf": [{ "$ref": "#/$defs/Team" }, { "type": "null" }] }
+        "round": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activeSeat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "phase": {
+          "$ref": "#/$defs/Phase"
+        },
+        "players": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "$ref": "#/$defs/PlayerView"
+          }
+        },
+        "drawPileCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "discardTop": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CardView"
+          }
+        },
+        "centralCards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CardView"
+          }
+        },
+        "headline": {
+          "type": "string"
+        },
+        "winnerTeam": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       }
     },
     "PrivateView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["hand", "preselectedWeaponSlot", "preselectedModeId", "preselectableWeaponSlots", "concealedChoices"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hand",
+        "preselectedWeaponSlot",
+        "preselectedModeId",
+        "preselectableWeaponSlots",
+        "concealedChoices"
+      ],
       "properties": {
-        "hand": { "type": "array", "items": { "$ref": "#/$defs/CardView" } },
-        "characterCandidates": { "type": "array", "items": { "type": "string" } },
-        "preselectedWeaponSlot": { "type": ["string", "null"] }, "preselectedModeId": { "type": ["string", "null"] },
-        "preselectableWeaponSlots": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-        "concealedChoices": { "type": "array", "items": { "$ref": "#/$defs/ObjectRef" } }
+        "hand": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CardView"
+          }
+        },
+        "characterCandidates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preselectedWeaponSlot": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "preselectedModeId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "preselectableWeaponSlots": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "concealedChoices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        }
       }
     },
     "PromptView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["promptId", "kind", "mandatory", "deadlineAt", "prioritySeat", "timeoutPolicy"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "promptId",
+        "kind",
+        "mandatory",
+        "deadlineAt",
+        "prioritySeat",
+        "timeoutPolicy"
+      ],
       "properties": {
-        "promptId": { "type": "string" }, "kind": { "type": "string" },
-        "mandatory": { "type": "boolean" }, "deadlineAt": { "type": "integer" },
-        "prioritySeat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] },
-        "timeoutPolicy": { "type": "string", "enum": ["pass", "randomLegal", "useDefault", "abortRemaining"] }
+        "promptId": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "mandatory": {
+          "type": "boolean"
+        },
+        "deadlineAt": {
+          "type": "integer"
+        },
+        "prioritySeat": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Seat"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timeoutPolicy": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "randomLegal",
+            "useDefault",
+            "abortRemaining"
+          ]
+        }
       }
     },
     "TargetRule": {
-      "type": "object", "additionalProperties": false,
-      "required": ["min", "max", "distinct"],
-      "properties": { "min": { "type": "integer", "minimum": 0 }, "max": { "type": "integer", "minimum": 0 }, "distinct": { "type": "boolean" } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min",
+        "max",
+        "distinct"
+      ],
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distinct": {
+          "type": "boolean"
+        }
+      }
     },
     "SelectionSpec": {
-      "type": "object", "additionalProperties": false,
-      "required": ["key", "kind", "min", "max"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "kind",
+        "min",
+        "max"
+      ],
       "properties": {
-        "key": { "type": "string" },
-        "kind": { "type": "string", "enum": ["cards", "targets", "option", "number", "color", "mode", "confirm"] },
-        "min": { "type": "integer", "minimum": 0 }, "max": { "type": "integer", "minimum": 0 },
-        "distinct": { "type": "boolean" },
-        "legalRefs": { "type": "array", "items": { "$ref": "#/$defs/ObjectRef" } },
-        "options": { "type": "array", "items": { "type": ["string", "number", "boolean"] } }
+        "key": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "cards",
+            "targets",
+            "option",
+            "number",
+            "color",
+            "mode",
+            "confirm"
+          ]
+        },
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distinct": {
+          "type": "boolean"
+        },
+        "legalRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          }
+        }
       }
     },
     "OfferPreview": {
-      "type": "object", "additionalProperties": false,
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "weaponRef": { "anyOf": [{ "$ref": "#/$defs/ObjectRef" }, { "type": "null" }] },
-        "modeId": { "type": ["string", "null"] }, "range": { "type": ["integer", "null"] },
-        "distanceByTarget": { "type": "object", "additionalProperties": { "type": "integer" } },
-        "damageStructure": { "type": ["string", "null"] }, "costSummary": { "type": ["string", "null"] }
+        "weaponRef": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObjectRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "modeId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "range": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "distanceByTarget": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "damageStructure": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "costSummary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     },
     "InteractionOffer": {
-      "type": "object", "additionalProperties": false,
-      "required": ["offerId", "kind", "sourceRefs", "legalTargetRefs", "selectionSpecs", "preview"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "offerId",
+        "kind",
+        "sourceRefs",
+        "legalTargetRefs",
+        "selectionSpecs",
+        "preview"
+      ],
       "properties": {
-        "offerId": { "type": "string" },
-        "kind": { "type": "string", "enum": ["declareAttack", "useCard", "activateAbility", "respond", "equip", "discardEquipment", "dismantle", "synthesize", "interveneJudgment", "rescueDying", "resolveChoice", "pass", "endPhase"] },
-        "sourceRefs": { "type": "array", "items": { "$ref": "#/$defs/ObjectRef" } },
-        "legalTargetRefs": { "type": "array", "items": { "$ref": "#/$defs/ObjectRef" } },
-        "selectionSpecs": { "type": "array", "items": { "$ref": "#/$defs/SelectionSpec" } },
-        "targetRule": { "$ref": "#/$defs/TargetRule" },
-        "preview": { "$ref": "#/$defs/OfferPreview" }
+        "offerId": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "declareAttack",
+            "useCard",
+            "activateAbility",
+            "respond",
+            "equip",
+            "discardEquipment",
+            "dismantle",
+            "synthesize",
+            "interveneJudgment",
+            "rescueDying",
+            "resolveChoice",
+            "pass",
+            "endPhase"
+          ]
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        },
+        "legalTargetRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        },
+        "selectionSpecs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SelectionSpec"
+          }
+        },
+        "targetRule": {
+          "$ref": "#/$defs/TargetRule"
+        },
+        "preview": {
+          "$ref": "#/$defs/OfferPreview"
+        }
       }
     },
     "DisabledHint": {
-      "type": "object", "additionalProperties": false,
-      "required": ["subjectRef", "reasonCode", "messageKey"],
-      "properties": { "subjectRef": { "$ref": "#/$defs/ObjectRef" }, "reasonCode": { "type": "string" }, "messageKey": { "type": "string" } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subjectRef",
+        "reasonCode",
+        "messageKey"
+      ],
+      "properties": {
+        "subjectRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "reasonCode": {
+          "type": "string"
+        },
+        "messageKey": {
+          "type": "string"
+        }
+      }
     },
     "InteractionView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["offers", "disabledHints"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "offers",
+        "disabledHints"
+      ],
       "properties": {
-        "prompt": { "anyOf": [{ "$ref": "#/$defs/PromptView" }, { "type": "null" }] },
-        "offers": { "type": "array", "items": { "$ref": "#/$defs/InteractionOffer" } },
-        "disabledHints": { "type": "array", "items": { "$ref": "#/$defs/DisabledHint" } }
+        "prompt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PromptView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "offers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InteractionOffer"
+          }
+        },
+        "disabledHints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DisabledHint"
+          }
+        }
       }
     },
     "ChatMessage": {
-      "type": "object", "additionalProperties": false,
-      "required": ["messageId", "channel", "senderSeat", "sentAt", "text"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "messageId",
+        "channel",
+        "senderSeat",
+        "sentAt",
+        "text"
+      ],
       "properties": {
-        "messageId": { "type": "string" }, "channel": { "type": "string", "enum": ["all", "team"] },
-        "senderSeat": { "$ref": "#/$defs/Seat" }, "sentAt": { "type": "integer" }, "text": { "type": "string", "maxLength": 500 }
+        "messageId": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "all",
+            "team"
+          ]
+        },
+        "senderSeat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "sentAt": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 500
+        }
       }
     },
     "SetupCardView": {
-      "type": "object", "additionalProperties": false,
-      "required": ["ref", "templateId", "displayName", "category", "printedColor", "resourceKey"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "templateId",
+        "displayName",
+        "category",
+        "printedColor",
+        "resourceKey"
+      ],
       "properties": {
-        "ref": { "$ref": "#/$defs/ObjectRef" }, "templateId": { "type": "string" }, "displayName": { "type": "string" },
-        "category": { "$ref": "#/$defs/CardCategory" }, "printedColor": { "$ref": "#/$defs/CardColor" }, "resourceKey": { "type": "string" }
+        "ref": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "templateId": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "category": {
+          "$ref": "#/$defs/CardCategory"
+        },
+        "printedColor": {
+          "$ref": "#/$defs/CardColor"
+        },
+        "resourceKey": {
+          "type": "string"
+        }
       }
     },
     "SetupSeatState": {
-      "type": "object", "additionalProperties": false,
-      "required": ["seat", "handCount", "redrawDecided"],
-      "properties": { "seat": { "$ref": "#/$defs/Seat" }, "handCount": { "type": "integer", "minimum": 0 }, "redrawDecided": { "type": "boolean" } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "handCount",
+        "redrawDecided"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "handCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "redrawDecided": {
+          "type": "boolean"
+        }
+      }
     },
     "SetupSnapshot": {
-      "type": "object", "additionalProperties": false,
-      "required": ["type", "gameId", "rulesetVersion", "stateRevision", "lastEventSeq", "serverTime", "lifecycle", "viewer", "firstSeat", "drawPileCount", "discardPile", "seats", "hand", "redrawUsed", "interaction"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "gameId",
+        "rulesetVersion",
+        "stateRevision",
+        "lastEventSeq",
+        "serverTime",
+        "lifecycle",
+        "viewer",
+        "firstSeat",
+        "drawPileCount",
+        "discardPile",
+        "seats",
+        "hand",
+        "redrawUsed",
+        "interaction"
+      ],
       "properties": {
-        "type": { "const": "SETUP_SNAPSHOT" }, "gameId": { "type": "string" }, "rulesetVersion": { "const": "1.3.4" },
-        "stateRevision": { "type": "integer", "minimum": 0 }, "lastEventSeq": { "type": "integer", "minimum": 0 }, "serverTime": { "type": "integer" },
-        "lifecycle": { "type": "string", "enum": ["setupRedraw", "inProgress"] },
-        "viewer": { "type": "object", "additionalProperties": false, "required": ["userId", "seat", "team"], "properties": {
-          "userId": { "type": ["string", "null"] }, "seat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] }, "team": { "anyOf": [{ "$ref": "#/$defs/Team" }, { "type": "null" }] }
-        } },
-        "firstSeat": { "$ref": "#/$defs/Seat" }, "drawPileCount": { "type": "integer", "minimum": 0 },
-        "discardPile": { "type": "array", "items": { "$ref": "#/$defs/SetupCardView" } },
-        "seats": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/SetupSeatState" } },
-        "hand": { "type": "array", "items": { "$ref": "#/$defs/SetupCardView" } },
-        "redrawUsed": { "type": ["boolean", "null"] }, "interaction": { "$ref": "#/$defs/InteractionView" }
+        "type": {
+          "const": "SETUP_SNAPSHOT"
+        },
+        "gameId": {
+          "type": "string"
+        },
+        "rulesetVersion": {
+          "const": "1.3.4"
+        },
+        "stateRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lastEventSeq": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "serverTime": {
+          "type": "integer"
+        },
+        "lifecycle": {
+          "type": "string",
+          "enum": [
+            "setupRedraw",
+            "inProgress"
+          ]
+        },
+        "viewer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "userId",
+            "seat",
+            "team"
+          ],
+          "properties": {
+            "userId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "seat": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Seat"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "team": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Team"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "firstSeat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "drawPileCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "discardPile": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SetupCardView"
+          }
+        },
+        "seats": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "$ref": "#/$defs/SetupSeatState"
+          }
+        },
+        "hand": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SetupCardView"
+          }
+        },
+        "redrawUsed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "interaction": {
+          "$ref": "#/$defs/InteractionView"
+        }
       }
     },
     "GameSnapshot": {
-      "type": "object", "additionalProperties": false,
-      "required": ["type", "gameId", "rulesetVersion", "stateRevision", "lastEventSeq", "serverTime", "viewer", "publicView", "privateView", "interaction", "chat"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "gameId",
+        "rulesetVersion",
+        "stateRevision",
+        "lastEventSeq",
+        "serverTime",
+        "viewer",
+        "publicView",
+        "privateView",
+        "interaction",
+        "chat"
+      ],
       "properties": {
-        "type": { "const": "GAME_SNAPSHOT" }, "gameId": { "type": "string" }, "rulesetVersion": { "const": "1.3.4" },
-        "stateRevision": { "type": "integer", "minimum": 0 }, "lastEventSeq": { "type": "integer", "minimum": 0 }, "serverTime": { "type": "integer" },
-        "viewer": { "type": "object", "additionalProperties": false, "required": ["userId", "seat", "team"], "properties": { "userId": { "type": "string" }, "seat": { "anyOf": [{ "$ref": "#/$defs/Seat" }, { "type": "null" }] }, "team": { "anyOf": [{ "$ref": "#/$defs/Team" }, { "type": "null" }] } } },
-        "publicView": { "$ref": "#/$defs/PublicView" }, "privateView": { "$ref": "#/$defs/PrivateView" },
-        "interaction": { "$ref": "#/$defs/InteractionView" }, "chat": { "type": "array", "items": { "$ref": "#/$defs/ChatMessage" } }
+        "type": {
+          "const": "GAME_SNAPSHOT"
+        },
+        "gameId": {
+          "type": "string"
+        },
+        "rulesetVersion": {
+          "const": "1.3.4"
+        },
+        "stateRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lastEventSeq": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "serverTime": {
+          "type": "integer"
+        },
+        "viewer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "userId",
+            "seat",
+            "team"
+          ],
+          "properties": {
+            "userId": {
+              "type": "string"
+            },
+            "seat": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Seat"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "team": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Team"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "publicView": {
+          "$ref": "#/$defs/PublicView"
+        },
+        "privateView": {
+          "$ref": "#/$defs/PrivateView"
+        },
+        "interaction": {
+          "$ref": "#/$defs/InteractionView"
+        },
+        "chat": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChatMessage"
+          }
+        }
       }
     },
     "ExecuteOfferPayload": {
-      "type": "object", "additionalProperties": false, "required": ["selections"],
-      "properties": { "selections": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": ["string", "number", "boolean"] } } } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selections"
+      ],
+      "properties": {
+        "selections": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean"
+              ]
+            }
+          }
+        }
+      }
     },
     "SetPreselectionPayload": {
-      "type": "object", "additionalProperties": false, "required": ["weaponSlot", "modeId"],
-      "properties": { "weaponSlot": { "type": ["string", "null"] }, "modeId": { "type": ["string", "null"] } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weaponSlot",
+        "modeId"
+      ],
+      "properties": {
+        "weaponSlot": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "modeId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     },
     "SendChatPayload": {
-      "type": "object", "additionalProperties": false, "required": ["channel", "clientMessageId", "text"],
-      "properties": { "channel": { "type": "string", "enum": ["all", "team"] }, "clientMessageId": { "type": "string" }, "text": { "type": "string", "minLength": 1, "maxLength": 500 } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel",
+        "clientMessageId",
+        "text"
+      ],
+      "properties": {
+        "channel": {
+          "type": "string",
+          "enum": [
+            "all",
+            "team"
+          ]
+        },
+        "clientMessageId": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      }
     },
     "GameCommand": {
-      "type": "object", "additionalProperties": false,
-      "required": ["type", "commandId", "gameId", "expectedStateRevision", "command", "payload"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "commandId",
+        "gameId",
+        "expectedStateRevision",
+        "command",
+        "payload"
+      ],
       "properties": {
-        "type": { "const": "GAME_COMMAND" }, "commandId": { "type": "string" }, "gameId": { "type": "string" },
-        "expectedStateRevision": { "type": "integer", "minimum": 0 }, "promptId": { "type": ["string", "null"] }, "offerId": { "type": ["string", "null"] },
-        "command": { "type": "string", "enum": ["EXECUTE_OFFER", "SET_PRESELECTION", "SEND_CHAT"] },
-        "payload": { "oneOf": [{ "$ref": "#/$defs/ExecuteOfferPayload" }, { "$ref": "#/$defs/SetPreselectionPayload" }, { "$ref": "#/$defs/SendChatPayload" }] }
+        "type": {
+          "const": "GAME_COMMAND"
+        },
+        "commandId": {
+          "type": "string"
+        },
+        "gameId": {
+          "type": "string"
+        },
+        "expectedStateRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "promptId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "offerId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "command": {
+          "type": "string",
+          "enum": [
+            "EXECUTE_OFFER",
+            "SET_PRESELECTION",
+            "SEND_CHAT"
+          ]
+        },
+        "payload": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ExecuteOfferPayload"
+            },
+            {
+              "$ref": "#/$defs/SetPreselectionPayload"
+            },
+            {
+              "$ref": "#/$defs/SendChatPayload"
+            }
+          ]
+        }
       },
-      "x-commandPayloadMap": { "EXECUTE_OFFER": "ExecuteOfferPayload", "SET_PRESELECTION": "SetPreselectionPayload", "SEND_CHAT": "SendChatPayload" }
+      "x-commandPayloadMap": {
+        "EXECUTE_OFFER": "ExecuteOfferPayload",
+        "SET_PRESELECTION": "SetPreselectionPayload",
+        "SEND_CHAT": "SendChatPayload"
+      }
     },
     "CommandAccepted": {
-      "type": "object", "additionalProperties": false, "required": ["type", "commandId", "stateRevision", "firstEventSeq"],
-      "properties": { "type": { "const": "COMMAND_ACCEPTED" }, "commandId": { "type": "string" }, "stateRevision": { "type": "integer" }, "firstEventSeq": { "type": "integer" } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "commandId",
+        "stateRevision",
+        "firstEventSeq"
+      ],
+      "properties": {
+        "type": {
+          "const": "COMMAND_ACCEPTED"
+        },
+        "commandId": {
+          "type": "string"
+        },
+        "stateRevision": {
+          "type": "integer"
+        },
+        "firstEventSeq": {
+          "type": "integer"
+        }
+      }
     },
     "CommandRejected": {
-      "type": "object", "additionalProperties": false, "required": ["type", "commandId", "reasonCode", "messageKey", "stateRevision", "refreshRequired"],
-      "properties": { "type": { "const": "COMMAND_REJECTED" }, "commandId": { "type": "string" }, "reasonCode": { "type": "string" }, "messageKey": { "type": "string" }, "stateRevision": { "type": "integer" }, "refreshRequired": { "type": "boolean" } }
-    },
-    "PhaseChangedPayload": { "type": "object", "additionalProperties": false, "required": ["activeSeat", "phase"], "properties": { "activeSeat": { "$ref": "#/$defs/Seat" }, "phase": { "$ref": "#/$defs/Phase" }, "skipped": { "type": "boolean" }, "replaced": { "type": "boolean" } } },
-    "CardMovedPayload": { "type": "object", "additionalProperties": false, "required": ["cardRef", "from", "to"], "properties": { "cardRef": { "$ref": "#/$defs/ObjectRef" }, "from": { "type": "string" }, "to": { "type": "string" } } },
-    "CardRevealedPayload": { "type": "object", "additionalProperties": false, "required": ["card"], "properties": { "card": { "$ref": "#/$defs/CardView" } } },
-    "ActionCommittedPayload": { "type": "object", "additionalProperties": false, "required": ["sourceRef", "actionKind"], "properties": { "sourceRef": { "$ref": "#/$defs/ObjectRef" }, "actionKind": { "type": "string" } } },
-    "AttackTargetedPayload": { "type": "object", "additionalProperties": false, "required": ["sourceRef", "targetRefs"], "properties": { "sourceRef": { "$ref": "#/$defs/ObjectRef" }, "targetRefs": { "type": "array", "items": { "$ref": "#/$defs/ObjectRef" } } } },
-    "ResponseWindowOpenedPayload": { "type": "object", "additionalProperties": false, "required": ["promptId", "responderSeat"], "properties": { "promptId": { "type": "string" }, "responderSeat": { "$ref": "#/$defs/Seat" }, "windowKind": { "type": "string" } } },
-    "ResponseResolvedPayload": { "type": "object", "additionalProperties": false, "required": ["responderSeat", "result"], "properties": { "responderSeat": { "$ref": "#/$defs/Seat" }, "result": { "type": "string" }, "cardRef": { "$ref": "#/$defs/ObjectRef" } } },
-    "JudgmentRevealedPayload": { "type": "object", "additionalProperties": false, "required": ["card", "printedColor"], "properties": { "card": { "$ref": "#/$defs/CardView" }, "printedColor": { "$ref": "#/$defs/CardColor" } } },
-    "JudgmentResultChangedPayload": { "type": "object", "additionalProperties": false, "required": ["from", "to", "reason"], "properties": { "from": { "$ref": "#/$defs/CardColor" }, "to": { "$ref": "#/$defs/CardColor" }, "reason": { "type": "string" } } },
-    "DamageSegmentAppliedPayload": { "type": "object", "additionalProperties": false, "required": ["targetRef", "segmentIndex", "totalSegments", "amount", "hpLost", "shieldLost"], "properties": { "sourceRef": { "$ref": "#/$defs/ObjectRef" }, "targetRef": { "$ref": "#/$defs/ObjectRef" }, "segmentIndex": { "type": "integer", "minimum": 1 }, "totalSegments": { "type": "integer", "minimum": 1 }, "amount": { "type": "integer" }, "hpLost": { "type": "integer", "minimum": 0 }, "shieldLost": { "type": "integer", "minimum": 0 } } },
-    "StatusChangedPayload": { "type": "object", "additionalProperties": false, "required": ["targetRef", "statusId", "change"], "properties": { "targetRef": { "$ref": "#/$defs/ObjectRef" }, "statusId": { "type": "string" }, "change": { "type": "string", "enum": ["applied", "refreshed", "removed", "expired"] } } },
-    "CharacterStatePayload": { "type": "object", "additionalProperties": false, "required": ["targetRef"], "properties": { "targetRef": { "$ref": "#/$defs/ObjectRef" } } },
-    "GameEndedPayload": { "type": "object", "additionalProperties": false, "required": ["winnerTeam"], "properties": { "winnerTeam": { "$ref": "#/$defs/Team" } } },
-    "SetupRedrawResolvedPayload": { "type": "object", "additionalProperties": false, "required": ["seat", "redraw"], "properties": { "seat": { "$ref": "#/$defs/Seat" }, "redraw": { "type": "boolean" } } },
-    "GameStartedPayload": { "type": "object", "additionalProperties": false, "required": ["firstSeat"], "properties": { "firstSeat": { "$ref": "#/$defs/Seat" } } },
-    "PresentationEvent": {
-      "type": "object", "additionalProperties": false,
-      "required": ["type", "eventSeq", "stateRevision", "eventType", "payload"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "commandId",
+        "reasonCode",
+        "messageKey",
+        "stateRevision",
+        "refreshRequired"
+      ],
       "properties": {
-        "type": { "const": "PRESENTATION_EVENT" }, "eventSeq": { "type": "integer", "minimum": 1 }, "stateRevision": { "type": "integer", "minimum": 0 },
-        "eventType": { "type": "string", "enum": ["PHASE_CHANGED", "CARD_MOVED", "CARD_REVEALED", "ACTION_COMMITTED", "ATTACK_TARGETED", "RESPONSE_WINDOW_OPENED", "RESPONSE_RESOLVED", "JUDGMENT_REVEALED", "JUDGMENT_RESULT_CHANGED", "DAMAGE_SEGMENT_APPLIED", "STATUS_CHANGED", "DYING_STARTED", "CHARACTER_RESCUED", "CHARACTER_DIED", "CHARACTER_ELIMINATED", "GAME_ENDED", "SETUP_REDRAW_RESOLVED", "GAME_STARTED"] },
-        "payload": { "oneOf": [
-          { "$ref": "#/$defs/PhaseChangedPayload" }, { "$ref": "#/$defs/CardMovedPayload" }, { "$ref": "#/$defs/CardRevealedPayload" },
-          { "$ref": "#/$defs/ActionCommittedPayload" }, { "$ref": "#/$defs/AttackTargetedPayload" }, { "$ref": "#/$defs/ResponseWindowOpenedPayload" },
-          { "$ref": "#/$defs/ResponseResolvedPayload" }, { "$ref": "#/$defs/JudgmentRevealedPayload" }, { "$ref": "#/$defs/JudgmentResultChangedPayload" },
-          { "$ref": "#/$defs/DamageSegmentAppliedPayload" }, { "$ref": "#/$defs/StatusChangedPayload" }, { "$ref": "#/$defs/CharacterStatePayload" },
-          { "$ref": "#/$defs/GameEndedPayload" }, { "$ref": "#/$defs/SetupRedrawResolvedPayload" }, { "$ref": "#/$defs/GameStartedPayload" }
-        ] }
+        "type": {
+          "const": "COMMAND_REJECTED"
+        },
+        "commandId": {
+          "type": "string"
+        },
+        "reasonCode": {
+          "type": "string"
+        },
+        "messageKey": {
+          "type": "string"
+        },
+        "stateRevision": {
+          "type": "integer"
+        },
+        "refreshRequired": {
+          "type": "boolean"
+        }
+      }
+    },
+    "PhaseChangedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activeSeat",
+        "phase"
+      ],
+      "properties": {
+        "activeSeat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "phase": {
+          "$ref": "#/$defs/Phase"
+        },
+        "skipped": {
+          "type": "boolean"
+        },
+        "replaced": {
+          "type": "boolean"
+        }
+      }
+    },
+    "CardMovedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cardRef",
+        "from",
+        "to"
+      ],
+      "properties": {
+        "cardRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        }
+      }
+    },
+    "CardRevealedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "card"
+      ],
+      "properties": {
+        "card": {
+          "$ref": "#/$defs/CardView"
+        }
+      }
+    },
+    "ActionCommittedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRef",
+        "actionKind"
+      ],
+      "properties": {
+        "sourceRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "actionKind": {
+          "type": "string"
+        }
+      }
+    },
+    "AttackTargetedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRef",
+        "targetRefs"
+      ],
+      "properties": {
+        "sourceRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "targetRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        }
+      }
+    },
+    "ResponseWindowOpenedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "promptId",
+        "responderSeat"
+      ],
+      "properties": {
+        "promptId": {
+          "type": "string"
+        },
+        "responderSeat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "windowKind": {
+          "type": "string"
+        }
+      }
+    },
+    "ResponseResolvedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responderSeat",
+        "result"
+      ],
+      "properties": {
+        "responderSeat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "result": {
+          "type": "string"
+        },
+        "cardRef": {
+          "$ref": "#/$defs/ObjectRef"
+        }
+      }
+    },
+    "JudgmentRevealedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "card",
+        "printedColor"
+      ],
+      "properties": {
+        "card": {
+          "$ref": "#/$defs/CardView"
+        },
+        "printedColor": {
+          "$ref": "#/$defs/CardColor"
+        }
+      }
+    },
+    "JudgmentResultChangedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "reason"
+      ],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/CardColor"
+        },
+        "to": {
+          "$ref": "#/$defs/CardColor"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "DamageSegmentAppliedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetRef",
+        "segmentIndex",
+        "totalSegments",
+        "amount",
+        "hpLost",
+        "shieldLost"
+      ],
+      "properties": {
+        "sourceRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "targetRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "segmentIndex": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "totalSegments": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "amount": {
+          "type": "integer"
+        },
+        "hpLost": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "shieldLost": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "StatusChangedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetRef",
+        "statusId",
+        "change"
+      ],
+      "properties": {
+        "targetRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "statusId": {
+          "type": "string"
+        },
+        "change": {
+          "type": "string",
+          "enum": [
+            "applied",
+            "refreshed",
+            "removed",
+            "expired"
+          ]
+        }
+      }
+    },
+    "CharacterStatePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetRef"
+      ],
+      "properties": {
+        "targetRef": {
+          "$ref": "#/$defs/ObjectRef"
+        }
+      }
+    },
+    "GameEndedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "winnerTeam"
+      ],
+      "properties": {
+        "winnerTeam": {
+          "$ref": "#/$defs/Team"
+        }
+      }
+    },
+    "SetupRedrawResolvedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "redraw"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "redraw": {
+          "type": "boolean"
+        }
+      }
+    },
+    "GameStartedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "firstSeat"
+      ],
+      "properties": {
+        "firstSeat": {
+          "$ref": "#/$defs/Seat"
+        }
+      }
+    },
+    "PresentationEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "eventSeq",
+        "stateRevision",
+        "eventType",
+        "payload"
+      ],
+      "properties": {
+        "type": {
+          "const": "PRESENTATION_EVENT"
+        },
+        "eventSeq": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "stateRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eventType": {
+          "type": "string",
+          "enum": [
+            "PHASE_CHANGED",
+            "CARD_MOVED",
+            "CARD_REVEALED",
+            "ACTION_COMMITTED",
+            "ATTACK_TARGETED",
+            "RESPONSE_WINDOW_OPENED",
+            "RESPONSE_RESOLVED",
+            "JUDGMENT_REVEALED",
+            "JUDGMENT_RESULT_CHANGED",
+            "DAMAGE_SEGMENT_APPLIED",
+            "STATUS_CHANGED",
+            "DYING_STARTED",
+            "CHARACTER_RESCUED",
+            "CHARACTER_DIED",
+            "CHARACTER_ELIMINATED",
+            "GAME_ENDED",
+            "SETUP_REDRAW_RESOLVED",
+            "GAME_STARTED",
+            "CARD_DRAWN",
+            "CARD_PLAYED",
+            "CARD_DISCARDED",
+            "ATTACK_DECLARED",
+            "ATTACK_RESOLVED",
+            "DAMAGE_PREVENTED",
+            "HEALTH_CHANGED",
+            "STATUS_PREVENTED",
+            "TRIGGER_RESOLVED",
+            "DECK_RESHUFFLED"
+          ]
+        },
+        "payload": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/PhaseChangedPayload"
+            },
+            {
+              "$ref": "#/$defs/CardMovedPayload"
+            },
+            {
+              "$ref": "#/$defs/CardRevealedPayload"
+            },
+            {
+              "$ref": "#/$defs/ActionCommittedPayload"
+            },
+            {
+              "$ref": "#/$defs/AttackTargetedPayload"
+            },
+            {
+              "$ref": "#/$defs/ResponseWindowOpenedPayload"
+            },
+            {
+              "$ref": "#/$defs/ResponseResolvedPayload"
+            },
+            {
+              "$ref": "#/$defs/JudgmentRevealedPayload"
+            },
+            {
+              "$ref": "#/$defs/JudgmentResultChangedPayload"
+            },
+            {
+              "$ref": "#/$defs/DamageSegmentAppliedPayload"
+            },
+            {
+              "$ref": "#/$defs/StatusChangedPayload"
+            },
+            {
+              "$ref": "#/$defs/CharacterStatePayload"
+            },
+            {
+              "$ref": "#/$defs/GameEndedPayload"
+            },
+            {
+              "$ref": "#/$defs/SetupRedrawResolvedPayload"
+            },
+            {
+              "$ref": "#/$defs/GameStartedPayload"
+            },
+            {
+              "$ref": "#/$defs/CardDrawnPayload"
+            },
+            {
+              "$ref": "#/$defs/CardPlayedPayload"
+            },
+            {
+              "$ref": "#/$defs/CardDiscardedPayload"
+            },
+            {
+              "$ref": "#/$defs/AttackDeclaredPayload"
+            },
+            {
+              "$ref": "#/$defs/AttackResolvedPayload"
+            },
+            {
+              "$ref": "#/$defs/DamagePreventedPayload"
+            },
+            {
+              "$ref": "#/$defs/HealthChangedPayload"
+            },
+            {
+              "$ref": "#/$defs/StatusPreventedPayload"
+            },
+            {
+              "$ref": "#/$defs/TriggerResolvedPayload"
+            },
+            {
+              "$ref": "#/$defs/DeckReshuffledPayload"
+            }
+          ]
+        }
       },
       "x-eventPayloadMap": {
-        "PHASE_CHANGED": "PhaseChangedPayload", "CARD_MOVED": "CardMovedPayload", "CARD_REVEALED": "CardRevealedPayload",
-        "ACTION_COMMITTED": "ActionCommittedPayload", "ATTACK_TARGETED": "AttackTargetedPayload", "RESPONSE_WINDOW_OPENED": "ResponseWindowOpenedPayload",
-        "RESPONSE_RESOLVED": "ResponseResolvedPayload", "JUDGMENT_REVEALED": "JudgmentRevealedPayload", "JUDGMENT_RESULT_CHANGED": "JudgmentResultChangedPayload",
-        "DAMAGE_SEGMENT_APPLIED": "DamageSegmentAppliedPayload", "STATUS_CHANGED": "StatusChangedPayload", "DYING_STARTED": "CharacterStatePayload",
-        "CHARACTER_RESCUED": "CharacterStatePayload", "CHARACTER_DIED": "CharacterStatePayload", "CHARACTER_ELIMINATED": "CharacterStatePayload", "GAME_ENDED": "GameEndedPayload",
-        "SETUP_REDRAW_RESOLVED": "SetupRedrawResolvedPayload", "GAME_STARTED": "GameStartedPayload"
+        "PHASE_CHANGED": "PhaseChangedPayload",
+        "CARD_MOVED": "CardMovedPayload",
+        "CARD_REVEALED": "CardRevealedPayload",
+        "ACTION_COMMITTED": "ActionCommittedPayload",
+        "ATTACK_TARGETED": "AttackTargetedPayload",
+        "RESPONSE_WINDOW_OPENED": "ResponseWindowOpenedPayload",
+        "RESPONSE_RESOLVED": "ResponseResolvedPayload",
+        "JUDGMENT_REVEALED": "JudgmentRevealedPayload",
+        "JUDGMENT_RESULT_CHANGED": "JudgmentResultChangedPayload",
+        "DAMAGE_SEGMENT_APPLIED": "DamageSegmentAppliedPayload",
+        "STATUS_CHANGED": "StatusChangedPayload",
+        "DYING_STARTED": "CharacterStatePayload",
+        "CHARACTER_RESCUED": "CharacterStatePayload",
+        "CHARACTER_DIED": "CharacterStatePayload",
+        "CHARACTER_ELIMINATED": "CharacterStatePayload",
+        "GAME_ENDED": "GameEndedPayload",
+        "SETUP_REDRAW_RESOLVED": "SetupRedrawResolvedPayload",
+        "GAME_STARTED": "GameStartedPayload",
+        "CARD_DRAWN": "CardDrawnPayload",
+        "CARD_PLAYED": "CardPlayedPayload",
+        "CARD_DISCARDED": "CardDiscardedPayload",
+        "ATTACK_DECLARED": "AttackDeclaredPayload",
+        "ATTACK_RESOLVED": "AttackResolvedPayload",
+        "DAMAGE_PREVENTED": "DamagePreventedPayload",
+        "HEALTH_CHANGED": "HealthChangedPayload",
+        "STATUS_PREVENTED": "StatusPreventedPayload",
+        "TRIGGER_RESOLVED": "TriggerResolvedPayload",
+        "DECK_RESHUFFLED": "DeckReshuffledPayload"
+      }
+    },
+    "CardDrawnPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "count"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cardRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        }
+      }
+    },
+    "CardPlayedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "purpose"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "cardRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "purpose": {
+          "type": "string"
+        }
+      }
+    },
+    "CardDiscardedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "reason"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "cardRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "AttackDeclaredPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attackerSeat",
+        "targetRefs"
+      ],
+      "properties": {
+        "attackerSeat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "targetRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ObjectRef"
+          }
+        }
+      }
+    },
+    "AttackResolvedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attackId",
+        "result"
+      ],
+      "properties": {
+        "attackId": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        }
+      }
+    },
+    "DamagePreventedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetRef",
+        "amount",
+        "reason"
+      ],
+      "properties": {
+        "targetRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "HealthChangedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "change"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "hp": {
+          "type": "integer"
+        },
+        "shield": {
+          "type": "integer"
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "change": {
+          "type": "string"
+        }
+      }
+    },
+    "StatusPreventedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetRef",
+        "statusId"
+      ],
+      "properties": {
+        "targetRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "statusId": {
+          "type": "string"
+        }
+      }
+    },
+    "TriggerResolvedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "action"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "abilityId": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        }
+      }
+    },
+    "DeckReshuffledPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "count"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     }
   }

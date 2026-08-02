@@ -68,7 +68,7 @@
 - 武器专属机制剩余批次已完成，详见文档117：W12/W33/W54/W56/W57/W58/W61/W64/W66的展示牌堆、判定替换、金币费用、独立弹头与诅咒、血量自动档、全场陨星CD、耐久拆牌、瞄准自动消费及无区域临时金币均已接入。服务端现为93个测试文件、380项测试通过，TypeScript构建与冻结规则校验通过；下一检查点按作者要求停在“统一验收武器合成配方及合成实例离场策略”之前。
 - 武器合成专项已完成，详见文档118：10条配方已进入冻结机器数据；材料可跨本人手牌/装备区，按`synthesizeConsume`原子消费，产物作为新实例加入手牌；所有合成实例按实例来源在将进入弃牌堆/牌堆时改送牌库外，W49初始牌与合成牌可正确分流。服务端现为94个测试文件、386项测试通过，TypeScript构建及规则校验通过；下一检查点按作者要求停在W01—W66武器总验收开始前。
 - 坐骑与雕像连续阶段已完成，详见文档119—120：M-01—M-11共用配置化装备/替换/主动丢弃与距离处理器，双槽坐骑保持单实例，百变怪按当前有效四盾天赋动态计算；十类50张雕像已接入权威正文报价、隐藏选牌、多人顺序、圣骑士LIFO、骑士决斗武器攻击、刺客多目标攻击及工程师循环判定。服务端现为96个测试文件、396项测试通过，TypeScript构建及冻结规则校验通过。本Goal已完成，下一模块尚未启动。
-- “完整可玩链路”连续Goal进行中，武器总验收和跨规则组合验收按作者要求后置。阶段二已完成（详见文档125）：真实WS四玩家E2E从建房到`winnerTeam`连续30次通过，断线重连/静态托管断言与全部协议工具验证通过。本Goal其余边界：注册表逐项真实执行验收继续推进；身份认证（会话token签名/盐化）、持久化幂等容量上限、演示事件全映射、浏览器层Vue自动化联调尚未完成。完整交接见根目录`agents.md`及文档121。
+- “完整可玩链路”连续Goal进行中，武器总验收和跨规则组合验收按作者要求后置。阶段二已完成（详见文档125）：真实WS四玩家E2E从建房到`winnerTeam`连续30次通过，断线重连/静态托管断言与全部协议工具验证通过。阶段3.1演示事件全映射已完成：新增10类演示事件（抽牌/出牌/弃牌/攻击发起/攻击结果/伤害被防/血盾变化/状态免疫/触发结算/牌堆重洗），补齐`judgment.finalized→JUDGMENT_RESULT_CHANGED`，schema演示事件28类全覆盖，客户端按`eventSeq`去重。本Goal其余边界：注册表逐项真实执行验收继续推进；身份认证（会话token签名/盐化）、持久化幂等容量上限、浏览器层Vue自动化联调尚未完成。完整交接见根目录`agents.md`及文档121。
 - 当前目录有Git元数据；修改须保留原始规则来源，统一稿写入`docs/整理/`。
 
 ## 必读恢复入口
@@ -120,6 +120,7 @@
 - 2026-08-02阶段一窗口覆盖：新增`server/src/app/windowCoverage.test.ts`，从源码反向收集全部真实`PendingWindowState`生产点并分类；`windowRegistry`补齐红爵士封灵战锤和五类雕像窗口；红爵士报价支持独立近战/激光目标；雕像隐藏候选改为`concealed:`占位符，超时使用权威随机源；Vue支持多目标规格与隐藏候选点击。当前服务端100个测试文件、421项测试通过，两端构建通过，详见文档123。
 - 2026-08-02阶段二进行中：协议已允许观战`GAME_SNAPSHOT`；已接入`/api/session`、会话token哈希、房间/对局命令持久化幂等、断线宽限与房间清理、静态托管、观战投影和`PRESENTATION_EVENT`广播。新增`stage2.test.ts` 5项通过；真实WS E2E已推进到正式对局与手刀攻击报价，但响应pass仍报`OFFER_HANDLER_NOT_REGISTERED`，正在排查，未完成。转接详见文档124。
 - 2026-08-02阶段二完成：真实WS四玩家E2E从建房到`winnerTeam="A"`连续30次通过。修复四个真实引擎缺陷：地狱火即时伤害等攻击结算完成后执行（`combatScheduler.ts`，原`DIRECT_DAMAGE_NOT_STABLE`）；`druid.ts processVineAfter`、`trapMaster.ts grantBombsAfterAttack`、`laserFishWeapon.ts clearInvalidLaserFishAim`三处commit漏push领域事件（原偶发`STATE_EVENT_SEQUENCE_GAP`）。E2E新增窗口排干循环、权威状态驱动的快照匹配、选角避开拳击柱/超界者；新增`reconnect.test.ts`断线重连与静态托管断言；协议工具全部通过并重新生成`room-protocol.ts`。服务端102文件/427项、客户端3文件/10项、两端构建全部通过，详见文档125。
+- 2026-08-02阶段3.1演示事件全映射完成：`projection.ts`新增10类演示事件（`CARD_DRAWN/CARD_PLAYED/CARD_DISCARDED/ATTACK_DECLARED/ATTACK_RESOLVED/DAMAGE_PREVENTED/HEALTH_CHANGED/STATUS_PREVENTED/TRIGGER_RESOLVED/DECK_RESHUFFLED`）并补齐`judgment.finalized→JUDGMENT_RESULT_CHANGED`；`client-protocol.schema.json`演示事件从18扩至28类（新增10个payload定义并挂入`PresentationEvent.payload.oneOf`）；客户端`serverProjection.ts`按`eventSeq`去重（快照重置队列+忽略过期事件）；新增`presentationEvents.test.ts`表驱动映射/隐私/全覆盖测试与`serverProjection.test.ts`去重测试，E2E加广播事件`eventSeq`单调不重复断言。服务端104文件/433项、客户端4文件/12项、两端构建与全部协议工具通过。
 
 ## 最近文档
 

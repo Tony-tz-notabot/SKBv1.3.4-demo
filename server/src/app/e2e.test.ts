@@ -85,6 +85,9 @@ describe("real websocket four-player E2E",()=>{
     await drainWindows(clients,rooms,sessions[0]!.userId,responseSnap.gameId);lastGameRevision=rooms.roomForUser(sessions[0]!.userId)!.game!.stateRevision;
    }
    const ended=await snapshotFor([clients[4]!],"game",message=>message.type==="GAME_SNAPSHOT"&&message.viewer.seat===null&&message.publicView.winnerTeam==="A");expect(ended.message.publicView.winnerTeam).toBe("A");
+   const eventSeqs=clients.flatMap(client=>client.messages.filter(entry=>entry.type==="MESSAGE"&&entry.channel==="game"&&entry.message.type==="PRESENTATION_EVENT").map(entry=>entry.message.eventSeq)).sort((a,b)=>a-b);
+   expect(eventSeqs.length).toBeGreaterThan(0);
+   for(const client of clients){const seqs=client.messages.filter(entry=>entry.type==="MESSAGE"&&entry.channel==="game"&&entry.message.type==="PRESENTATION_EVENT").map(entry=>entry.message.eventSeq);for(let i=1;i<seqs.length;i+=1)expect(seqs[i]!).toBeGreaterThan(seqs[i-1]!);expect(new Set(seqs).size).toBe(seqs.length);}
   }finally{for(const client of clients)client.close();await server.close();}
  },120000);
 });

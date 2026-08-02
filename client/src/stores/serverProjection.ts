@@ -10,6 +10,7 @@ export const useServerProjectionStore = defineStore("serverProjection", () => {
   const setupSnapshot = shallowRef<SetupSnapshot | null>(null);
   const eventQueue = shallowRef<readonly PresentationEvent[]>([]);
   const protocolErrors = shallowRef<readonly string[]>([]);
+  let lastEventSeq = 0;
 
   const screen = computed(() => gameSnapshot.value ? "game" : setupSnapshot.value ? "setup" : roomSnapshot.value ? "room" : "lobby");
 
@@ -23,9 +24,13 @@ export const useServerProjectionStore = defineStore("serverProjection", () => {
       gameSnapshot.value = message;
       setupSnapshot.value = null;
       eventQueue.value = [];
+      lastEventSeq = message.lastEventSeq;
     }
-    if (message.type === "SETUP_SNAPSHOT") { setupSnapshot.value = message; gameSnapshot.value = null; eventQueue.value = []; }
-    if (message.type === "PRESENTATION_EVENT") eventQueue.value = [...eventQueue.value, message];
+    if (message.type === "SETUP_SNAPSHOT") { setupSnapshot.value = message; gameSnapshot.value = null; eventQueue.value = []; lastEventSeq = message.lastEventSeq; }
+    if (message.type === "PRESENTATION_EVENT" && message.eventSeq > lastEventSeq) {
+      eventQueue.value = [...eventQueue.value, message];
+      lastEventSeq = message.eventSeq;
+    }
   }
 
   function reportProtocolError(errors: readonly string[]) {
@@ -39,6 +44,7 @@ export const useServerProjectionStore = defineStore("serverProjection", () => {
     setupSnapshot.value = null;
     eventQueue.value = [];
     protocolErrors.value = [];
+    lastEventSeq = 0;
   }
 
   return {
