@@ -23,7 +23,7 @@
 //   SKB_PROFILE     Edge 用户数据目录（默认 <server>/data/.edge-skb-profile）
 
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -152,9 +152,6 @@ class CdpClient {
 }
 
 async function openEdge(edge, profile, headless) {
-  // 同 profile 的旧 Edge 若在运行，新实例会转发给它然后自己退出（标签页叠加的根因）。
-  // 先清掉旧窗口，保证每次运行都是干净窗口 + 恰好 N 个标签页。
-  await stopEdge(profile);
   const args = [
     "--no-first-run", "--no-default-browser-check", "--disable-popup-blocking",
     "--no-restore-session-state", "--disable-session-crashed-bubble",
@@ -305,6 +302,13 @@ async function main() {
   if (serverOnly) { log("服务器运行中，浏览器未打开。停止：Ctrl-C 或 --stop"); process.exit(0); }
 
   const edge = await findEdge();
+  // 默认测试 profile 是一次性的：登录态在 sessionStorage（运行时注入），不依赖持久化。
+  // 每次冷启动前删掉它，从根上杜绝 Edge 会话恢复出旧标签页（那正是"8个=4登录+4未登录"的来源）。
+  const profileIsDefault = !process.env.SKB_PROFILE;
+  if (profileIsDefault) {
+    await stopEdge(profile); // 先关掉正在用该 profile 的旧 Edge，否则文件被占用删不掉
+    if (existsSync(profile)) { rmSync(profile, { recursive: true, force: true }); log("已重置测试 profile"); }
+  }
   const edgeProc = await openEdge(edge, profile, headless);
   const targets = await openLoggedInTabs(baseUrl, sessions);
   const shotDir = join(DATA_DIR, "shots");
