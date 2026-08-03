@@ -27,7 +27,7 @@ class TestClient{
  constructor(private readonly socket:WebSocket){this.open=new Promise((resolve,reject)=>{socket.once("open",()=>resolve());socket.once("error",reject);});socket.on("message",raw=>this.accept(String(raw)));}
  send(message:unknown){this.socket.send(JSON.stringify(message));}
  close(){if(this.socket.readyState===this.socket.OPEN)this.socket.close();else this.socket.terminate();}
- private accept(raw:string){const wire=JSON.parse(raw) as WireEntry;wire.seq=++this.seq;if(wire.type==="MESSAGE"||wire.type==="COMMAND_RESULT"){const result=validateProtocol(wire.channel!,wire.message);if(!result.ok)throw new Error(`FULL protocol invalid: ${result.errors.join("; ")} :: RAW=${raw.slice(0,600)}`);}this.messages.push(wire);}
+ private accept(raw:string){const wire=JSON.parse(raw) as WireEntry;wire.seq=++this.seq;if(wire.type==="MESSAGE"||wire.type==="COMMAND_RESULT"){const result=validateProtocol(wire.channel!,wire.message);if(!result.ok)throw new Error(`FULL protocol invalid: ${result.errors.join("; ")} :: RAW=${raw.slice(0,600)}`);}if(wire.type==="MESSAGE"&&wire.channel==="game"&&wire.message?.type==="GAME_SNAPSHOT"&&wire.message.interaction?.prompt){if(wire.message.interaction.prompt.deadlineAt<=wire.message.serverTime)throw new Error(`FULL zero-deadline window: kind=${wire.message.interaction.prompt.kind} deadlineAt=${wire.message.interaction.prompt.deadlineAt} serverTime=${wire.message.serverTime} RAW=${raw.slice(0,300)}`);}this.messages.push(wire);}
 }
 
 const starts=(clients:TestClient[])=>clients.map(client=>({client,index:client.messages.length}));
