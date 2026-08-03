@@ -157,6 +157,7 @@ async function openEdge(edge, profile, headless) {
   await stopEdge(profile);
   const args = [
     "--no-first-run", "--no-default-browser-check", "--disable-popup-blocking",
+    "--no-restore-session-state", "--disable-session-crashed-bubble",
     `--remote-debugging-port=${CDP_PORT}`,
     `--user-data-dir=${profile}`,
   ];
@@ -175,22 +176,30 @@ async function openEdge(edge, profile, headless) {
   return proc;
 }
 
+async function listPages() {
+  const list = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json/list`)).json();
+  return list.filter((t) => t.type === "page");
+}
+
 async function openLoggedInTabs(baseUrl, sessions) {
-  // 清掉上次运行遗留的标签页：本 profile 专属（.edge-skb-profile），全部 page target 都是我们的
-  try {
-    const list = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json/list`)).json();
-    const leftover = list.filter((t) => t.type === "page");
-    for (const t of leftover) {
-      await fetch(`http://127.0.0.1:${CDP_PORT}/json/close/${t.id}`).catch(() => {});
-    }
-    if (leftover.length) log(`关闭 ${leftover.length} 个遗留标签页`);
-  } catch { /* 无遗留 */ }
+  // 启动 Edge 后已有的标签页 = 会话恢复的旧页（未登录），全部清掉。
+  // 不能靠 /json/close/<id>：close 有时不生效；直接重建窗口里的标签页。
+  let preexisting = [];
+  try { preexisting = await listPages(); } catch { /* Edge 刚起 */ }
+  const preIds = new Set(preexisting.map((t) => t.id));
   const targets = [];
   for (let i = 0; i < sessions.length; i++) {
     const res = await fetch(`http://127.0.0.1:${CDP_PORT}/json/new?${encodeURIComponent(baseUrl)}`, { method: "PUT" });
     const target = await res.json();
     targets.push(target);
   }
+  // 启动前就存在的标签页 = 会话恢复的旧页（未登录），全关掉，保证恰好 N 个
+  const now = await listPages();
+  const stale = now.filter((t) => preIds.has(t.id));
+  for (const t of stale) {
+    await fetch(`http://127.0.0.1:${CDP_PORT}/json/close/${t.id}`).catch(() => {});
+  }
+  if (stale.length) log(`关闭 ${stale.length} 个会话恢复的标签页`);
   await sleep(1500);
   for (let i = 0; i < sessions.length; i++) {
     const cdp = await CdpClient.connect(targets[i].webSocketDebuggerUrl);
