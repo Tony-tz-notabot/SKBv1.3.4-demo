@@ -1,9 +1,0 @@
-feat(退出本局): 任一玩家可退出并结束当前对局，显示未完成且不做胜负评判
-
-- 服务端：新 GAME_COMMAND FORFEIT（schema 枚举 + 空 payload 分支）；
-  置 lifecycle=ended、forfeited=true、winnerTeam=null、清空窗口/战斗，
-  发 game.aborted 事件；投影 headline：forfeited 显示未完成
-- 客户端：GameView HUD 新增退出本局按钮（对局中显示），点击经
-  gameActions.forfeit 发送；结束后 headline 显示未完成、按钮隐藏
-- 测试：forfeit.test.ts 2 项（全员收到未完成快照无胜负/旧 revision 拒绝
-  零污染）、gameViewChoices 按钮 emit 1 项；服务端 497 项、客户端 33 项全过
