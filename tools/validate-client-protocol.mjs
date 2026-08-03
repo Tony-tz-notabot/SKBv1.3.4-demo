@@ -29,7 +29,7 @@ const requiredDefs = ["SetupSnapshot", "SetupCardView", "SetupSeatState", "GameS
 for (const name of requiredDefs) if (!schema.$defs[name]) fail(`missing definition ${name}`);
 const eventNames = schema.$defs.PresentationEvent.properties.eventType.enum;
 const eventPayloadMap = schema.$defs.PresentationEvent["x-eventPayloadMap"];
-if (eventNames.length !== 28 || Object.keys(eventPayloadMap).length !== eventNames.length) fail("event payload map coverage");
+if (eventNames.length !== 32 || Object.keys(eventPayloadMap).length !== eventNames.length) fail("event payload map coverage");
 for (const eventName of eventNames) if (!schema.$defs[eventPayloadMap[eventName]]) fail(`event payload missing ${eventName}`);
 const commandNames = schema.$defs.GameCommand.properties.command.enum;
 const commandPayloadMap = schema.$defs.GameCommand["x-commandPayloadMap"];

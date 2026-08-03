@@ -346,8 +346,8 @@ export type PresentationEvent = {
   "type": "PRESENTATION_EVENT";
   "eventSeq": number;
   "stateRevision": number;
-  "eventType": "PHASE_CHANGED" | "CARD_MOVED" | "CARD_REVEALED" | "ACTION_COMMITTED" | "ATTACK_TARGETED" | "RESPONSE_WINDOW_OPENED" | "RESPONSE_RESOLVED" | "JUDGMENT_REVEALED" | "JUDGMENT_RESULT_CHANGED" | "DAMAGE_SEGMENT_APPLIED" | "STATUS_CHANGED" | "DYING_STARTED" | "CHARACTER_RESCUED" | "CHARACTER_DIED" | "CHARACTER_ELIMINATED" | "GAME_ENDED" | "SETUP_REDRAW_RESOLVED" | "GAME_STARTED" | "CARD_DRAWN" | "CARD_PLAYED" | "CARD_DISCARDED" | "ATTACK_DECLARED" | "ATTACK_RESOLVED" | "DAMAGE_PREVENTED" | "HEALTH_CHANGED" | "STATUS_PREVENTED" | "TRIGGER_RESOLVED" | "DECK_RESHUFFLED";
-  "payload": PhaseChangedPayload | CardMovedPayload | CardRevealedPayload | ActionCommittedPayload | AttackTargetedPayload | ResponseWindowOpenedPayload | ResponseResolvedPayload | JudgmentRevealedPayload | JudgmentResultChangedPayload | DamageSegmentAppliedPayload | StatusChangedPayload | CharacterStatePayload | GameEndedPayload | SetupRedrawResolvedPayload | GameStartedPayload | CardDrawnPayload | CardPlayedPayload | CardDiscardedPayload | AttackDeclaredPayload | AttackResolvedPayload | DamagePreventedPayload | HealthChangedPayload | StatusPreventedPayload | TriggerResolvedPayload | DeckReshuffledPayload;
+  "eventType": "PHASE_CHANGED" | "CARD_MOVED" | "CARD_REVEALED" | "ACTION_COMMITTED" | "ATTACK_TARGETED" | "RESPONSE_WINDOW_OPENED" | "RESPONSE_RESOLVED" | "JUDGMENT_REVEALED" | "JUDGMENT_RESULT_CHANGED" | "DAMAGE_SEGMENT_APPLIED" | "STATUS_CHANGED" | "DYING_STARTED" | "CHARACTER_RESCUED" | "CHARACTER_DIED" | "CHARACTER_ELIMINATED" | "GAME_ENDED" | "SETUP_REDRAW_RESOLVED" | "GAME_STARTED" | "CARD_DRAWN" | "CARD_PLAYED" | "CARD_DISCARDED" | "ATTACK_DECLARED" | "ATTACK_RESOLVED" | "DAMAGE_PREVENTED" | "HEALTH_CHANGED" | "STATUS_PREVENTED" | "TRIGGER_RESOLVED" | "DECK_RESHUFFLED" | "TURN_CHANGED" | "CHOICE_REQUESTED" | "COUNTER_CHANGED" | "DURABILITY_CHANGED";
+  "payload": PhaseChangedPayload | CardMovedPayload | CardRevealedPayload | ActionCommittedPayload | AttackTargetedPayload | ResponseWindowOpenedPayload | ResponseResolvedPayload | JudgmentRevealedPayload | JudgmentResultChangedPayload | DamageSegmentAppliedPayload | StatusChangedPayload | CharacterStatePayload | GameEndedPayload | SetupRedrawResolvedPayload | GameStartedPayload | CardDrawnPayload | CardPlayedPayload | CardDiscardedPayload | AttackDeclaredPayload | AttackResolvedPayload | DamagePreventedPayload | HealthChangedPayload | StatusPreventedPayload | TriggerResolvedPayload | DeckReshuffledPayload | TurnChangedPayload | ChoiceRequestedPayload | CounterChangedPayload | DurabilityChangedPayload;
 };
 
 export type CardDrawnPayload = {
@@ -405,6 +405,28 @@ export type TriggerResolvedPayload = {
 
 export type DeckReshuffledPayload = {
   "count": number;
+};
+
+export type TurnChangedPayload = {
+  "seat": Seat;
+  "round": number;
+};
+
+export type ChoiceRequestedPayload = {
+  "seat": Seat;
+  "kind": string;
+};
+
+export type CounterChangedPayload = {
+  "seat": Seat;
+  "key": string;
+  "value": number;
+};
+
+export type DurabilityChangedPayload = {
+  "cardRef": ObjectRef;
+  "from": number;
+  "to": number;
 };
 
 

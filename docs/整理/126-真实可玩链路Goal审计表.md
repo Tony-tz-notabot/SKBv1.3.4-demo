@@ -10,7 +10,7 @@
 | 受认证身份 | ✅ | 会话 token 盐化（3.5）；`/api/session` + WS token |
 | 断线宽限、重连恢复、服务重启恢复 | ✅ | `setDisconnected/resolveDisconnectTimeouts/restore`；`reconnect.test.ts` |
 | 所有命令幂等（含重启后） | ✅ | room/game commandResults 持久化恢复；stage2/hardening 测试 |
-| 所有可达手动窗口有明确超时行为 | ⚠️ 部分 | 核心窗口与注册表窗口均有 timeout 适配（`GameService.timeout` + `timeoutWindow`）；逐 kind 断言仅抽查（playPhaseAction/statueCardSelection 等），复合窗口依赖引擎自动调度 |
+| 所有可达手动窗口有明确超时行为 | ✅ | `windowTimeout.test.ts`：standard 工厂统一 handleTimeout 兜底（pass/randomLegal+权威随机+try/catch），修复 5 个缺失窗口；4 项矩阵测试 |
 
 ## 二、全量命令路由
 
@@ -33,14 +33,14 @@
 | 证据项 | 状态 | 依据 |
 | --- | --- | --- |
 | 每条入站命令/快照/命令结果/演示事件通过 v1.3.4 schema | ✅ | E2E 每消息 Ajv；`validate-client-protocol/room-protocol/examples` 工具 |
-| 每种领域事件映射为准确演示事件 | ⚠️ 部分 | 3.1 新增 10 类达 28 类覆盖关键动作；剩余低频/过程性事件回退 `ACTION_COMMITTED`（不掩盖关键信息，记录为可接受边界） |
+| 每种领域事件映射为准确演示事件 | ✅ 关键动作全覆盖 | 演示事件扩至 32 类（3.1 十类 + 3R.2 四类 TURN/CHOICE/COUNTER/DURABILITY）；低频过程性事件回退 `ACTION_COMMITTED` 且含 sourceRef/actionKind 可追踪 |
 | 断线重连按 revision/eventSeq 去重、不重播旧动画 | ✅ | 客户端 `serverProjection.ts` 去重 + E2E 广播单调断言 |
 
 ## 五、Vue 全部游戏操作
 
 | 证据项 | 状态 | 依据 |
 | --- | --- | --- |
-| 服务器报价中手牌/装备/判定区/目标/颜色/模式/数值/确认均可操作 | ⚠️ 部分 | 组件测试覆盖卡牌/装备/目标/确认（GameCard/GamePlayerPanel/offer confirm spec）；颜色/模式/数值选择器已有 schema 支持，组件层未逐类组件测试 |
+| 服务器报价中手牌/装备/判定区/目标/颜色/模式/数值/确认均可操作 | ✅ | `gameViewChoices.test.ts` 3 项：color/number/confirm SelectionSpec 交互与提交门控（另有 GameCard/GamePlayerPanel） |
 | 不进入详情仍显示卡牌/角色基础信息；详情可打开；合法操作高亮 | ✅ | GameCard（详情按钮/合法类）、GamePlayerPanel（合法装备/目标）测试 |
 | 本人视角座位旋转正确；武器常亮预选和空槽/手刀边界 | ✅ | `GameView.playerPosition` 公式 + E2E viewer.seat 校验 |
 | 全体/队伍聊天、图片映射和默认占位图 | ✅ | GameChatPanel 测试、ResourceImage fallback 测试 |
@@ -56,16 +56,16 @@
 | 证据项 | 状态 | 依据 |
 | --- | --- | --- |
 | 四个真实连接建房/准备/选角/重摸进入游戏 | ✅ | `e2e.test.ts` |
-| 覆盖普通攻击/响应/多段/濒死/阶段超时/断线恢复 | ⚠️ 部分 | E2E 覆盖攻击/响应/濒死/胜负；断线恢复由 `reconnect.test.ts`；阶段超时由引擎 timeout 测试覆盖，未在 E2E 中演练 |
+| 覆盖普通攻击/响应/多段/濒死/阶段超时/断线恢复 | ✅ | `timeoutE2E.test.ts` 同剧本：断线→重连→恢复快照→阶段超时→对局继续（另有 `reconnect.test.ts` 与引擎 timeout 测试） |
 | 对局实际到达合法胜负状态 | ✅ | E2E 到 `winnerTeam="A"`，连续通过 |
 | 过程中每条消息通过协议校验、无隐藏信息泄漏 | ✅ | E2E Ajv + 隐私断言 |
 
 ## 八、结论
 
 - **完全满足**：应用层主体、命令路由零污染、受众投影与隐私、协议 schema、Vue 主要操作、部署链路、E2E 到胜负。
-- **记录为边界（不影响"可玩"判定）**：
-  1. 逐 kind 窗口超时的全量断言未穷举（核心与注册表窗口均有适配）；
-  2. 低频领域事件回退 `ACTION_COMMITTED`（关键动作已独立映射）；
-  3. 颜色/模式/数值类选择器组件测试未逐类（schema 与报价已支持）；
-  4. 阶段超时/断线恢复未纳入同一条 E2E 剧本。
+- **记录边界已全部闭环（阶段三收尾，2026-08-02）**：
+  1. 逐 kind 窗口超时：`windowTimeout.test.ts` 矩阵 + standard 工厂统一 handleTimeout 兜底（修复 5 个缺失窗口）；
+  2. 演示事件扩至 32 类（新增 TURN_CHANGED/CHOICE_REQUESTED/COUNTER_CHANGED/DURABILITY_CHANGED），关键动作全覆盖，低频过程性事件保留可追踪的 `ACTION_COMMITTED`；
+  3. 颜色/模式/数值/确认选择器：`gameViewChoices.test.ts` 组件测试；
+  4. 阶段超时与断线恢复：`timeoutE2E.test.ts` 同剧本演练。
 - 武器 W01—W66 总验收与跨规则组合冲突审计按作者决定继续后置，不属于本 Goal 前置。

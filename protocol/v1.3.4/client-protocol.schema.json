@@ -1603,7 +1603,11 @@
             "HEALTH_CHANGED",
             "STATUS_PREVENTED",
             "TRIGGER_RESOLVED",
-            "DECK_RESHUFFLED"
+            "DECK_RESHUFFLED",
+            "TURN_CHANGED",
+            "CHOICE_REQUESTED",
+            "COUNTER_CHANGED",
+            "DURABILITY_CHANGED"
           ]
         },
         "payload": {
@@ -1682,6 +1686,18 @@
             },
             {
               "$ref": "#/$defs/DeckReshuffledPayload"
+            },
+            {
+              "$ref": "#/$defs/TurnChangedPayload"
+            },
+            {
+              "$ref": "#/$defs/ChoiceRequestedPayload"
+            },
+            {
+              "$ref": "#/$defs/CounterChangedPayload"
+            },
+            {
+              "$ref": "#/$defs/DurabilityChangedPayload"
             }
           ]
         }
@@ -1714,7 +1730,11 @@
         "HEALTH_CHANGED": "HealthChangedPayload",
         "STATUS_PREVENTED": "StatusPreventedPayload",
         "TRIGGER_RESOLVED": "TriggerResolvedPayload",
-        "DECK_RESHUFFLED": "DeckReshuffledPayload"
+        "DECK_RESHUFFLED": "DeckReshuffledPayload",
+        "TURN_CHANGED": "TurnChangedPayload",
+        "CHOICE_REQUESTED": "ChoiceRequestedPayload",
+        "COUNTER_CHANGED": "CounterChangedPayload",
+        "DURABILITY_CHANGED": "DurabilityChangedPayload"
       }
     },
     "CardDrawnPayload": {
@@ -1903,6 +1923,81 @@
       ],
       "properties": {
         "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "TurnChangedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "round"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "ChoiceRequestedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "kind"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "kind": {
+          "type": "string"
+        }
+      }
+    },
+    "CounterChangedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seat",
+        "key",
+        "value"
+      ],
+      "properties": {
+        "seat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer"
+        }
+      }
+    },
+    "DurabilityChangedPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cardRef",
+        "from",
+        "to"
+      ],
+      "properties": {
+        "cardRef": {
+          "$ref": "#/$defs/ObjectRef"
+        },
+        "from": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "to": {
           "type": "integer",
           "minimum": 0
         }

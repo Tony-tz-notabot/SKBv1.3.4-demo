@@ -49,6 +49,14 @@ describe("presentation event mapping",()=>{
    ["ability.resolved",{seat:1,abilityId:"skill.x"},"TRIGGER_RESOLVED"],
    ["deck.reshuffled",{randomSeq:1,count:5,reason:"draw"},"DECK_RESHUFFLED"],
    ["deck.exhausted",{reason:"draw"},"DECK_RESHUFFLED"],
+   ["turn.start",{seat:2,round:1},"TURN_CHANGED"],
+   ["turn.end",{seat:2,round:1},"TURN_CHANGED"],
+   ["choice.requested",{seat:1,kind:"playPhaseAction"},"CHOICE_REQUESTED"],
+   ["counter.changed",{seat:1,counterId:"trap.bombs",from:0,to:2},"COUNTER_CHANGED"],
+   ["marker.changed",{seat:1,markerId:"aim",from:0,to:1},"COUNTER_CHANGED"],
+   ["cooldown.started",{seat:1,abilityId:"skill.general.mortar",cooldown:2},"COUNTER_CHANGED"],
+   ["weapon.durability.changed",{weaponRef:handCard,before:2,after:1},"DURABILITY_CHANGED"],
+   ["armor.durability.changed",{seat:1,armorRef:handCard,from:1,to:0},"DURABILITY_CHANGED"],
    ["judgment.finalized",{judgmentId:"j1",printedColor:"red",finalColor:"blue",overridden:true},"JUDGMENT_RESULT_CHANGED"],
    ["judgment.card.revealed",{judgmentId:"j1",cardRef:handCard,printedColor:"red"},"JUDGMENT_REVEALED"],
    ["phase.start",{seat:1,phase:"prepare"},"PHASE_CHANGED"],
@@ -72,7 +80,7 @@ describe("presentation event mapping",()=>{
    expect(presented,domainType).toBeTruthy();expect(presented!.eventType,domainType).toBe(expected);covered.add(expected);
    expect(validateProtocol("game",presented),`${domainType}->${expected}`).toEqual({ok:true});
   }
-  expect([...covered].sort()).toEqual(["ATTACK_DECLARED","ATTACK_RESOLVED","ATTACK_TARGETED","CARD_DISCARDED","CARD_DRAWN","CARD_MOVED","CARD_PLAYED","CARD_REVEALED","CHARACTER_DIED","CHARACTER_ELIMINATED","CHARACTER_RESCUED","DAMAGE_PREVENTED","DAMAGE_SEGMENT_APPLIED","DECK_RESHUFFLED","DYING_STARTED","GAME_ENDED","GAME_STARTED","HEALTH_CHANGED","JUDGMENT_RESULT_CHANGED","JUDGMENT_REVEALED","PHASE_CHANGED","RESPONSE_RESOLVED","RESPONSE_WINDOW_OPENED","STATUS_CHANGED","STATUS_PREVENTED","TRIGGER_RESOLVED"].sort());
+  expect([...covered].sort()).toEqual(["ATTACK_DECLARED","ATTACK_RESOLVED","ATTACK_TARGETED","CARD_DISCARDED","CARD_DRAWN","CARD_MOVED","CARD_PLAYED","CARD_REVEALED","CHARACTER_DIED","CHARACTER_ELIMINATED","CHARACTER_RESCUED","CHOICE_REQUESTED","COUNTER_CHANGED","DAMAGE_PREVENTED","DAMAGE_SEGMENT_APPLIED","DECK_RESHUFFLED","DURABILITY_CHANGED","DYING_STARTED","GAME_ENDED","GAME_STARTED","HEALTH_CHANGED","JUDGMENT_RESULT_CHANGED","JUDGMENT_REVEALED","PHASE_CHANGED","RESPONSE_RESOLVED","RESPONSE_WINDOW_OPENED","STATUS_CHANGED","STATUS_PREVENTED","TRIGGER_RESOLVED","TURN_CHANGED"].sort());
   expect(covered.has("ACTION_COMMITTED")).toBe(false);
  });
  it("maps setup redraw events to SETUP_REDRAW_RESOLVED while in the redraw lifecycle",async()=>{const {room,users}=await startedRoom(),state=room.game!,projector=new GameProjector(ruleset);
