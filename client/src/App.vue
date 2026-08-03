@@ -85,11 +85,11 @@ const localizedRejection = computed(() => lastRejection.value ? localizeCommandR
     <section v-if="lastRejection && localizedRejection" class="notice notice--error" role="alert"><strong>{{ localizedRejection.title }}</strong><p>{{ localizedRejection.detail }}</p><details><summary>技术信息</summary><code>{{ lastRejection.reasonCode }} · {{ lastRejection.messageKey }}</code></details><button class="button" @click="feedbackStore.clearRejection()">关闭</button></section>
     <div v-if="pendingIds.length" class="pending-banner" role="status">等待服务器确认 · {{ pendingIds.length }}</div>
 
-    <CharacterSelectionView v-if="roomSnapshot?.phase === 'characterSelection'" :snapshot="roomSnapshot" @preselect="roomActions.preselectCharacter" @lock="roomActions.lockCharacter" @chat="roomActions.sendChat" />
-    <RoomView v-else-if="roomSnapshot" :snapshot="roomSnapshot" @ready="roomActions.setReady" @chat="roomActions.sendChat" @settings="roomActions.updateSettings" @change-seat="roomActions.changeSeat" @kick="roomActions.kickPlayer" @transfer-host="roomActions.transferHost" @start="roomActions.startGame" @leave="roomActions.leave" @close="roomActions.closeRoom" />
+    <GameView v-if="gameSnapshot" :snapshot="gameSnapshot" :events="eventQueue" @execute="gameActions.execute" @preselection="gameActions.setPreselection" @chat="gameActions.sendChat" />
     <SetupRedrawView v-else-if="setupSnapshot" :snapshot="setupSnapshot" @decide="(offerId,redraw)=>gameActions.execute(offerId,{confirm:[redraw]})" />
-    <LobbyView v-else-if="!gameSnapshot" :snapshot="lobbySnapshot" @create="(settings,password)=>roomActions.create(settings,password||null)" @join="(code,password,asSpectator)=>roomActions.join(code,password||null,asSpectator)" />
-    <GameView v-else-if="gameSnapshot" :snapshot="gameSnapshot" :events="eventQueue" @execute="gameActions.execute" @preselection="gameActions.setPreselection" @chat="gameActions.sendChat" />
+    <CharacterSelectionView v-else-if="roomSnapshot?.phase === 'characterSelection'" :snapshot="roomSnapshot" @preselect="roomActions.preselectCharacter" @lock="roomActions.lockCharacter" @chat="roomActions.sendChat" />
+    <RoomView v-else-if="roomSnapshot && roomSnapshot.phase !== 'inGame'" :snapshot="roomSnapshot" @ready="roomActions.setReady" @chat="roomActions.sendChat" @settings="roomActions.updateSettings" @change-seat="roomActions.changeSeat" @kick="roomActions.kickPlayer" @transfer-host="roomActions.transferHost" @start="roomActions.startGame" @leave="roomActions.leave" @close="roomActions.closeRoom" />
+    <LobbyView v-else :snapshot="lobbySnapshot" @create="(settings,password)=>roomActions.create(settings,password||null)" @join="(code,password,asSpectator)=>roomActions.join(code,password||null,asSpectator)" />
 
     <footer class="boundary-note">Vue 不执行规则，不预测隐藏信息，不直接修改权威状态。</footer>
   </main>
