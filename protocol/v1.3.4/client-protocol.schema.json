@@ -669,6 +669,12 @@
             "string",
             "null"
           ]
+        },
+        "slot": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },

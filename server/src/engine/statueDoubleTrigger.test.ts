@@ -8,6 +8,7 @@ import {
   finishStatueEffectFlow,
   StatuePlaySession,
 } from "./statueDoubleTrigger.js";
+import {StatueResolutionSession} from "./statueEffects.js";
 let r: LoadedRuleset;
 beforeAll(async () => {
   r = await loadFrozenRuleset(
@@ -32,8 +33,9 @@ describe("statue double trigger", () => {
     Object.assign(s,{activeSeat:1,phase:"play",phaseBoundary:"body",phaseMode:"manual",phaseBodyResolved:false});
     s.pendingWindows=[{promptId:"play",kind:"playPhaseAction",prioritySeat:1,mandatory:false,deadlineAt:900,timeoutPolicy:"pass",legalOfferIds:["offer:playPhaseAction:finish"],context:{}}];
     s.players[0]!.initialTalentIds.push("talent.statue_double_trigger");
+    for(const seat of[1,2,3,4]as const)for(const ref of[...s.zones[`hand:${seat}`]!.orderedCardRefs])if(s.cards[ref]!.templateId.startsWith("statue.paladin.")){const z=s.zones[s.cards[ref]!.zoneRef]!;z.orderedCardRefs.splice(z.orderedCardRefs.indexOf(ref),1);s.zones.drawPile!.orderedCardRefs.push(ref);Object.assign(s.cards[ref]!,{zoneRef:"drawPile",ownerSeat:null,controllerSeat:null,faceUp:false});}
     const statue = Object.values(s.cards).find((x) =>
-        x.templateId.startsWith("statue."),
+        x.templateId.startsWith("statue.wizard."),
       )!,
       z = s.zones[statue.zoneRef]!;
     z.orderedCardRefs.splice(z.orderedCardRefs.indexOf(statue.cardRef), 1);
@@ -49,7 +51,12 @@ describe("statue double trigger", () => {
     expect(session.state.cards[statue.cardRef]!.zoneRef).toBe("resolving");
     let state = finalizeJudgment(session.state, "blue").state;
     expect(state.cards[statue.cardRef]!.runtime.returnAfterStatue).toBe(true);
-    state = finishStatueEffectFlow(state, statue.cardRef, true)!.state;
+    // 判蓝后自动进入效果解析窗口，执行后按双触回手
+    const window=state.pendingWindows[0]!;
+    expect(window.kind).toBe("statueResolutionChoice");
+    const choice=new StatueResolutionSession(state,r),chosen=choice.handle({commandId:"resolve-statue",gameId:state.gameId,expectedStateRevision:state.stateRevision,actorUserId:"u1",offerId:window.legalOfferIds[0]!,statueRef:statue.cardRef},900);
+    expect(chosen.accepted).toBe(true);
+    state=choice.state;
     expect(state.cards[statue.cardRef]!.zoneRef).toBe("hand:1");
     expect(state.pendingWindows[0]).toMatchObject({kind:"playPhaseAction",prioritySeat:1});
   });

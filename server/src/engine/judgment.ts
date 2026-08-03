@@ -1,5 +1,6 @@
 import type { LoadedRuleset } from "../ruleset/types.js";
 import { ensureDrawPileInTransaction } from "./deck.js";
+import { openStatueResolutionFromJudgment } from "./statueDoubleTrigger.js";
 import type { AuthoritativeGameState, Seat } from "./state.js";
 import { validateAuthoritativeState } from "./stateValidation.js";
 import { EngineTransaction } from "./transaction.js";
@@ -306,6 +307,8 @@ export function finalizeJudgment(
       matched,
       finalColor,
     });
+    // 双触判定完成后继续雕像效果解析（目标选择/直接执行）
+    openStatueResolutionFromJudgment(tx, context.statueRef);
   }
   if (
     typeof context.attackId === "string" &&
