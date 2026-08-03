@@ -95,6 +95,14 @@ describe("presentation event mapping",()=>{
   expect((other.payload as any).cardRefs??[]).toHaveLength(0);expect(JSON.stringify(other)).not.toContain("private:");
   expect(validateProtocol("game",owner)).toEqual({ok:true});expect(validateProtocol("game",other)).toEqual({ok:true});
  });
+ it("does not emit COUNTER_CHANGED when a marker value is a non-numeric reference",async()=>{const {room,users}=await startedRoom();for(const seat of[1,2,3,4]as const)room.game=resolveInitialRedraw(room.game!,seat,false,ruleset).state;const state=room.game! as AuthoritativeGameState,projector=new GameProjector(ruleset);
+  const refValue={eventType:"marker.changed" as const,payload:{seat:4,markerId:"elf.aimTargetRef",from:null,to:null,value:null},eventSeq:1,stateRevision:state.stateRevision};
+  const presented=projector.presentationFor(state,users[3]!.userId,[refValue])[0];
+  expect(presented,"reference-typed marker must not be broadcast as COUNTER_CHANGED").toBeUndefined();
+  const numeric={eventType:"marker.changed" as const,payload:{seat:4,markerId:"trapMaster.bomb",from:0,to:2},eventSeq:2,stateRevision:state.stateRevision};
+  const ok=projector.presentationFor(state,users[3]!.userId,[numeric])[0]!;
+  expect(ok.eventType).toBe("COUNTER_CHANGED");expect(ok.payload).toMatchObject({seat:4,key:"trapMaster.bomb",value:2});expect(validateProtocol("game",ok)).toEqual({ok:true});
+ });
  it("maps every schema presentation eventType through a representative domain event",async()=>{const {room,users}=await startedRoom();for(const seat of[1,2,3,4]as const)room.game=resolveInitialRedraw(room.game!,seat,false,ruleset).state;const state=room.game!,projector=new GameProjector(ruleset),schema=JSON.parse(await (await import("node:fs/promises")).readFile(resolve(import.meta.dirname,"../../../protocol/v1.3.4/client-protocol.schema.json"),"utf8")) as {["$defs"]:{PresentationEvent:{properties:{eventType:{enum:string[]}}}}},enumeration=schema.$defs.PresentationEvent.properties.eventType.enum;
   for(const eventType of enumeration){
    const payload=eventType==="ACTION_COMMITTED"?{sourceRef:"public:seat_1",actionKind:"any"}:eventType==="SETUP_REDRAW_RESOLVED"?{seat:1,redraw:false}:{};
