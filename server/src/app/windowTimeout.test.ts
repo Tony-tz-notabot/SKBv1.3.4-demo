@@ -6,6 +6,9 @@ import type {LoadedRuleset} from "../ruleset/types.js";
 import {createInitialSetup,resolveInitialRedraw} from "../engine/setup.js";
 import type {AuthoritativeGameState,PendingWindowState,Seat} from "../engine/state.js";
 import {GameService} from "./gameService.js";
+import {openTemporaryCoinChoiceAfterHit} from "../engine/coinGun.js";
+import {openBombDetonation} from "../engine/trapMaster.js";
+import {EngineTransaction} from "../engine/transaction.js";
 import type {AppRoom,AppSettings,AppUser} from "./types.js";
 
 let ruleset:LoadedRuleset;
@@ -38,6 +41,18 @@ describe("window timeout coverage",()=>{
   const result=service.timeout(room);
   expect(result).toBe(true);expect(room.game!.pendingWindows.some(w=>w.kind==="engineerMechChoice")).toBe(false);
   expect(room.game!.randomHistory.length).toBeGreaterThan(before);
+ });
+ it("advances a real temporary coin window produced by a w66 hit",()=>{
+  let state=engineState(350,"character.trap_master");state.combat.attack={attackId:"attack:1:1",attackerSeat:1,weaponId:"weapon.w66",status:"targetHit",currentTargetHit:true} as never;state.combat.currentTargetRef="character:2";
+  const opened=openTemporaryCoinChoiceAfterHit({previousRevision:state.stateRevision,state,events:[]} as never,1);state=opened.state;
+  expect(state.pendingWindows[0]!.kind).toBe("temporaryCoinImmediateUse");
+  const room=makeRoom(state),service=new GameService(ruleset,()=>1000);expect(service.timeout(room)).toBe(true);expect(room.game!.pendingWindows.some(w=>w.kind==="temporaryCoinImmediateUse")).toBe(false);
+ });
+ it("advances a real bomb detonation window from trap bombs",()=>{
+  let state=engineState(351,"character.trap_master");state.players.find(p=>p.seat===1)!.markers["trap.bombs"]=2;
+  const tx=new EngineTransaction(state);openBombDetonation(tx,1,1);state=tx.commit().state;
+  expect(state.pendingWindows[0]!.kind).toBe("trapBombDetonation");
+  const room=makeRoom(state),service=new GameService(ruleset,()=>1000);expect(service.timeout(room)).toBe(true);expect(room.game!.pendingWindows.some(w=>w.kind==="trapBombDetonation")).toBe(false);
  });
  it("advances qi ball dismantle, temporary coin and bomb detonation windows on timeout",()=>{
   let state=engineState(341,"character.trap_master");const weaponCard=Object.values(state.cards).find(card=>card.templateId.startsWith("weapon."))!;moveCard(state,weaponCard.cardRef,"weapon:1:2",2);
