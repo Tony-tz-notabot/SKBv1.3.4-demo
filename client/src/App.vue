@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, shallowRef } from "vue";
+import {computed,onMounted,ref,shallowRef} from "vue";
 import { storeToRefs } from "pinia";
 import ConnectionStatus from "./components/ConnectionStatus.vue";
 import { useServerProjectionStore } from "./stores/serverProjection";
@@ -27,18 +27,21 @@ const isDev = import.meta.env.DEV;
 const mockScene = shallowRef<MockScene>("selection");
 let showMock: ((scene: MockScene) => void) | undefined;
 
+const savedToken=sessionStorage.getItem("skb.token");
+const savedDisplayName=sessionStorage.getItem("skb.displayName");
+const account=ref<{userId:string;displayName:string;token:string}|null>(savedToken&&savedDisplayName?{userId:sessionStorage.getItem("skb.userId")??"",displayName:savedDisplayName,token:savedToken}:null);
+const loginUsername=ref("");const loginPassword=ref("");const loginError=ref<string|null>(null);const loginBusy=ref(false);
+function connectAs(session:{userId:string;displayName:string;token:string}){account.value=session;sessionStorage.setItem("skb.token",session.token);sessionStorage.setItem("skb.userId",session.userId);sessionStorage.setItem("skb.displayName",session.displayName);const scheme=location.protocol==="https:"?"wss":"ws";const base=import.meta.env.VITE_WS_URL||`${scheme}://${location.hostname}:${import.meta.env.DEV?"8787":location.port}/ws`,url=new URL(base);url.searchParams.set("token",session.token);const realtime=createRealtimeService(url.toString());configureRoomCommandSender(realtime.sendRoomCommand);configureGameCommandSender(realtime.sendGameCommand);realtime.connect();}
+async function login(){const username=loginUsername.value.trim(),password=loginPassword.value;if(!username||!password){loginError.value="请输入账号和密码";return;}loginBusy.value=true;loginError.value=null;try{const response=await fetch("/api/session",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({username,password})});const result=await response.json() as {ok?:boolean;reason?:string;userId?:string;displayName?:string;token?:string};if(!response.ok||!result.ok||!result.userId||!result.token){loginError.value=result.reason==="ACCOUNT_PASSWORD_INVALID"?"账号或密码错误":result.reason==="USERNAME_INVALID"?"账号格式不合法（2-20位字母/数字/下划线/中文）":"登录失败，请重试";return;}connectAs({userId:result.userId,displayName:result.displayName??username,token:result.token});}catch{loginError.value="无法连接服务器";}finally{loginBusy.value=false;}}
+function logout(){sessionStorage.removeItem("skb.token");sessionStorage.removeItem("skb.userId");sessionStorage.removeItem("skb.displayName");account.value=null;location.reload();}
+
 onMounted(async () => {
   if (import.meta.env.DEV && new URLSearchParams(location.search).get("mock") === "1") {
     const mock = (await import("./dev/mockServer")).createMockServer(); showMock = mock.show;
     configureRoomCommandSender(mock.send); configureGameCommandSender(mock.sendGame); showMock(mockScene.value);
     connectionStore.setState("online"); connectionStore.setLatency(24); return;
   }
-  let userId=localStorage.getItem("skb.userId"); if(!userId){userId=crypto.randomUUID();localStorage.setItem("skb.userId",userId);}
-  let displayName=localStorage.getItem("skb.displayName")||`玩家${userId.slice(0,4)}`;let token=localStorage.getItem("skb.token");
-  try{if(!token){const response=await fetch("/api/session",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({displayName})});if(response.ok){const session=await response.json() as {token:string;userId:string;displayName:string};token=session.token;userId=session.userId;displayName=session.displayName;localStorage.setItem("skb.token",token);localStorage.setItem("skb.userId",userId);localStorage.setItem("skb.displayName",displayName);}}}catch{/* fall back to legacy query identity */}const scheme=location.protocol==="https:"?"wss":"ws";
-  const base=import.meta.env.VITE_WS_URL||`${scheme}://${location.hostname}:${import.meta.env.DEV?"8787":location.port}/ws`,url=new URL(base);
-  if(token)url.searchParams.set("token",token);else{url.searchParams.set("userId",userId);url.searchParams.set("displayName",displayName);}
-  const realtime=createRealtimeService(url.toString());configureRoomCommandSender(realtime.sendRoomCommand);configureGameCommandSender(realtime.sendGameCommand);realtime.connect();
+  if(account.value)connectAs(account.value);
 });
 
 function switchMock(scene: MockScene) {
@@ -60,8 +63,20 @@ const localizedRejection = computed(() => lastRejection.value ? localizeCommandR
           <button v-for="scene in ['lobby', 'room', 'selection', 'setup', 'game'] as MockScene[]" :key="scene" type="button" :class="{ active: mockScene === scene }" @click="switchMock(scene)">{{ scene }}</button>
         </nav>
         <ConnectionStatus :state="connectionState" :latency-ms="latencyMs" />
+        <span v-if="account && !(isDev && showMock)" class="topbar__account">{{ account.displayName }}<button type="button" class="button button--ghost" @click="logout">退出</button></span>
       </div>
     </header>
+
+    <section v-if="!account && !(isDev && showMock)" class="login-panel">
+      <form class="login-card" @submit.prevent="login">
+        <h2>登录 / 注册</h2>
+        <p class="eyebrow">输入账号密码，不存在则自动注册。每个标签页可登录不同账号，便于一机多开。</p>
+        <label>账号<input v-model="loginUsername" maxlength="20" placeholder="2-20位字母/数字/下划线/中文" autocomplete="username" /></label>
+        <label>密码<input v-model="loginPassword" type="password" placeholder="密码" autocomplete="current-password" /></label>
+        <p v-if="loginError" class="login-card__error" role="alert">{{ loginError }}</p>
+        <button type="submit" class="button button--primary" :disabled="loginBusy">{{ loginBusy ? "登录中…" : "登录 / 注册" }}</button>
+      </form>
+    </section>
 
     <section v-if="protocolErrors.length" class="notice notice--error" role="alert">
       <strong>服务器消息未通过协议校验</strong>

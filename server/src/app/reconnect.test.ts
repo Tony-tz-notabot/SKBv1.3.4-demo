@@ -29,7 +29,7 @@ async function command(client:TestClient,message:any,channel:"room"|"game"){clie
 
 describe("reconnect and static hosting",()=>{
  it("restores the room snapshot after reconnecting with the same session token",async()=>{const dir=await mkdtemp(join(tmpdir(),"skb-reconnect-")),persistence=new JsonPersistence(join(dir,"state.json")),rooms=new RoomService(ruleset,persistence);dirs.push(dir);await rooms.restore();const server=new SkbApplicationServer(rooms,ruleset);await server.listen(0);const port=(server.http.address() as AddressInfo).port,base=`http://127.0.0.1:${port}`;
-  const response=await fetch(`${base}/api/session`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({displayName:"重连玩家"})});const session=await response.json() as {token:string;userId:string;displayName:string};expect(session.token).toBeTruthy();
+  const response=await fetch(`${base}/api/session`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({username:"重连玩家",password:"test123"})});const session=await response.json() as {token:string;userId:string;displayName:string};expect(session.token).toBeTruthy();
   const first=await openClient(base,session.token);
   try{
    await command(first,{type:"ROOM_COMMAND",commandId:"create",command:"CREATE_ROOM",payload:{settings,password:null}},"room");

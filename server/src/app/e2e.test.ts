@@ -52,7 +52,7 @@ async function drainWindows(clients:TestClient[],rooms:RoomService,userId:string
 
 describe("real websocket four-player E2E",()=>{
  it("reaches a legal winner through real room, redraw, attack, response and elimination commands",async()=>{const dir=await mkdtemp(join(tmpdir(),"skb-e2e-")),persistence=new JsonPersistence(join(dir,"state.json")),rooms=new RoomService(ruleset,persistence);dirs.push(dir);await rooms.restore();const server=new SkbApplicationServer(rooms,ruleset);await server.listen(0);const port=(server.http.address() as AddressInfo).port,base=`http://127.0.0.1:${port}`;
-  const sessions:Array<{token:string;userId:string;displayName:string}>=[];for(let i=0;i<5;i++){const response=await fetch(`${base}/api/session`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({displayName:`玩家${i+1}`})});sessions.push(await response.json() as {token:string;userId:string;displayName:string});}
+  const sessions:Array<{token:string;userId:string;displayName:string}>=[];for(let i=0;i<5;i++){const response=await fetch(`${base}/api/session`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({username:`玩家${i+1}`,password:"test123"})});sessions.push(await response.json() as {token:string;userId:string;displayName:string});}
   const clients=sessions.map(session=>new TestClient(new WebSocket(`ws://127.0.0.1:${port}/ws?token=${encodeURIComponent(session.token)}`)));
   await Promise.all(clients.map(client=>client.open));
   try{
