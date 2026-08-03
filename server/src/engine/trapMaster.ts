@@ -269,11 +269,20 @@ export function grantBombsAfterAttack(
       ) {
         const tx = new EngineTransaction(s),
           q = tx.draft.players.find((x) => x.seat === p.seat)!,
-          attack = tx.draft.combat.attack as Record<string, unknown>,
-          before = Number(attack.trapBombHpAccumulator ?? 0),
+          accum = q.markers["trap.bombHpAccum"] as
+            | { attackId?: string; value?: number }
+            | undefined,
+          sameAttack =
+            accum &&
+            typeof accum === "object" &&
+            accum.attackId === String(d.attackId),
+          before = sameAttack ? Number(accum?.value ?? 0) : 0,
           after = before + Number(d.actualHpLoss),
           gain = Math.floor(after / 2) - Math.floor(before / 2);
-        attack.trapBombHpAccumulator = after;
+        q.markers["trap.bombHpAccum"] = {
+          attackId: String(d.attackId),
+          value: after,
+        };
         if (gain) {
           q.markers["trap.bombs"] = Number(q.markers["trap.bombs"] ?? 0) + gain;
           tx.emit("marker.changed", {

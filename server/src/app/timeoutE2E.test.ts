@@ -6,6 +6,8 @@ import {afterEach,beforeAll,describe,expect,it} from "vitest";
 import WebSocket from "ws";
 import {loadFrozenRuleset} from "../ruleset/loadRuleset.js";
 import type {LoadedRuleset} from "../ruleset/types.js";
+import {createInitialSetup,resolveInitialRedraw} from "../engine/setup.js";
+import {runAutomaticScheduler} from "../engine/automaticScheduler.js";
 import {JsonPersistence} from "./persistence.js";
 import {RoomService} from "./roomService.js";
 import {SkbApplicationServer} from "./server.js";
@@ -42,7 +44,7 @@ describe("timeout and reconnect within one E2E script",()=>{
    for(let i=0;i<4;i++){const latest=latestRoom(clients[i]!);await command(clients[i]!,{type:"ROOM_COMMAND",commandId:`ready${i}`,roomId:latest.roomId,expectedRoomRevision:latest.roomRevision,command:"SET_READY",payload:{ready:true}},"room");}
    await command(clients[0]!,{type:"ROOM_COMMAND",commandId:"start",roomId:latestRoom(clients[0]!).roomId,expectedRoomRevision:latestRoom(clients[0]!).roomRevision,command:"START_GAME",payload:{}},"room");
    const selectionSnaps:any[]=[];for(let i=0;i<4;i++)selectionSnaps.push((await waitFor([clients[i]!],[{client:clients[i]!,index:0}],e=>e.type==="MESSAGE"&&e.channel==="room"&&e.message.type==="ROOM_SNAPSHOT"&&e.message.phase==="characterSelection"&&e.message.characterSelection)).message);
-   for(let i=0;i<4;i++){const latest=latestRoom(clients[i]!),candidates=selectionSnaps[i]!.characterSelection.candidates,avoid=["character.punching_bag","character.interdimensional_traveler"],pick=candidates.find((c:any)=>!avoid.includes(c.characterId))??candidates[0]!;await command(clients[i]!,{type:"ROOM_COMMAND",commandId:`lock${i}`,roomId:latest.roomId,expectedRoomRevision:latest.roomRevision,command:"LOCK_CHARACTER",payload:{characterId:pick.characterId}},"room");}
+   for(let i=0;i<4;i++){const latest=latestRoom(clients[i]!),candidates=selectionSnaps[i]!.characterSelection.candidates,avoid=["character.punching_bag","character.interdimensional_traveler","character.general","character.engineer","character.shaman","character.berserker"],pick=candidates.find((c:any)=>!avoid.includes(c.characterId))??candidates[0]!;await command(clients[i]!,{type:"ROOM_COMMAND",commandId:`lock${i}`,roomId:latest.roomId,expectedRoomRevision:latest.roomRevision,command:"LOCK_CHARACTER",payload:{characterId:pick.characterId}},"room");}
    const setupSnaps:any[]=[];for(let i=0;i<4;i++)setupSnaps.push((await waitFor([clients[i]!],[{client:clients[i]!,index:0}],e=>e.type==="MESSAGE"&&e.channel==="game"&&e.message.type==="SETUP_SNAPSHOT")).message);
    const room=rooms.roomForUser(sessions[0]!.userId)!;let gameRevision=room.game!.stateRevision;for(let i=0;i<4;i++){await command(clients[i]!,{type:"GAME_COMMAND",commandId:`redraw${i}`,gameId:setupSnaps[i]!.gameId,expectedStateRevision:gameRevision,promptId:setupSnaps[i]!.interaction.prompt.promptId,offerId:setupSnaps[i]!.interaction.offers[0]!.offerId,command:"EXECUTE_OFFER",payload:{selections:{confirm:[false]}}},"game");gameRevision=room.game!.stateRevision;}
    const game=room.game!;const kills=Object.values(game.cards).filter(card=>card.templateId.startsWith("basic.kill.")).slice(0,2);for(const card of kills){const from=game.zones[card.zoneRef]!;if(from.zoneRef!=="hand:1"){from.orderedCardRefs.splice(from.orderedCardRefs.indexOf(card.cardRef),1);game.zones["hand:1"]!.orderedCardRefs.push(card.cardRef);Object.assign(card,{zoneRef:"hand:1",ownerSeat:1,controllerSeat:1,faceUp:false});}}
@@ -69,4 +71,24 @@ describe("timeout and reconnect within one E2E script",()=>{
    reconnected.close();
   }finally{for(const client of clients)client.close();await server.close();}
  },120000);
+ it("shaman foresight draw window blocks automatic advance to the play phase (why the E2E must avoid it)",async()=>{
+  let state=createInitialSetup(ruleset,{gameId:"shaman-block",firstSeat:1,seed:42,usersBySeat:{1:"u1",2:"u2",3:"u3",4:"u4"},characterIdsBySeat:{1:"character.shaman",2:"character.knight",3:"character.ranger",4:"character.wizard"}});
+  for(const seat of[1,2,3,4]as const)state=resolveInitialRedraw(state,seat,false,ruleset).state;
+  const ran=runAutomaticScheduler(state,ruleset,()=>Date.now()+30000);
+  expect(ran.state.pendingWindows[0]?.kind).toBe("foresightDrawChoice");
+  expect(ran.state.phase).toBe("draw");
+ });
+ it("engineer does not block the first turn advance (mech window only opens on later prepares)",async()=>{
+  let state=createInitialSetup(ruleset,{gameId:"engineer-block",firstSeat:1,seed:43,usersBySeat:{1:"u1",2:"u2",3:"u3",4:"u4"},characterIdsBySeat:{1:"character.engineer",2:"character.knight",3:"character.ranger",4:"character.wizard"}});
+  for(const seat of[1,2,3,4]as const)state=resolveInitialRedraw(state,seat,false,ruleset).state;
+  const ran=runAutomaticScheduler(state,ruleset,()=>Date.now()+30000);
+  expect(ran.state.pendingWindows[0]?.kind).toBe("playPhaseAction");
+ });
+ it("berserker rage window blocks automatic advance before the draw phase (why the E2E must avoid it)",async()=>{
+  let state=createInitialSetup(ruleset,{gameId:"berserker-block",firstSeat:1,seed:44,usersBySeat:{1:"u1",2:"u2",3:"u3",4:"u4"},characterIdsBySeat:{1:"character.berserker",2:"character.knight",3:"character.ranger",4:"character.wizard"}});
+  for(const seat of[1,2,3,4]as const)state=resolveInitialRedraw(state,seat,false,ruleset).state;
+  const ran=runAutomaticScheduler(state,ruleset,()=>Date.now()+30000);
+  expect(ran.state.pendingWindows[0]?.kind).toBe("berserkerRage");
+  expect(ran.state.phase).toBe("draw");
+ });
 });
