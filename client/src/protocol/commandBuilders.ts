@@ -10,7 +10,7 @@ type RoomPayloadMap = {
   TRANSFER_HOST: TargetUserPayload; START_GAME: EmptyPayload; CLOSE_ROOM: EmptyPayload;
   PRESELECT_CHARACTER: PreselectCharacterPayload; LOCK_CHARACTER: LockCharacterPayload; SEND_CHAT: RoomSendChatPayload;
 };
-type GamePayloadMap = { EXECUTE_OFFER: ExecuteOfferPayload; SET_PRESELECTION: SetPreselectionPayload; SEND_CHAT: SendChatPayload };
+type GamePayloadMap = { EXECUTE_OFFER: ExecuteOfferPayload; SET_PRESELECTION: SetPreselectionPayload; SEND_CHAT: SendChatPayload; FORFEIT: Record<string, never> };
 
 export type CommandIdFactory = () => string;
 export const randomCommandId: CommandIdFactory = () => crypto.randomUUID();

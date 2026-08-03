@@ -239,8 +239,8 @@ export type GameCommand = {
   "expectedStateRevision": number;
   "promptId"?: string | null;
   "offerId"?: string | null;
-  "command": "EXECUTE_OFFER" | "SET_PRESELECTION" | "SEND_CHAT";
-  "payload": ExecuteOfferPayload | SetPreselectionPayload | SendChatPayload;
+  "command": "EXECUTE_OFFER" | "SET_PRESELECTION" | "SEND_CHAT" | "FORFEIT";
+  "payload": ExecuteOfferPayload | SetPreselectionPayload | SendChatPayload | Record<string, never>;
 };
 
 export type CommandAccepted = {

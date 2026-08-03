@@ -14,4 +14,5 @@ describe("GameView choice selectors",()=>{
  it("shows a plain-language hint for the play phase window",async()=>{const wrapper=mountView(snapshotWith([],undefined,"playPhaseAction"));const hint=wrapper.find(".prompt-hint");expect(hint.exists()).toBe(true);expect(hint.text()).toContain("出牌阶段");expect(hint.text()).toContain("攻击");});
  it("shows a plain-language hint for the attack response window",async()=>{const wrapper=mountView(snapshotWith([],undefined,"attackResponse"));const hint=wrapper.find(".prompt-hint");expect(hint.exists()).toBe(true);expect(hint.text()).toContain("被攻击");});
  it("falls back to a generic hint for unknown window kinds",async()=>{const wrapper=mountView(snapshotWith([],undefined,"someUnknownKind"));const hint=wrapper.find(".prompt-hint");expect(hint.exists()).toBe(true);expect(hint.text().length).toBeGreaterThan(0);});
+ it("shows a forfeit button that emits the forfeit action",async()=>{const wrapper=mountView(snapshotWith([]));const button=wrapper.find(".forfeit-button");expect(button.exists()).toBe(true);await button.trigger("click");expect(wrapper.emitted("forfeit")).toBeTruthy();});
 });

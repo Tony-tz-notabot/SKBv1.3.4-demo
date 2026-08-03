@@ -1198,7 +1198,8 @@
           "enum": [
             "EXECUTE_OFFER",
             "SET_PRESELECTION",
-            "SEND_CHAT"
+            "SEND_CHAT",
+            "FORFEIT"
           ]
         },
         "payload": {
@@ -1211,6 +1212,10 @@
             },
             {
               "$ref": "#/$defs/SendChatPayload"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false
             }
           ]
         }
@@ -1218,7 +1223,8 @@
       "x-commandPayloadMap": {
         "EXECUTE_OFFER": "ExecuteOfferPayload",
         "SET_PRESELECTION": "SetPreselectionPayload",
-        "SEND_CHAT": "SendChatPayload"
+        "SEND_CHAT": "SendChatPayload",
+        "FORFEIT": "ForfeitPayload"
       }
     },
     "CommandAccepted": {

@@ -30,6 +30,12 @@ export class GameService{
   if(command.expectedStateRevision!==room.game.stateRevision)return reject("STALE_REVISION",true);
   try{
    if(command.command==="SEND_CHAT")return reject("CHAT_ROUTED_BY_APPLICATION");
+   if(command.command==="FORFEIT"){
+    const actor=room.game.players.find(x=>x.userId===user.userId);if(!actor)return reject("NOT_YOUR_PRIORITY");
+    room.game.pendingWindows=[];room.game.combat={attack:null,targetQueue:[],currentTargetRef:null,responseStack:[],dyingStack:[],damageSegment:null};room.game.lifecycle="ended";room.game.winnerTeam=null;room.game.forfeited=true;room.game.forfeitedBySeat=actor.seat;room.game.phase=null;room.game.activeSeat=null;room.game.phaseBoundary=null;room.game.phaseMode=null;room.game.phaseBodyResolved=null;
+    room.game.lastEventSeq+=1;room.game.history.domainEvents.push({eventType:"game.aborted",payload:{bySeat:actor.seat},eventSeq:room.game.lastEventSeq,stateRevision:room.game.stateRevision});room.game.stateRevision+=1;
+    return this.accept(command,room,room.game.lastEventSeq);
+   }
    if(command.command==="SET_PRESELECTION"){
     const actor=room.game.players.find(x=>x.userId===user.userId)!,payload=command.payload??{},committed=setWeaponPreselection(room.game,actor.seat,typeof payload.weaponSlot==="string"?internalRef(payload.weaponSlot):null,typeof payload.modeId==="string"?payload.modeId:null,this.ruleset);room.game=committed.state;return this.accept(command,room,committed.events[0]?.eventSeq??room.game.lastEventSeq);
    }
