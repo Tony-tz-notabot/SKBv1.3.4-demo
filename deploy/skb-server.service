@@ -1,0 +1,27 @@
+# SKB v1.3.4 联机服务器 systemd 单元（pm2 之外的备选守护方式）
+# 安装：
+#   sudo cp deploy/skb-server.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now skb-server
+# 注意：按实际部署路径修改 WorkingDirectory 与 ExecStart 中的 /home/ubuntu/skb
+[Unit]
+Description=SKB v1.3.4 authoritative game server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/skb
+Environment=NODE_ENV=production
+Environment=PORT=8787
+# 持久化文件默认在 <仓库根>/server/data/skb-state.json，如需改位置：
+# Environment=SKB_DATA_FILE=/var/lib/skb/skb-state.json
+ExecStart=/usr/bin/node /home/ubuntu/skb/server/dist/app/main.js
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

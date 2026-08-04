@@ -1,0 +1,63 @@
+# SKB v1.3.4 云服务器部署说明
+
+## 前置条件
+
+- Ubuntu 22.04 / 24.04（或兼容 Debian 系）；
+- 公网端口：**8787**（默认）需在云控制台安全组放行。
+
+## 一键部署（pm2 守护）
+
+```bash
+sudo bash deploy/deploy.sh
+# 或指定安装目录：
+sudo APP_DIR=/opt/skb bash deploy/deploy.sh
+# 或换端口：
+sudo PORT=9000 bash deploy/deploy.sh
+```
+
+脚本会依次完成：安装 Node 22 → clone 仓库 → 构建 server（tsc）与 client（vite）→ pm2 启动。
+
+> `server/dist` 与 `client/dist` 均被 .gitignore 忽略、不入库，**必须在服务器上构建**，因此部署脚本执行完整 `npm install`（含 devDependencies），需要几分钟。
+
+## 验证
+
+```bash
+curl http://127.0.0.1:8787/health
+# {"ok":true,"rulesetVersion":"1.3.4"}
+```
+
+浏览器访问 `http://<服务器公网IP>:8787/`，注册账号即可开局。
+
+## 管理命令（pm2）
+
+```bash
+pm2 logs skb-server        # 日志
+pm2 restart skb-server     # 重启
+pm2 stop skb-server        # 停止
+pm2 startup                # 生成开机自启（按提示执行输出的 sudo 命令后 pm2 save）
+```
+
+## 备选：systemd（不用 pm2）
+
+```bash
+sudo cp deploy/skb-server.service /etc/systemd/system/
+# 编辑服务文件，把 /home/ubuntu/skb 改为实际路径
+sudo systemctl daemon-reload
+sudo systemctl enable --now skb-server
+journalctl -u skb-server -f   # 看日志
+```
+
+## 更新到新版本
+
+```bash
+cd <仓库> && git pull
+cd server && npm install && npm run build
+cd ../client && npm install && npm run build
+pm2 restart skb-server        # 或 sudo systemctl restart skb-server
+```
+
+## 生产建议（可选）
+
+- **反向代理 + HTTPS**：Nginx 将 `/`、`/api`、`/ws` 转发到 `127.0.0.1:8787`，WebSocket 需 `proxy_set_header Upgrade $http_upgrade; Connection "upgrade";`；证书用 certbot。
+- **持久化**：`server/data/skb-state.json` 建议放在持久卷（云盘/对象存储挂载），重装系统不丢数据。
+- **数据备份**：定期复制 `server/data/skb-state.json`。
