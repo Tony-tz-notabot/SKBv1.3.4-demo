@@ -104,11 +104,19 @@ function valid(state: AuthoritativeGameState, attack: AttackRecord): boolean {
 function restorePlay(
   tx: EngineTransaction<AuthoritativeGameState>,
   attack: AttackRecord,
+  deadlineSupplier: () => number = Date.now,
 ): void {
   const draft = tx.draft,
     deadline = attack.resumePlayDeadlineAt,
     seat = Number(attack.rootAttackerSeat ?? attack.attackerSeat) as Seat;
-  if (typeof deadline !== "number" || draft.lifecycle !== "inProgress") return;
+  // resumePlayDeadlineAt === null 表示该攻击无需恢复出牌窗口（如脚本化攻击），
+  // 不得因时间供应商总能给出数值而误开窗口。仅当攻击确实携带恢复意图时，
+  // 才用新鲜截止时刻替换捕获时的绝对 deadline（后者在长战斗中早已过期）。
+  if (
+    typeof deadline !== "number" ||
+    draft.lifecycle !== "inProgress"
+  )
+    return;
   const kind = "playPhaseAction",
     promptId = `prompt:${kind}:${draft.round}:${seat}:${draft.stateRevision + 1}`;
   draft.pendingWindows.push({
@@ -116,7 +124,7 @@ function restorePlay(
     kind,
     prioritySeat: seat,
     mandatory: false,
-    deadlineAt: deadline,
+    deadlineAt: deadlineSupplier(),
     timeoutPolicy: "pass",
     legalOfferIds: [`offer:${kind}:finish`],
     context: {},
@@ -154,6 +162,7 @@ function openParticleEagleFollowUp(
 export function finalizeCurrentAttack(
   tx: EngineTransaction<AuthoritativeGameState>,
   attack: AttackRecord,
+  deadlineSupplier: () => number = Date.now,
 ): void {
   const draft = tx.draft,
     attackId = String(attack.attackId);
@@ -277,7 +286,7 @@ export function finalizeCurrentAttack(
     });
     return;
   }
-  restorePlay(tx, attack);
+  restorePlay(tx, attack, deadlineSupplier);
 }
 
 export interface ParticleEagleCommand { commandId: string; gameId: string; expectedStateRevision: number; actorUserId: string; promptId: string; offerId: string; targetRef?: string }

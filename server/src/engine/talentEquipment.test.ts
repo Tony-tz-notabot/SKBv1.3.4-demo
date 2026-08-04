@@ -131,4 +131,47 @@ describe("talent equipment lifecycle", () => {
     s.players[0]!.statuses=[];
     const tx=new EngineTransaction(s);setEquippedTalentContributionsEnabled(tx,1,true);s=tx.commit().state;expect(calculateHandLimit(s,1)).toBe(before+1);
   });
+  it("keeps the talent zone capped at 3: offers only target slots 0-2, equipping when full replaces instead of exceeding the cap",()=>{
+    let s=ready();
+    for(const id of["talent.max_hp_up","talent.max_shield_up","talent.hand_limit_up"]){const c=Object.values(s.cards).find(x=>x.templateId===id)!;s=moveCard(s,{cardRef:c.cardRef,toZoneRef:"talent:1",moveKind:"equip"}).state;}
+    expect(s.zones["talent:1"]!.orderedCardRefs).toHaveLength(3);
+    const ref=hand(s,"talent.melee_counter");
+    const offers=buildTalentEquipOffers(s,1).filter(x=>x.cardRef===ref);
+    expect(offers.length,"天赋槽满时仍提供 3 个替换 offer（选槽位）").toBe(3);
+    for(const o of offers)expect(o.replacedCardRef,"满槽时每个 offer 都应替换某张已装备天赋").toBeTruthy();
+    let session=new TalentEquipSession(s,r);
+    const o=offers.find(x=>x.offerId.endsWith(":slot:2"))!;
+    expect(session.handle({commandId:"eq-cap",gameId:s.gameId,expectedStateRevision:s.stateRevision,actorUserId:"u1",promptId:"play",offerId:o.offerId,cardRef:ref}).accepted).toBe(true);
+    expect(session.state.zones["talent:1"]!.orderedCardRefs,"装备第 4 张天赋必须替换旧卡，不能超过 3 张").toHaveLength(3);
+  });
+  it("routes an equip offer to a specific talent slot and marks the replaced occupant",()=>{
+    let s=ready();
+    for(const id of["talent.max_hp_up","talent.max_shield_up"]){const ref=hand(s,id),session=new TalentEquipSession(s,r),o=buildTalentEquipOffers(s,1).find(x=>x.cardRef===ref&&!x.replacedCardRef)!;
+      expect(o.offerId,"首次装备应指向空闲槽位").toMatch(/:slot:\d$/);
+      expect(session.handle({commandId:`fill-${id}`,gameId:s.gameId,expectedStateRevision:s.stateRevision,actorUserId:"u1",promptId:"play",offerId:o.offerId,cardRef:ref}).accepted).toBe(true);s=session.state;}
+    expect(s.zones["talent:1"]!.orderedCardRefs).toHaveLength(2);
+    const ref=hand(s,"talent.hand_limit_up"),offers=buildTalentEquipOffers(s,1).filter(x=>x.cardRef===ref);
+    expect(offers.length,"zone 有 2 张时应生成 3 个带槽位 offer：替换 0/1 + 放入 2").toBe(3);
+    for(const o of offers)expect(o.offerId,`offer 应携带目标槽位 :slot:N`).toMatch(/:slot:[0-3]$/);
+    expect(new Set(offers.map(o=>o.offerId)).size,"每个 offer 指向不同槽位").toBe(3);
+    const replaceOffers=offers.filter(o=>o.replacedCardRef),placement=offers.find(o=>!o.replacedCardRef);
+    expect(replaceOffers.length,"占用槽位各提供一个替换 offer").toBe(2);
+    expect(placement?.offerId,"空闲槽位提供放入 offer").toMatch(/:slot:2$/);
+  });
+  it("equips into the requested slot and replaces the occupant when that slot is occupied",()=>{
+    let s=ready(),first=hand(s,"talent.max_hp_up"),second=hand(s,"talent.hand_limit_up");
+    let session=new TalentEquipSession(s,r),o1=buildTalentEquipOffers(s,1).find(x=>x.cardRef===first)!;
+    expect(session.handle({commandId:"eq1",gameId:s.gameId,expectedStateRevision:s.stateRevision,actorUserId:"u1",promptId:"play",offerId:o1.offerId,cardRef:first}).accepted).toBe(true);s=session.state;
+    expect(s.zones["talent:1"]!.orderedCardRefs,"装备应落到天赋区").toContain(first);
+    session=new TalentEquipSession(s,r);const o2=buildTalentEquipOffers(s,1).find(x=>x.cardRef===second&&x.offerId.endsWith(":slot:0"))!;
+    expect(o2.replacedCardRef,"占用槽位应携带被替换的天赋").toBe(first);
+    expect(session.handle({commandId:"eq2",gameId:s.gameId,expectedStateRevision:s.stateRevision,actorUserId:"u1",promptId:"play",offerId:o2.offerId,cardRef:second}).accepted).toBe(true);
+    expect(session.state.cards[first]!.zoneRef,"替换旧天赋应弃置旧天赋").toBe("discardPile");
+    expect(session.state.zones["talent:1"]!.orderedCardRefs,"新天赋应落到所换槽位").toContain(second);
+  });
+  it("rejects a slot offer with an invalid slot index (out of 0-3)",()=>{
+    const s=ready(),ref=hand(s,"talent.hand_limit_up"),session=new TalentEquipSession(s,r);
+    const result=session.handle({commandId:"bad-slot",gameId:s.gameId,expectedStateRevision:s.stateRevision,actorUserId:"u1",promptId:"play",offerId:`offer:talent-equip:${ref}:slot:9`,cardRef:ref});
+    expect(result.accepted).toBe(false);
+  });
 });

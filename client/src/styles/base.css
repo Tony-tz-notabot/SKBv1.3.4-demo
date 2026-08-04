@@ -128,3 +128,10 @@ h1 { margin-bottom: 0; font-size: clamp(1.7rem, 5vw, 2.6rem); }
 .login-card label { display: grid; gap: 6px; font-size: 0.9rem; }
 .login-card input { padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.25); color: inherit; }
 .login-card__error { color: #ff8080; margin: 0; font-size: 0.9rem; }
+.game-hud__actions { display: flex; align-items: center; gap: 10px; }
+.forfeit-button { min-height: 44px; padding: 0 18px; border: 1px solid #8d4452; border-radius: 10px; color: #ffdce1; background: #4a2029; font-weight: 750; cursor: pointer; }
+.confirm-dialog { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(4, 10, 15, .7); }
+.confirm-dialog__card { width: min(420px, calc(100% - 32px)); padding: 24px 26px; border: 1px solid #36556a; border-radius: 14px; background: #0d1c27; box-shadow: 0 26px 80px rgba(0, 0, 0, .4); }
+.confirm-dialog__card h3 { margin: 0 0 12px; }
+.confirm-dialog__card p { margin: 0 0 18px; line-height: 1.6; color: #b9c7d0; }
+.confirm-dialog__actions { display: flex; justify-content: flex-end; gap: 10px; }

@@ -5,8 +5,7 @@ import GameCard from "./GameCard.vue";
 import ResourceImage from "./ResourceImage.vue";
 const props=defineProps<{ player: DeepReadonly<PlayerView>; active: boolean; local: boolean; legalTarget?: boolean; selectedTarget?: boolean; selectedOrder?: number; preselectedWeaponSlot?: string | null; preselectableWeaponSlots?: readonly string[]; legalCardRefs?:ReadonlySet<string>; selectedCardRefs?:ReadonlySet<string> }>();
 const emit=defineEmits<{ select: [playerRef: string]; slotSelect:[slotId:string,card:DeepReadonly<CardView>|null]; cardSelect:[cardRef:string]; detail:[card:DeepReadonly<CardView>]; characterDetail:[characterId:string|null] }>();
-function chooseSlot(slotId:string,card:DeepReadonly<CardView>|null){if(props.preselectableWeaponSlots?.includes(slotId)){emit("slotSelect",slotId,card);return;}if(card&&props.legalCardRefs?.has(card.ref))emit("cardSelect",card.ref);}
-const eq=computed(()=>props.player.equipmentSlots);
+function chooseSlot(slotId:string,card:DeepReadonly<CardView>|null){if(props.preselectableWeaponSlots?.includes(slotId)){emit("slotSelect",slotId,card);return;}if(card&&props.legalCardRefs?.has(card.ref))emit("cardSelect",card.ref);}const eq=computed(()=>props.player.equipmentSlots);
 // 占双槽坐骑（mountDual 或 攻/防指向同一张）合并为单个"坐骑"槽；否则攻骑/防骑分开显示（仅显示已装备的）。
 const mountSlots=computed(()=>{const s=eq.value,off=s.mountOffense,def=s.mountDefense,merged=s.mountDual===true||(off&&def&&off.ref===def.ref);if(merged&&(off||def))return[{slotId:"mountDual",label:"坐骑",card:off??def}];return[{slotId:"mountOffense",label:"攻骑",card:off},{slotId:"mountDefense",label:"防骑",card:def}].filter((item)=>item.card!==null);});
 // 第一行：武1 武2 [武3常规槽（仅三持）] [三武（仅装备了第三武器）] 坐骑（攻骑/防骑）。
@@ -14,8 +13,8 @@ const row1=computed(()=>{const s=eq.value,items=[
   {slotId:`weapon:1:${props.player.seat}`,label:"武1",card:s.weapon1},
   {slotId:`weapon:2:${props.player.seat}`,label:"武2",card:s.weapon2},
 ];if(s.tripleWield)items.push({slotId:`weapon:3:${props.player.seat}`,label:"武3",card:s.weapon3});if(s.thirdWeapon)items.push({slotId:`thirdWeapon:${props.player.seat}`,label:"三武",card:s.thirdWeapon});return items.concat(mountSlots.value);});
-// 第二行：防具 赋1 赋2 赋3（天赋槽 3 个）boss。
-const row2=computed(()=>{const s=eq.value,items=[{slotId:"armor",label:"甲",card:s.armor}];(s.talents??[]).forEach((card,index)=>items.push({slotId:`talent:${index}:${props.player.seat}`,label:`赋${index+1}`,card}));items.push({slotId:"boss",label:"BOSS",card:s.boss});return items;});
+// 第二行：防具 赋1 赋2 赋3（天赋槽固定 3 个，未装也占位可选）boss。
+const row2=computed(()=>{const s=eq.value,items=[{slotId:"armor",label:"甲",card:s.armor}];for(let index=0;index<3;index++)items.push({slotId:`talent:${index}:${props.player.seat}`,label:`赋${index+1}`,card:s.talents?.[index]??null});items.push({slotId:"boss",label:"BOSS",card:s.boss});return items;});
 
 </script>
 <template>

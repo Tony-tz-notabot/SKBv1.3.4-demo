@@ -37,13 +37,35 @@ export function buildTalentEquipOffers(s: AuthoritativeGameState, seat: Seat) {
     p.lifeState !== "alive"
   )
     return [];
+  const equipped = s.zones[`talent:${seat}`]?.orderedCardRefs ?? [];
+  type SlotOffer = {
+    offerId: string;
+    cardRef: string;
+    slot: number;
+    replacedCardRef: string | null;
+    duplicate: boolean;
+  };
+  const slotOffers = (
+    ref: string,
+    slot: number,
+    replacedCardRef: string | null,
+  ): SlotOffer => ({
+    offerId: `offer:talent-equip:${ref}:slot:${slot}`,
+    cardRef: ref,
+    slot,
+    replacedCardRef,
+    duplicate: hasTalentFamily(s, seat, s.cards[ref]!.templateId),
+  });
   return (s.zones[`hand:${seat}`]?.orderedCardRefs ?? [])
     .filter((ref) => s.cards[ref]!.templateId.startsWith(PREFIX))
-    .map((ref) => ({
-      offerId: `offer:talent-equip:${ref}`,
-      cardRef: ref,
-      duplicate: hasTalentFamily(s, seat, s.cards[ref]!.templateId),
-    }));
+    .flatMap((ref) => {
+      const offers = equipped.map((occupantRef, slot) =>
+        slotOffers(ref, slot, occupantRef),
+      );
+      if (equipped.length < 3)
+        offers.push(slotOffers(ref, equipped.length, null));
+      return offers;
+    });
 }
 export function buildTalentDiscardOffers(s: AuthoritativeGameState, seat: Seat) {
   const canAct =
@@ -142,12 +164,27 @@ export class TalentEquipSession {
         draw: 1,
       });
     } else {
+      if (o.replacedCardRef)
+        moveCardInTransaction(tx, {
+          cardRef: o.replacedCardRef,
+          toZoneRef: "discardPile",
+          moveKind: "replace",
+          faceUp: true,
+        });
       moveCardInTransaction(tx, {
         cardRef: c.cardRef,
         toZoneRef: `talent:${p.seat}`,
         moveKind: "equip",
         faceUp: true,
       });
+      const talentZone = tx.draft.zones[`talent:${p.seat}`]!,
+        fromIndex = talentZone.orderedCardRefs.indexOf(c.cardRef);
+      if (fromIndex >= 0) talentZone.orderedCardRefs.splice(fromIndex, 1);
+      talentZone.orderedCardRefs.splice(
+        Math.min(o.slot, talentZone.orderedCardRefs.length),
+        0,
+        c.cardRef,
+      );
       const draftPlayer = tx.draft.players.find((x) => x.seat === p.seat)!,
         contribution = resolveTalentContribution(this.r, id),
         equipmentEnabled =
@@ -163,6 +200,8 @@ export class TalentEquipSession {
         seat: p.seat,
         cardRef: c.cardRef,
         talentId: id,
+        slot: o.slot,
+        replacedCardRef: o.replacedCardRef,
       });
     }
     const out = tx.commit();

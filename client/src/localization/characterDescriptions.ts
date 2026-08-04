@@ -48,6 +48,7 @@ const abilityMap: Record<string, AbilityEntry> = {
   "skill.werewolf.notebook": { displayName: "狼人笔记", description: "主动，整局 2 次：指定一名在场角色并弃置白、绿、蓝、橙、红手牌各 1 张；随后血量上限+1 并回复 1 血，再执行死亡笔记。目标有护盾则将其护盾修改为 0，无护盾则将其血量修改为 1。" },
   "talent.shield_breaker": { displayName: "碎盾", description: "触发：圣骑士护盾从大于 0 变为 0 时，可以拆除该伤害来源一张合法牌。" },
   "skill.paladin.divine_barrier": { displayName: "神圣屏障", description: "主动/响应，CD=1，共享同一冷却：即将受到一个伤害段时弃置任意合法区域中的 2 张蓝色牌，免疫该伤害段并获得无敌；也可在自己的出牌阶段弃置相同费用只获得无敌。无敌持续到圣骑士下个准备阶段开始前。" },
+  "skill.statue.paladin_think": { displayName: "思考", description: "圣骑士雕像的响应思考窗口：圣骑士在场时，可出圣骑士雕像使另一张雕像效果无效；嵌套后进先出。" },
   "talent.charge_acceleration": { displayName: "蓄力加快", description: "锁定：蓄力武器每档所需蓄力次数-1，最低可降为 0；0 次档可直接使用，但不产生蓄力动作。" },
   "skill.elf.gather_strength": { displayName: "养精蓄锐", description: "主动：自己的出牌阶段不限次数；消耗 1 次可攻击次数，摸 1 张牌。" },
   "skill.elf.focused_shot": { displayName: "专注射击", description: "被动：一名来源对精灵的全部伤害段结束后，若造成血量伤害，则瞄准该来源。对瞄准目标攻击不消耗可攻击次数；整次攻击对其造成血量伤害后解除瞄准。" },

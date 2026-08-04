@@ -7,7 +7,7 @@ import type { ExecuteOfferPayload, SetPreselectionPayload, SendChatPayload, Game
 type RoomPayloadMap = {
   CREATE_ROOM: CreateRoomPayload; JOIN_ROOM: JoinRoomPayload; LEAVE_ROOM: EmptyPayload; SET_READY: SetReadyPayload;
   CHANGE_SEAT: ChangeSeatPayload; UPDATE_ROOM_SETTINGS: UpdateRoomSettingsPayload; KICK_PLAYER: TargetUserPayload;
-  TRANSFER_HOST: TargetUserPayload; START_GAME: EmptyPayload; CLOSE_ROOM: EmptyPayload;
+  TRANSFER_HOST: TargetUserPayload; START_GAME: EmptyPayload; CLOSE_ROOM: EmptyPayload; DISBAND_ROOM: EmptyPayload;
   PRESELECT_CHARACTER: PreselectCharacterPayload; LOCK_CHARACTER: LockCharacterPayload; SEND_CHAT: RoomSendChatPayload;
 };
 type GamePayloadMap = { EXECUTE_OFFER: ExecuteOfferPayload; SET_PRESELECTION: SetPreselectionPayload; SEND_CHAT: SendChatPayload; FORFEIT: Record<string, never> };

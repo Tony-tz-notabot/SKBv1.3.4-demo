@@ -243,6 +243,7 @@ function restorePlayWindow(
 }
 function resumeOuterAttack(
   tx: EngineTransaction<AuthoritativeGameState>,
+  deadlineSupplier?: () => number,
 ): void {
   const draft = tx.draft;
   if (!draft.combat.attack) {
@@ -266,7 +267,7 @@ function resumeOuterAttack(
       kind,
       prioritySeat: owner.seat,
       mandatory: false,
-      deadlineAt: deadline,
+      deadlineAt: deadlineSupplier ? deadlineSupplier() : deadline,
       timeoutPolicy: "pass",
       legalOfferIds: [`offer:${kind}:finish`],
       context: {},
@@ -314,7 +315,7 @@ function resumeOuterAttack(
       !Array.isArray(attack.pendingOwlTrigger)
         ? "awaitingOwlTrigger"
         : "committed";
-  } else finalizeCurrentAttack(tx, attack);
+  } else finalizeCurrentAttack(tx, attack, deadlineSupplier);
 }
 function commit(
   tx: EngineTransaction<AuthoritativeGameState>,
@@ -323,6 +324,31 @@ function commit(
   result.state.history.domainEvents.push(...result.events);
   validateAuthoritativeState(result.state);
   return result;
+}
+export function eliminatePlayer(
+  tx: EngineTransaction<AuthoritativeGameState>,
+  dyingRef: string,
+): void {
+  const draft = tx.draft,
+    dyingSeat = seatFromRef(dyingRef),
+    dying = draft.players.find((item) => item.seat === dyingSeat)!;
+  dying.lifeState = "eliminated";
+  dying.hp = null;
+  dying.shield = null;
+  tx.emit("elimination.occurred", { dyingRef });
+  const losingTeam = dying.team,
+    teamLost = draft.players
+      .filter((item) => item.team === losingTeam)
+      .every((item) => item.lifeState === "eliminated");
+  tx.emit("game.victory.check", {
+    team: losingTeam,
+    allEliminated: teamLost,
+  });
+  if (teamLost) {
+    draft.lifecycle = "ended";
+    draft.winnerTeam = losingTeam === "A" ? "B" : "A";
+    tx.emit("game.victory", { winnerTeam: draft.winnerTeam });
+  }
 }
 function continueEliminationAfterDeath(
   tx: EngineTransaction<AuthoritativeGameState>,
@@ -337,26 +363,10 @@ function continueEliminationAfterDeath(
     replaceEliminationWithDarkKnightFinalStrike(tx, dyingSeat, deadlineAt) ||
     replaceEliminationWithIronPirate(tx, dyingSeat);
   if (!replaced) {
-    dying.lifeState = "eliminated";
-    dying.hp = null;
-    dying.shield = null;
-    tx.emit("elimination.occurred", { dyingRef });
-    const losingTeam = dying.team,
-      teamLost = draft.players
-        .filter((item) => item.team === losingTeam)
-        .every((item) => item.lifeState === "eliminated");
-    tx.emit("game.victory.check", {
-      team: losingTeam,
-      allEliminated: teamLost,
-    });
-    if (teamLost) {
-      draft.lifecycle = "ended";
-      draft.winnerTeam = losingTeam === "A" ? "B" : "A";
-      tx.emit("game.victory", { winnerTeam: draft.winnerTeam });
-    }
+    eliminatePlayer(tx, dyingRef);
   }
   draft.combat.dyingStack.pop();
-  if (draft.lifecycle !== "ended") resumeOuterAttack(tx);
+  if (draft.lifecycle !== "ended") resumeOuterAttack(tx, () => deadlineAt);
 }
 function openExtraGemDeathTransfer(
   tx: EngineTransaction<AuthoritativeGameState>,
@@ -621,7 +631,7 @@ export class DyingCommandSession {
         const extraGem = pendingExtraGem(draft, dyingRef);
         if (extraGem)
           removeExtraGemAfterResult(tx, extraGem.scheduledId, "rescued");
-        resumeOuterAttack(tx);
+        resumeOuterAttack(tx, this.nextDeadlineAt);
       } else
         pushWindow(
           draft,

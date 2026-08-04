@@ -28,7 +28,7 @@ roomSnapshot.roomRevision = 5;
 roomSnapshot.characterSelection = null;
 roomSnapshot.viewerUserId = "u2";
 roomSnapshot.viewerSeat = 2;
-roomSnapshot.permissions = { canChangeSeat: true, canUpdateSettings: true, canKick: true, canTransferHost: true, canStartGame: true, canCloseRoom: true };
+roomSnapshot.permissions = { canChangeSeat: true, canUpdateSettings: true, canKick: true, canTransferHost: true, canStartGame: true, canCloseRoom: true, canDisbandRoom: true };
 roomSnapshot.players = roomSnapshot.players.map((player) => ({ ...player, isHost: player.userId === roomSnapshot.viewerUserId, selectionState: "notStarted", revealedCharacterId: null }));
 
 const card = (ref:string,templateId:string,displayName:string,category:CardView["category"],printedColor:CardView["printedColor"],resourceKey:string,summary:string):CardView => ({ ref,templateId,displayName,category,printedColor,resourceKey,summary,coreStats:[],badges:[],state:{effective:true,selected:false},detailAvailable:true });
@@ -91,7 +91,7 @@ export function createMockServer() {
         if (command.command === "CHANGE_SEAT") { const p=command.payload as {userId:string;seat:1|2|3|4}; const player=current.players.find(x=>x.userId===p.userId); if(player) { player.seat=p.seat; player.team=p.seat===1||p.seat===4?"A":"B"; if(player.userId===current.viewerUserId) current.viewerSeat=p.seat; } }
         if (command.command === "UPDATE_ROOM_SETTINGS") current.settings = structuredClone((command.payload as {settings:RoomSnapshot["settings"]}).settings);
         if (command.command === "KICK_PLAYER") { const userId=(command.payload as {userId:string}).userId; current.players=current.players.filter(x=>x.userId!==userId); }
-        if (command.command === "TRANSFER_HOST") { const userId=(command.payload as {userId:string}).userId; current.players=current.players.map(x=>({...x,isHost:x.userId===userId})); current.permissions={canChangeSeat:true,canUpdateSettings:false,canKick:false,canTransferHost:false,canStartGame:false,canCloseRoom:false}; }
+        if (command.command === "TRANSFER_HOST") { const userId=(command.payload as {userId:string}).userId; current.players=current.players.map(x=>({...x,isHost:x.userId===userId})); current.permissions={canChangeSeat:true,canUpdateSettings:false,canKick:false,canTransferHost:false,canStartGame:false,canCloseRoom:false,canDisbandRoom:false}; }
         if (command.command === "START_GAME") { const next=structuredClone(selectionSnapshot); next.roomRevision=current.roomRevision; next.viewerUserId=current.viewerUserId; next.viewerSeat=current.viewerSeat; next.players=current.players.map(x=>({...x,selectionState:x.userId===current.viewerUserId?"choosing":"notStarted",revealedCharacterId:null})); current=next; }
         if (command.command === "PRESELECT_CHARACTER" && current.characterSelection) current.characterSelection.preselectedCharacterId = (command.payload as {characterId:string|null}).characterId;
         if (command.command === "LOCK_CHARACTER" && current.characterSelection) { current.characterSelection.lockedCharacterId = (command.payload as {characterId:string}).characterId; const me=current.players.find((p)=>p.userId===current.viewerUserId); if(me) me.selectionState="locked"; }

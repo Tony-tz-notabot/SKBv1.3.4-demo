@@ -58,6 +58,44 @@ describe("PromptBanner 倒计时（task18）", () => {
   });
 });
 
+describe("PromptBanner 非轮转玩家也显示倒计时（其他玩家可见）", () => {
+  const base = { deadlineAt: Date.now() + 10000, timeoutPolicy: "pass" as const, mandatory: false };
+
+  it("prompt 为 null（非轮转玩家）但 activeWindow 存在时，仍渲染 <time> 倒计时（来源 activeWindow.deadlineAt）", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1000);
+    const wrapper = mount(PromptBanner, {
+      props: {
+        prompt: null,
+        viewerSeat: 1,
+        serverTime: 1000,
+        activeWindow: { kind: "playPhaseAction", prioritySeat: 3, deadlineAt: 11000, attackerSeat: null, abilityId: null },
+        characterNameOf: (seat: number) => (seat === 3 ? "游侠" : `玩家${seat}`),
+      },
+    });
+    const time = wrapper.find("time");
+    expect(time.exists(), "非轮转玩家也应看到倒计时 <time>").toBe(true);
+    expect(time.text()).toBe("10s");
+    expect(wrapper.find(".prompt-banner").exists(), "activeWindow 存在时渲染信息条而非占位符").toBe(true);
+    expect(wrapper.find(".prompt-banner strong").text()).toBe("游侠行动阶段");
+  });
+
+  it("activeWindow 的 deadlineAt 已过期时，非轮转玩家倒计时显示 0s", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1000);
+    const wrapper = mount(PromptBanner, {
+      props: {
+        prompt: null,
+        viewerSeat: 1,
+        serverTime: 1000,
+        activeWindow: { kind: "playPhaseAction", prioritySeat: 3, deadlineAt: 500, attackerSeat: null, abilityId: null },
+        characterNameOf: (seat: number) => `玩家${seat}`,
+      },
+    });
+    expect(wrapper.find("time").text()).toBe("0s");
+  });
+});
+
 describe("PromptBanner 阶段文案（task18）", () => {
   const base = { deadlineAt: Date.now() + 10000, timeoutPolicy: "pass" as const, mandatory: false };
 
@@ -112,6 +150,34 @@ describe("PromptBanner 阶段文案（task18）", () => {
       },
     });
     expect(wrapper.find(".prompt-banner strong").text()).toBe("圣骑士使用神圣屏障");
+  });
+
+  it("思考窗口（圣骑士雕像使用思考）：x使用思考", () => {
+    const wrapper = mount(PromptBanner, {
+      props: {
+        prompt: { ...base, promptId: "p", kind: "statuePaladinResponse", prioritySeat: 3 },
+        viewerSeat: 1,
+        serverTime: Date.now(),
+        activeWindow: { kind: "statuePaladinResponse", prioritySeat: 3, deadlineAt: base.deadlineAt, attackerSeat: null, abilityId: "skill.statue.paladin_think" },
+        characterNameOf: (seat: number) => ({ 3: "圣骑士" }[seat] ?? `玩家${seat}`),
+        abilityNameOf: (id: string) => (id === "skill.statue.paladin_think" ? "思考" : id),
+      },
+    });
+    expect(wrapper.find(".prompt-banner strong").text()).toBe("圣骑士使用思考");
+  });
+
+  it("思考窗口（萨满逆天改命思考）：x使用思考（判前干预）", () => {
+    const wrapper = mount(PromptBanner, {
+      props: {
+        prompt: { ...base, promptId: "p", kind: "preJudgment", prioritySeat: 3 },
+        viewerSeat: 1,
+        serverTime: Date.now(),
+        activeWindow: { kind: "preJudgment", prioritySeat: 3, deadlineAt: base.deadlineAt, attackerSeat: null, abilityId: "skill.shaman.defy_fate" },
+        characterNameOf: (seat: number) => ({ 3: "萨满" }[seat] ?? `玩家${seat}`),
+        abilityNameOf: (id: string) => (id === "skill.shaman.defy_fate" ? "思考" : id),
+      },
+    });
+    expect(wrapper.find(".prompt-banner strong").text()).toBe("萨满使用思考");
   });
 
   it("无 activeWindow（无窗口）时回退显示 等待服务器推进", () => {

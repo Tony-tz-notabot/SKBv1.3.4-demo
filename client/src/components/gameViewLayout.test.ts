@@ -87,14 +87,14 @@ describe("GameView 角色站位 4 角（task19）",()=>{
   expect(panel,`seat ${seat} 应有角色面板`).toBeTruthy();
   return (panel!.element.parentElement as HTMLElement).getAttribute("data-position");
  };
- it("viewer 1：左下4 右下1 右上3 左上2",()=>{
+ it("viewer 1：左下4 右下1 右上2 左上3",()=>{
   const snapshot=snapshotWith([]);
   snapshot.publicView.players=allSeats();
   const wrapper=mountView(snapshot);
   expect(cornerOf(wrapper,4)).toBe("bottomLeft");
   expect(cornerOf(wrapper,1)).toBe("bottomRight");
-  expect(cornerOf(wrapper,3)).toBe("topRight");
-  expect(cornerOf(wrapper,2)).toBe("topLeft");
+  expect(cornerOf(wrapper,2)).toBe("topRight");
+  expect(cornerOf(wrapper,3)).toBe("topLeft");
  });
  it("viewer 2：左下2 右下3 右上4 左上1",()=>{
   const snapshot=snapshotWith([]);
@@ -113,6 +113,8 @@ describe("GameView 角色站位 4 角（task19）",()=>{
   const w4=mountView(snap4);
   expect(cornerOf(w4,4)).toBe("bottomLeft");
   expect(cornerOf(w4,1)).toBe("bottomRight");
+  expect(cornerOf(w4,2)).toBe("topRight");
+  expect(cornerOf(w4,3)).toBe("topLeft");
   const snap3=snapshotWith([]);
   snap3.viewer={userId:"u3",seat:3 as const,team:"B" as const};
   snap3.publicView.players=allSeats();

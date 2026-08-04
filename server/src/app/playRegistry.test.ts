@@ -260,6 +260,28 @@ describe("playRegistry real play-phase adapters", () => {
     expect(room.game!.cards[cardRef]!.zoneRef).toBe("weapon:1:1");
   });
 
+  it("equips armor through the registry (offer flows from playOffers and lands in armor zone)", () => {
+    const state = openedState(109);
+    const armor = refsByTemplate(state, "armor.a01")[0]!;
+    moveCard(state, armor, "hand:1");
+    const room = makeRoom(state);
+    const service = new GameService(ruleset, () => 1000);
+    const offer = playOffers(state, ruleset, 1, "u1", () => 21000).find((item) =>
+      item.offerId.includes("equip") && item.cardRef === armor,
+    )!;
+    expect(offer, "出牌阶段应生成防具装备 offer").toBeTruthy();
+    const cardRef = String(offer.cardRef);
+    submitOffer(
+      room,
+      service,
+      users[1]!,
+      offer.offerId,
+      { cards: [`public:${cardRef}`] },
+      "equip-armor-1",
+    );
+    expect(room.game!.cards[cardRef]!.zoneRef, "装备防具应落入 armor:1").toBe("armor:1");
+  });
+
   it("discards an equipped weapon through the registry", () => {
     const state = openedState(105);
     const weapon = refsByTemplate(state, "weapon.w06")[0]!;

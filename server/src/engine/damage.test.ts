@@ -87,8 +87,11 @@ describe("damage segments", () => {
     expect(result.state.combat.attack).toBeNull();
     expect(result.state.pendingWindows[0]).toMatchObject({
       kind: "playPhaseAction",
-      deadlineAt: 900,
     });
+    expect(
+      result.state.pendingWindows[0]!.deadlineAt,
+      "恢复后的出牌窗口应使用新鲜截止时刻而非捕获时过期的 900",
+    ).toBeGreaterThan(900);
     expect(result.events.map((event) => event.eventType)).toEqual(
       expect.arrayContaining([
         "damage.received",
@@ -96,6 +99,16 @@ describe("damage segments", () => {
         "attack.resolved",
       ]),
     );
+  });
+  it("does not restore a play window with a stale past deadline after combat resolves", () => {
+    const state = hitState(),
+      attack = state.combat.attack as Record<string, unknown>;
+    attack.resumePlayDeadlineAt = 100; // 早已过期：若原样复用，恢复后的出牌窗口剩余时间为 0
+    const result = resolveCurrentAttackTarget(state);
+    const window = result.state.pendingWindows[0];
+    expect(window?.kind).toBe("playPhaseAction");
+    expect(typeof window!.deadlineAt).toBe("number");
+    expect(window!.deadlineAt, "恢复后的出牌窗口 deadline 必须大于捕获时的旧 deadline，不能是过期的 100").toBeGreaterThan(100);
   });
   it("applies iron shield per segment and suppresses received at zero", () => {
     const state = hitState();

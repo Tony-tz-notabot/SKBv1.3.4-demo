@@ -30,8 +30,8 @@ const starts=(clients:TestClient[])=>clients.map(client=>({client,index:client.m
 async function waitFor(clients:TestClient[],start:WaitStart[],predicate:(entry:WireEntry)=>boolean,timeout=12000){const deadline=Date.now()+timeout;while(Date.now()<deadline){for(const item of start){const entry=item.client.messages.slice(item.index).find(predicate);if(entry)return entry;}await delay(20);}throw new Error(`FORFEIT-E2E wait timeout`);}
 async function command(client:TestClient,message:any,channel:"room"|"game"){const start=starts([client]);client.send({type:"COMMAND",channel,command:message});const entry=await waitFor([client],start,item=>item.type==="COMMAND_RESULT"&&item.channel===channel&&item.message.commandId===message.commandId);if(!String(entry.message.type).endsWith("ACCEPTED"))throw new Error(`FORFEIT-E2E command rejected: ${entry.message.reasonCode}`);return entry.message;}
 
-describe("forfeit returns every player to the lobby",()=>{
- it("disbands the room and pushes LOBBY_SNAPSHOT to all four players",async()=>{const dir=await mkdtemp(join(tmpdir(),"skb-forfeit-e2e-")),persistence=new JsonPersistence(join(dir,"state.json")),rooms=new RoomService(ruleset,persistence);dirs.push(dir);await rooms.restore();const server=new SkbApplicationServer(rooms,ruleset);await server.listen(0);const port=(server.http.address() as AddressInfo).port,base=`http://127.0.0.1:${port}`;
+describe("forfeit marks a player eliminated without ending the room",()=>{
+ it("keeps the room and game alive for the other three players after one FORFEIT",async()=>{const dir=await mkdtemp(join(tmpdir(),"skb-forfeit-e2e-")),persistence=new JsonPersistence(join(dir,"state.json")),rooms=new RoomService(ruleset,persistence);dirs.push(dir);await rooms.restore();const server=new SkbApplicationServer(rooms,ruleset);await server.listen(0);const port=(server.http.address() as AddressInfo).port,base=`http://127.0.0.1:${port}`;
   const sessions:Array<{token:string;userId:string;displayName:string}>=[];for(let i=0;i<4;i++){const response=await fetch(`${base}/api/session`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({username:`退出玩家${i+1}`,password:"test123"})});sessions.push(await response.json() as {token:string;userId:string;displayName:string});}
   const clients=sessions.map(session=>new TestClient(new WebSocket(`ws://127.0.0.1:${port}/ws?token=${encodeURIComponent(session.token)}`)));await Promise.all(clients.map(client=>client.open));
   try{
@@ -51,17 +51,18 @@ describe("forfeit returns every player to the lobby",()=>{
    expect(roomBefore.phase).toBe("inGame");
    expect(roomBefore.game!.lifecycle).toBe("setupRedraw");
    const setupSnap=(await waitFor([clients[0]!],[{client:clients[0]!,index:0}],entry=>entry.type==="MESSAGE"&&entry.channel==="game"&&entry.message.type==="SETUP_SNAPSHOT")).message;
-   // 玩家 1 在红换阶段直接退出本局
+   // 玩家 1 在红换阶段直接退出本局：被淘汰，但房间不结束，其余玩家仍在对局中
    const gameRevision=roomBefore.game!.stateRevision;
    await command(clients[0]!,{type:"GAME_COMMAND",commandId:"forfeit",gameId:setupSnap.gameId,expectedStateRevision:gameRevision,command:"FORFEIT",payload:{}},"game");
-   // FORFEIT 应立即解散房间
-   expect(roomBefore.phase).toBe("closed");
-   expect(roomBefore.players).toHaveLength(0);
-   expect(roomBefore.game!.lifecycle).toBe("ended");
-   expect(roomBefore.game!.forfeited).toBe(true);
-   for(const session of sessions)expect(rooms.roomForUser(session.userId)).toBeNull();
-   // 四名玩家都应收到 LOBBY_SNAPSHOT，回到大厅
-   for(let i=0;i<4;i++){const lobby=await waitFor([clients[i]!],[{client:clients[i]!,index:0}],entry=>entry.type==="MESSAGE"&&entry.channel==="room"&&entry.message.type==="LOBBY_SNAPSHOT");expect(lobby?.message.type).toBe("LOBBY_SNAPSHOT");}
+   // FORFEIT = 离开对局 → 玩家 1 被淘汰；房间保持 inGame，4 人仍在房间
+   expect(roomBefore.phase).toBe("inGame");
+   expect(roomBefore.players).toHaveLength(4);
+   expect(roomBefore.game!.lifecycle).toBe("setupRedraw");
+   expect(roomBefore.game!.players[0]!.lifeState).toBe("eliminated");
+   expect(roomBefore.game!.players[0]!.hp).toBeNull();
+   expect(roomBefore.game!.players[0]!.shield).toBeNull();
+   // 其余三名玩家仍收到对局/红换快照，不回到大厅
+   for(let i=0;i<4;i++){expect(rooms.roomForUser(sessions[i]!.userId)).toBe(roomBefore);}
   }finally{for(const client of clients)client.close();await server.close();}
  },120000);
 });

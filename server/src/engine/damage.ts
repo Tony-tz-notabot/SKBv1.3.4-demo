@@ -1348,7 +1348,7 @@ export function resolveCurrentAttackTarget(
       delete draftAttack.precisionStrikeNoHandDodgeTargetRef;
     }
     draftAttack.status = "committed";
-  } else finalizeCurrentAttack(tx, draftAttack);
+  } else finalizeCurrentAttack(tx, draftAttack, () => deadlineAt);
   const committed = tx.commit();
   committed.state.history.domainEvents.push(...committed.events);
   validateAuthoritativeState(committed.state);

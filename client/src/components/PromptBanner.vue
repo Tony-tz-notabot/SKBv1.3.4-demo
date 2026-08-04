@@ -11,7 +11,9 @@ const timer=window.setInterval(()=>{now.value=Date.now();},250);onBeforeUnmount(
 // 叠加到最新 serverTime 上，会让 estimatedServerNow 逐步虚高，剩余时间被拉回 0。
 watch(()=>props.serverTime,(value)=>{if(value>anchorServer.value){anchorServer.value=value;anchorLocal=Date.now();}});
 const estimatedServerNow=computed(()=>anchorServer.value+(now.value-anchorLocal));
-const remaining=computed(()=>props.prompt?Math.max(0,props.prompt.deadlineAt-estimatedServerNow.value):0);
+// 倒计时来源：轮转玩家用 prompt.deadlineAt；非轮转玩家（prompt 为 null）
+// 用 activeWindow.deadlineAt —— 两者为同一窗口的服务端绝对截止时刻，保证全员可见一致倒计时。
+const remaining=computed(()=>{const deadline=props.prompt?.deadlineAt??props.activeWindow?.deadlineAt;return deadline!=null?Math.max(0,deadline-estimatedServerNow.value):0;});
 const seconds=computed(()=>Math.ceil(remaining.value/1000));
 const policyText=computed(()=>({pass:"超时不操作",randomLegal:"超时随机合法操作",useDefault:"超时采用默认选择",abortRemaining:"超时终止剩余操作"} as Record<string,string>)[props.prompt?.timeoutPolicy??""]??"");
 const nameOf=(seat:number|null|undefined)=>seat!=null?(props.characterNameOf?.(seat)??`${seat}号玩家`):"";
@@ -33,6 +35,6 @@ const headline=computed(()=>{
 </script>
 <template>
   <div v-if="prompt" class="prompt-banner" :class="{'prompt-banner--mine':prompt.prioritySeat===viewerSeat,'prompt-banner--mandatory':prompt.mandatory}"><div><strong>{{ headline }}</strong><span>{{ prompt.kind }} · {{ policyText }}</span></div><time :datetime="`${seconds}s`">{{ seconds }}s</time></div>
-  <div v-else-if="activeWindow" class="prompt-banner prompt-banner--info"><div><strong>{{ headline }}</strong></div></div>
+  <div v-else-if="activeWindow" class="prompt-banner prompt-banner--info"><div><strong>{{ headline }}</strong><span>等待该玩家操作</span></div><time :datetime="`${seconds}s`">{{ seconds }}s</time></div>
   <div v-else class="prompt-banner-placeholder">{{ headline }}</div>
 </template>

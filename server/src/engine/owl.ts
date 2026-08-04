@@ -185,7 +185,7 @@ export function openPendingOwlWindow(
       ? "committed"
       : "targetMiss";
     if (!tx.draft.combat.targetQueue.length)
-      finalizeCurrentAttack(tx, draftAttack);
+      finalizeCurrentAttack(tx, draftAttack, () => deadlineAt);
   } else draftAttack.status = "owlDecision";
   const committed = tx.commit();
   committed.state.history.domainEvents.push(...committed.events);

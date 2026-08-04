@@ -106,6 +106,7 @@ export type RoomPermissions = {
   "canTransferHost": boolean;
   "canStartGame": boolean;
   "canCloseRoom": boolean;
+  "canDisbandRoom": boolean;
 };
 
 export type RoomSnapshot = {
@@ -175,7 +176,7 @@ export type RoomCommand = {
   "commandId": string;
   "roomId"?: string | null;
   "expectedRoomRevision"?: number | null;
-  "command": "CREATE_ROOM" | "JOIN_ROOM" | "LEAVE_ROOM" | "SET_READY" | "CHANGE_SEAT" | "UPDATE_ROOM_SETTINGS" | "KICK_PLAYER" | "TRANSFER_HOST" | "START_GAME" | "CLOSE_ROOM" | "PRESELECT_CHARACTER" | "LOCK_CHARACTER" | "SEND_CHAT";
+  "command": "CREATE_ROOM" | "JOIN_ROOM" | "LEAVE_ROOM" | "SET_READY" | "CHANGE_SEAT" | "UPDATE_ROOM_SETTINGS" | "KICK_PLAYER" | "TRANSFER_HOST" | "START_GAME" | "CLOSE_ROOM" | "DISBAND_ROOM" | "PRESELECT_CHARACTER" | "LOCK_CHARACTER" | "SEND_CHAT";
   "payload": {
 
 };

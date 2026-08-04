@@ -4,7 +4,8 @@ import {PhaseCommandSession} from "../engine/phaseCommands.js";
 import {runAutomaticScheduler} from "../engine/automaticScheduler.js";
 import {setWeaponPreselection} from "../engine/preselection.js";
 import {AttackResponseSession} from "../engine/response.js";
-import {DyingCommandSession} from "../engine/dying.js";
+import {DyingCommandSession,eliminatePlayer} from "../engine/dying.js";
+import {EngineTransaction} from "../engine/transaction.js";
 import {JudgmentDesignationSession} from "../engine/judgmentDesignation.js";
 import {JudgmentInterventionSession} from "../engine/judgmentIntervention.js";
 import {PreJudgmentSession} from "../engine/preJudgment.js";
@@ -32,9 +33,16 @@ export class GameService{
    if(command.command==="SEND_CHAT")return reject("CHAT_ROUTED_BY_APPLICATION");
    if(command.command==="FORFEIT"){
     const actor=room.game.players.find(x=>x.userId===user.userId);if(!actor)return reject("NOT_YOUR_PRIORITY");
-    room.game.pendingWindows=[];room.game.combat={attack:null,targetQueue:[],currentTargetRef:null,responseStack:[],dyingStack:[],damageSegment:null};room.game.lifecycle="ended";room.game.winnerTeam=null;room.game.forfeited=true;room.game.forfeitedBySeat=actor.seat;room.game.phase=null;room.game.activeSeat=null;room.game.phaseBoundary=null;room.game.phaseMode=null;room.game.phaseBodyResolved=null;
-    room.game.lastEventSeq+=1;room.game.history.domainEvents.push({eventType:"game.aborted",payload:{bySeat:actor.seat},eventSeq:room.game.lastEventSeq,stateRevision:room.game.stateRevision});room.game.stateRevision+=1;
-    const result=this.accept(command,room,room.game.lastEventSeq);room.phase="closed";room.players=[];room.spectators=[];room.updatedAt=Date.now();room.revision++;return result;
+    const seat=actor.seat;
+    // setupRedraw：仅关闭离局者的重摸窗口（他人可继续重摸）；
+    // inProgress：清空窗口与战斗栈（离局可能中断任意结算），交由调度器推进到下一个可行动玩家。
+    if(room.game.lifecycle==="inProgress"){room.game.pendingWindows=[];room.game.resolutionStack=[];room.game.combat={attack:null,targetQueue:[],currentTargetRef:null,responseStack:[],dyingStack:[],damageSegment:null};}
+    else{room.game.pendingWindows=room.game.pendingWindows.filter(w=>w.prioritySeat!==seat);if(room.game.setup)room.game.setup.redrawBySeat[seat].decided=true;}
+    room.game.forfeited=true;room.game.forfeitedBySeat=seat;room.game.forfeitedAt=this.clock();
+    const tx=new EngineTransaction(room.game);eliminatePlayer(tx,`character:${seat}`);const committed=tx.commit();committed.state.history.domainEvents.push(...committed.events);room.game=committed.state;
+    if(room.game.lifecycle==="ended"){this.disband(room);return this.accept(command,room,room.game.lastEventSeq);}
+    if(room.game.lifecycle==="inProgress"&&room.game.phaseBoundary==="body")room.game.phaseBodyResolved=true;
+    this.stabilize(room);return this.accept(command,room,room.game!.lastEventSeq);
    }
    if(command.command==="SET_PRESELECTION"){
     const actor=room.game.players.find(x=>x.userId===user.userId)!,payload=command.payload??{},committed=setWeaponPreselection(room.game,actor.seat,typeof payload.weaponSlot==="string"?internalRef(payload.weaponSlot):null,typeof payload.modeId==="string"?payload.modeId:null,this.ruleset);room.game=committed.state;return this.accept(command,room,committed.events[0]?.eventSeq??room.game.lastEventSeq);

@@ -43,6 +43,8 @@ describe("descriptions 本地化配置", () => {
     // 初始天赋显示名
     expect(abilityDisplayName("talent.blue_shield")).toBe("蓝盾");
     expect(abilityDisplayName("skill.knight.instinct")).toBe("骑士本能");
+    // 圣骑士雕像思考窗口技能名
+    expect(abilityDisplayName("skill.statue.paladin_think")).toBe("思考");
   });
 
   it("未知 key 安全降级不抛错", () => {

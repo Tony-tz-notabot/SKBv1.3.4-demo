@@ -19,6 +19,7 @@ export const roomActions = {
   transferHost(userId: string) { dispatch(buildRoomCommand("TRANSFER_HOST", { userId }, context())); },
   startGame() { dispatch(buildRoomCommand("START_GAME", {}, context())); },
   closeRoom() { dispatch(buildRoomCommand("CLOSE_ROOM", {}, context())); },
+  disband() { dispatch(buildRoomCommand("DISBAND_ROOM", {}, context())); },
   preselectCharacter(characterId: string | null) { dispatch(buildRoomCommand("PRESELECT_CHARACTER", { characterId }, context())); },
   lockCharacter(characterId: string) { dispatch(buildRoomCommand("LOCK_CHARACTER", { characterId }, context())); },
   sendChat(channel: "all" | "team", text: string) { dispatch(buildRoomCommand("SEND_CHAT", { channel, clientMessageId: crypto.randomUUID(), text }, context())); }

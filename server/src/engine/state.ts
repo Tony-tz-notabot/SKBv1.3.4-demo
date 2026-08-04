@@ -29,7 +29,7 @@ export interface CombatState { attack:JsonValue|null; targetQueue:string[]; curr
 
 export interface AuthoritativeGameState {
   kind:"AUTHORITATIVE_GAME_STATE"; gameId:string; rulesetVersion:string; stateRevision:number; lastEventSeq:number;
-  lifecycle:GameLifecycle; setup:SetupLifecycleState|null; round:number; activeSeat:Seat|null; phase:Phase|null; phaseBoundary:PhaseBoundary|null; phaseMode:PhaseMode|null; phaseBodyResolved:boolean|null; winnerTeam:Team|null; forfeited?:boolean; forfeitedBySeat?:Seat|null;
+  lifecycle:GameLifecycle; setup:SetupLifecycleState|null; round:number; activeSeat:Seat|null; phase:Phase|null; phaseBoundary:PhaseBoundary|null; phaseMode:PhaseMode|null; phaseBodyResolved:boolean|null; winnerTeam:Team|null; forfeited?:boolean; forfeitedBySeat?:Seat|null; forfeitedAt?:number;
   players:PlayerRuntimeState[]; cards:Record<string,CardInstanceState>; zones:Record<string,ZoneState>;
   pendingWindows:PendingWindowState[]; resolutionStack:ResolutionFrame[]; combat:CombatState;
   durations:DurationState[]; scheduledEffects:ScheduledEffectState[]; randomHistory:RandomRecord[];

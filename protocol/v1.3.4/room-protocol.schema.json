@@ -86,10 +86,11 @@
     },
     "RoomPermissions": {
       "type": "object", "additionalProperties": false,
-      "required": ["canChangeSeat", "canUpdateSettings", "canKick", "canTransferHost", "canStartGame", "canCloseRoom"],
+      "required": ["canChangeSeat", "canUpdateSettings", "canKick", "canTransferHost", "canStartGame", "canCloseRoom", "canDisbandRoom"],
       "properties": {
         "canChangeSeat": { "type": "boolean" }, "canUpdateSettings": { "type": "boolean" }, "canKick": { "type": "boolean" },
-        "canTransferHost": { "type": "boolean" }, "canStartGame": { "type": "boolean" }, "canCloseRoom": { "type": "boolean" }
+        "canTransferHost": { "type": "boolean" }, "canStartGame": { "type": "boolean" }, "canCloseRoom": { "type": "boolean" },
+        "canDisbandRoom": { "type": "boolean" }
       }
     },
     "RoomSnapshot": {
@@ -120,13 +121,13 @@
       "properties": {
         "type": { "const": "ROOM_COMMAND" }, "commandId": { "type": "string" }, "roomId": { "type": ["string", "null"] },
         "expectedRoomRevision": { "type": ["integer", "null"], "minimum": 0 },
-        "command": { "type": "string", "enum": ["CREATE_ROOM", "JOIN_ROOM", "LEAVE_ROOM", "SET_READY", "CHANGE_SEAT", "UPDATE_ROOM_SETTINGS", "KICK_PLAYER", "TRANSFER_HOST", "START_GAME", "CLOSE_ROOM", "PRESELECT_CHARACTER", "LOCK_CHARACTER", "SEND_CHAT"] },
+        "command": { "type": "string", "enum": ["CREATE_ROOM", "JOIN_ROOM", "LEAVE_ROOM", "SET_READY", "CHANGE_SEAT", "UPDATE_ROOM_SETTINGS", "KICK_PLAYER", "TRANSFER_HOST", "START_GAME", "CLOSE_ROOM", "DISBAND_ROOM", "PRESELECT_CHARACTER", "LOCK_CHARACTER", "SEND_CHAT"] },
         "payload": { "type": "object" }
       },
       "x-commandPayloadMap": {
         "CREATE_ROOM": "CreateRoomPayload", "JOIN_ROOM": "JoinRoomPayload", "LEAVE_ROOM": "EmptyPayload", "SET_READY": "SetReadyPayload",
         "CHANGE_SEAT": "ChangeSeatPayload", "UPDATE_ROOM_SETTINGS": "UpdateRoomSettingsPayload", "KICK_PLAYER": "TargetUserPayload",
-        "TRANSFER_HOST": "TargetUserPayload", "START_GAME": "EmptyPayload", "CLOSE_ROOM": "EmptyPayload",
+        "TRANSFER_HOST": "TargetUserPayload", "START_GAME": "EmptyPayload", "CLOSE_ROOM": "EmptyPayload", "DISBAND_ROOM": "EmptyPayload",
         "PRESELECT_CHARACTER": "PreselectCharacterPayload", "LOCK_CHARACTER": "LockCharacterPayload", "SEND_CHAT": "RoomSendChatPayload"
       }
     },
