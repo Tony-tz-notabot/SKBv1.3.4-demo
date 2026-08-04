@@ -63,7 +63,7 @@ const localizedRejection = computed(() => lastRejection.value ? localizeCommandR
           <button v-for="scene in ['lobby', 'room', 'selection', 'setup', 'game'] as MockScene[]" :key="scene" type="button" :class="{ active: mockScene === scene }" @click="switchMock(scene)">{{ scene }}</button>
         </nav>
         <ConnectionStatus :state="connectionState" :latency-ms="latencyMs" />
-        <span v-if="account && !(isDev && showMock)" class="topbar__account">{{ account.displayName }}<button type="button" class="button button--ghost" @click="logout">退出</button></span>
+        <span v-if="account && !(isDev && showMock)" class="topbar__account">{{ account.displayName }}<button type="button" class="button button--ghost" @click="logout">登出</button></span>
       </div>
     </header>
 
