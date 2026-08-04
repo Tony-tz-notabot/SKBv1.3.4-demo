@@ -11,7 +11,7 @@ const selectionText = (state: RoomPlayerView["selectionState"]) => ({ notStarted
     <div class="seat-card__number">{{ seat }}</div>
     <div v-if="player" class="seat-card__body">
       <div class="seat-card__topline">
-        <strong>{{ player.displayName }}</strong>
+        <strong>{{ player.username ?? player.displayName }}</strong>
         <span v-if="player.isHost" class="pill pill--host">房主</span>
       </div>
       <p>{{ teamFor(seat) }}队 · {{ player.connection === "online" ? `${player.latencyMs ?? "--"} ms` : player.connection === "reconnecting" ? "重连中" : "离线" }}</p>

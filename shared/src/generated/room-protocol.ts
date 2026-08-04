@@ -28,6 +28,7 @@ export type RoomSettings = {
 export type LobbyUser = {
   "userId": string;
   "displayName": string;
+  "username"?: string | null;
   "latencyMs": number | null;
 };
 
@@ -62,6 +63,7 @@ export type RoomPreview = {
 export type RoomPlayerView = {
   "userId": string;
   "displayName": string;
+  "username"?: string | null;
   "seat": Seat;
   "team": Team;
   "isHost": boolean;

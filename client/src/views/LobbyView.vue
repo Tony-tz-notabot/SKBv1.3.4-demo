@@ -76,7 +76,7 @@ function submitJoin() {
       </form>
     </article>
     <aside class="lobby-side">
-      <div class="account-card"><span class="avatar">K</span><div><strong>{{ snapshot?.user.displayName ?? "等待账号" }}</strong><p>{{ snapshot?.user.latencyMs ?? "--" }} ms · 在线</p></div></div>
+      <div class="account-card"><span class="avatar">K</span><div><strong>{{ snapshot?.user.username ?? snapshot?.user.displayName ?? "等待账号" }}</strong><p>{{ snapshot?.user.latencyMs ?? "--" }} ms · 在线</p></div></div>
       <article class="resume-card"><p class="eyebrow">CONTINUE</p><template v-if="snapshot?.resumableGames[0]"><h3>继续未完成对局</h3><strong class="room-code">{{ snapshot.resumableGames[0].roomCode }}</strong><p>第 {{ snapshot.resumableGames[0].round }} 轮 · {{ snapshot.resumableGames[0].statusText }}</p></template><p v-else>没有可恢复的对局</p></article>
       <nav class="quick-links" aria-label="大厅功能"><span>角色图鉴</span><span>卡牌图鉴</span><span>设置</span></nav>
     </aside>

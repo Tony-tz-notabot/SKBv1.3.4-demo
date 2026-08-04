@@ -29,7 +29,7 @@
     },
     "LobbyUser": {
       "type": "object", "additionalProperties": false, "required": ["userId", "displayName", "latencyMs"],
-      "properties": { "userId": { "type": "string" }, "displayName": { "type": "string" }, "latencyMs": { "type": ["integer", "null"], "minimum": 0 } }
+      "properties": { "userId": { "type": "string" }, "displayName": { "type": "string" }, "username": { "type": ["string", "null"] }, "latencyMs": { "type": ["integer", "null"], "minimum": 0 } }
     },
     "ResumableGame": {
       "type": "object", "additionalProperties": false, "required": ["gameId", "roomCode", "round", "statusText"],
@@ -55,7 +55,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["userId", "displayName", "seat", "team", "isHost", "ready", "connection", "latencyMs", "selectionState"],
       "properties": {
-        "userId": { "type": "string" }, "displayName": { "type": "string" }, "seat": { "$ref": "#/$defs/Seat" }, "team": { "$ref": "#/$defs/Team" },
+        "userId": { "type": "string" }, "displayName": { "type": "string" }, "username": { "type": ["string", "null"] }, "seat": { "$ref": "#/$defs/Seat" }, "team": { "$ref": "#/$defs/Team" },
         "isHost": { "type": "boolean" }, "ready": { "type": "boolean" }, "connection": { "$ref": "#/$defs/ConnectionState" },
         "latencyMs": { "type": ["integer", "null"], "minimum": 0 }, "selectionState": { "type": "string", "enum": ["notStarted", "choosing", "locked", "revealed"] },
         "revealedCharacterId": { "type": ["string", "null"] }

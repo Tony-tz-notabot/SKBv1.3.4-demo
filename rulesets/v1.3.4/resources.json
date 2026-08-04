@@ -159,79 +159,79 @@
     {
       "resourceKey": "card.basic.kill.white",
       "entityId": "basic.kill.white",
-      "assetPath": "assets/基础牌/杀-白.jpg",
+      "assetPath": "assets/基础牌/杀-白.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.kill.green",
       "entityId": "basic.kill.green",
-      "assetPath": "assets/基础牌/杀-绿.jpg",
+      "assetPath": "assets/基础牌/杀-绿.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.kill.blue",
       "entityId": "basic.kill.blue",
-      "assetPath": "assets/基础牌/杀-蓝.jpg",
+      "assetPath": "assets/基础牌/杀-蓝.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.kill.orange",
       "entityId": "basic.kill.orange",
-      "assetPath": "assets/基础牌/杀-橙.jpg",
+      "assetPath": "assets/基础牌/杀-橙.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.kill.red",
       "entityId": "basic.kill.red",
-      "assetPath": "assets/基础牌/杀-红.jpg",
+      "assetPath": "assets/基础牌/杀-红.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.dodge.white",
       "entityId": "basic.dodge.white",
-      "assetPath": "assets/基础牌/闪-白.jpg",
+      "assetPath": "assets/基础牌/闪-白.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.dodge.green",
       "entityId": "basic.dodge.green",
-      "assetPath": "assets/基础牌/闪-绿.jpg",
+      "assetPath": "assets/基础牌/闪-绿.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.dodge.blue",
       "entityId": "basic.dodge.blue",
-      "assetPath": "assets/基础牌/闪-蓝.jpg",
+      "assetPath": "assets/基础牌/闪-蓝.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.dodge.orange",
       "entityId": "basic.dodge.orange",
-      "assetPath": "assets/基础牌/闪-橙.jpg",
+      "assetPath": "assets/基础牌/闪-橙.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.dodge.red",
       "entityId": "basic.dodge.red",
-      "assetPath": "assets/基础牌/闪-红.jpg",
+      "assetPath": "assets/基础牌/闪-红.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.potion.white",
       "entityId": "basic.potion.white",
-      "assetPath": "assets/基础牌/药水-白.jpg",
+      "assetPath": "assets/基础牌/药水-白.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.potion.green",
       "entityId": "basic.potion.green",
-      "assetPath": "assets/基础牌/药水-绿.jpg",
+      "assetPath": "assets/基础牌/药水-绿.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.potion.blue",
       "entityId": "basic.potion.blue",
-      "assetPath": "assets/基础牌/药水-蓝.jpg",
+      "assetPath": "assets/基础牌/药水-蓝.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
@@ -243,37 +243,37 @@
     {
       "resourceKey": "card.basic.potion.red",
       "entityId": "basic.potion.red",
-      "assetPath": "assets/基础牌/药水-红.jpg",
+      "assetPath": "assets/基础牌/药水-红.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.horn.white",
       "entityId": "basic.horn.white",
-      "assetPath": "assets/基础牌/号角.jpg",
+      "assetPath": "assets/基础牌/号角.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.horn.green",
       "entityId": "basic.horn.green",
-      "assetPath": "assets/基础牌/号角-绿.jpg",
+      "assetPath": "assets/基础牌/号角-绿.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.horn.blue",
       "entityId": "basic.horn.blue",
-      "assetPath": "assets/基础牌/号角-蓝.jpg",
+      "assetPath": "assets/基础牌/号角-蓝.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.horn.orange",
       "entityId": "basic.horn.orange",
-      "assetPath": "assets/基础牌/号角-橙.jpg",
+      "assetPath": "assets/基础牌/号角-橙.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
       "resourceKey": "card.basic.horn.red",
       "entityId": "basic.horn.red",
-      "assetPath": "assets/基础牌/号角-红.jpg",
+      "assetPath": "assets/基础牌/号角-红.png",
       "fallbackResourceKey": "placeholder.basic"
     },
     {
@@ -1376,26 +1376,26 @@
     }
   ],
   "inventory": [
-    "assets/基础牌/号角-橙.jpg",
-    "assets/基础牌/号角-红.jpg",
-    "assets/基础牌/号角-绿.jpg",
-    "assets/基础牌/号角-蓝.jpg",
-    "assets/基础牌/号角.jpg",
-    "assets/基础牌/杀-橙.jpg",
-    "assets/基础牌/杀-白.jpg",
-    "assets/基础牌/杀-红.jpg",
-    "assets/基础牌/杀-绿.jpg",
-    "assets/基础牌/杀-蓝.jpg",
+    "assets/基础牌/号角-橙.png",
+    "assets/基础牌/号角-红.png",
+    "assets/基础牌/号角-绿.png",
+    "assets/基础牌/号角-蓝.png",
+    "assets/基础牌/号角.png",
+    "assets/基础牌/杀-橙.png",
+    "assets/基础牌/杀-白.png",
+    "assets/基础牌/杀-红.png",
+    "assets/基础牌/杀-绿.png",
+    "assets/基础牌/杀-蓝.png",
     "assets/基础牌/药水-橙.png",
-    "assets/基础牌/药水-白.jpg",
-    "assets/基础牌/药水-红.jpg",
-    "assets/基础牌/药水-绿.jpg",
-    "assets/基础牌/药水-蓝.jpg",
-    "assets/基础牌/闪-橙.jpg",
-    "assets/基础牌/闪-白.jpg",
-    "assets/基础牌/闪-红.jpg",
-    "assets/基础牌/闪-绿.jpg",
-    "assets/基础牌/闪-蓝.jpg",
+    "assets/基础牌/药水-白.png",
+    "assets/基础牌/药水-红.png",
+    "assets/基础牌/药水-绿.png",
+    "assets/基础牌/药水-蓝.png",
+    "assets/基础牌/闪-橙.png",
+    "assets/基础牌/闪-白.png",
+    "assets/基础牌/闪-红.png",
+    "assets/基础牌/闪-绿.png",
+    "assets/基础牌/闪-蓝.png",
     "assets/防具/光剑土豪金.png",
     "assets/防具/双节棍.png",
     "assets/防具/圆盾.png",
