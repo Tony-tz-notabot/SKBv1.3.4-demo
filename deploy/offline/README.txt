@@ -7,7 +7,7 @@ SKB v1.3.4 联机游戏 · 客户端离线包使用说明
 
 一、启动（Windows）
   1. 解压本目录到任意位置；
-  2. 双击「启动客户端.bat」；
+  2. 双击「start-client.bat」；
   3. 浏览器自动可访问（若未自动打开）：http://localhost:8080
 
 二、启动（macOS / Linux）

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 离线客户端包构建脚本（Linux/macOS 一键版；Windows 请双击 deploy/offline/打包客户端.bat）
+// 离线客户端包构建脚本（Linux/macOS 一键版；Windows 请双击 deploy/offline/build-offline.bat）
 // 用法：node deploy/offline/build-offline.mjs <服务器地址> [输出目录]
 //   服务器地址示例：ws://47.97.87.169/ws 或 wss://skb.example.com/ws
 // 内部流程：注入 VITE_WS_URL 构建 client/dist → 调用 assemble-offline.mjs 组装

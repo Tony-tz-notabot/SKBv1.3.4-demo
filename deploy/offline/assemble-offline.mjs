@@ -16,6 +16,6 @@ await mkdir(outArg,{recursive:true});
 await cp(resolve(root,"client","dist"),outArg,{recursive:true});
 await cp(resolve(here,"start-local.mjs"),resolve(outArg,"start-local.mjs"));
 await cp(resolve(here,"README.txt"),resolve(outArg,"使用说明.txt"));
-await writeFile(resolve(outArg,"启动客户端.bat"),"@echo off\r\ncd /d %~dp0\r\necho 正在启动本地客户端服务（端口 8080），完成后请在浏览器打开 http://localhost:8080\r\nnode start-local.mjs\r\npause\r\n","utf8");
+await writeFile(resolve(outArg,"start-client.bat"),"@echo off\r\ncd /d %~dp0\r\necho Starting local client on port 8080 ... open http://localhost:8080 in your browser\r\nnode start-local.mjs\r\npause\r\n","utf8");
 await writeFile(resolve(outArg,"启动客户端.command"),"#!/bin/bash\ncd \"$(dirname \"$0\")\"\necho '启动中，浏览器打开 http://localhost:8080'\nnode start-local.mjs\n","utf8");
-console.log("==> 组装完成。压缩本目录发给客户：解压 → 双击「启动客户端.bat」→ 浏览器访问 http://localhost:8080");
+console.log("==> 组装完成。压缩本目录发给客户：解压 → 双击 start-client.bat → 浏览器访问 http://localhost:8080");

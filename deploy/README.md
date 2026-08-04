@@ -30,7 +30,7 @@ node ../deploy/offline/build-offline.mjs "ws://<ECS公网IP>:8787/ws"  ../deploy
 ```
 
 产出 `deploy/offline/out/skb-client-offline/`，把**整个目录**压缩发给客户：
-解压 → 双击「启动客户端.bat」→ 浏览器打开 http://localhost:8080。
+解压 → 双击「start-client.bat」→ 浏览器打开 http://localhost:8080。
 
 - 客户机**只跑本地静态界面**（图片/页面零云流量），游戏消息走注入的云服务器地址；
 - 需要 Node.js ≥ 20 的客户机；
