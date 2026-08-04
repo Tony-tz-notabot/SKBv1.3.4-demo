@@ -31,4 +31,10 @@ describe("player card nickname",()=>{
   expect(validateProtocolGame(snap)).toBe(true);
  });
 });
+describe("opening preselection",()=>{
+ it("preselects weapon slot 1 for every player at game start",()=>{
+  const state=createInitialSetup(ruleset,{gameId:"pre-1",firstSeat:1,seed:403,usersBySeat:{1:"u1",2:"u2",3:"u3",4:"u4"},characterIdsBySeat:{1:"character.knight",2:"character.alchemist",3:"character.ranger",4:"character.wizard"}});
+  for(const seat of[1,2,3,4]as Seat[])expect(state.preselection[seat]?.weaponSlot,`seat ${seat} must auto-preselect weapon:1:${seat}`).toBe(`weapon:1:${seat}`);
+ });
+});
 function validateProtocolGame(snap:unknown){try{(globalThis as any).__ajvCheck?.(snap);return true}catch{return true}}
