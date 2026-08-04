@@ -65,6 +65,11 @@ h1 { margin-bottom: 0; font-size: clamp(1.7rem, 5vw, 2.6rem); }
 .quick-links { padding: 18px; display: flex; justify-content: space-around; color: #9cafba; }
 .room-layout { min-height: 650px; padding: 24px; display: grid; grid-template-columns: 1fr 260px; grid-template-rows: auto 1fr; gap: 18px; }
 .room-summary { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.room-code-row { display: flex; align-items: center; gap: 10px; margin: 2px 0 6px; }
+.room-code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: clamp(1.9rem, 4vw, 2.8rem); letter-spacing: 0.14em; color: var(--accent, #ffd166); background: rgba(0,0,0,0.35); border: 1px dashed rgba(255,255,255,0.45); border-radius: 10px; padding: 2px 14px; }
+.room-code__copy { font-size: 0.85rem; padding: 4px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.12); color: inherit; cursor: pointer; }
+.room-code__copy:hover { background: rgba(255,255,255,0.22); }
+.room-code__copied { font-size: 0.85rem; color: #7ce38b; }
 .room-summary h2, .selection-header h2 { margin-bottom: 0; font-size: clamp(2rem,5vw,3.4rem); }
 .summary-pills { display: flex; gap: 8px; }
 .summary-pills span, .pill { padding: 5px 9px; border: 1px solid #36556a; border-radius: 999px; color: #9eb2bf; font-size: .75rem; }

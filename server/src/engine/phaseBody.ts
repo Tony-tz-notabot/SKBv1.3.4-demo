@@ -160,7 +160,7 @@ export function resolvePhaseBody(
         kind,
         prioritySeat: seat,
         mandatory: count > 0,
-        deadlineAt: playDeadline,
+        deadlineAt,
         timeoutPolicy: "randomLegal",
         legalOfferIds: [
           ...(count > 0 ? [`offer:${kind}:submit`] : [`offer:${kind}:finish`]),

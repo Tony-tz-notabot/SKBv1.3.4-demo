@@ -29,11 +29,13 @@ function confirmKick(player: DeepReadonly<RoomPlayerView>) { if (window.confirm(
 function confirmTransfer(player: DeepReadonly<RoomPlayerView>) { if (window.confirm(`确定将房主转让给“${player.displayName}”？`)) emit("transferHost", player.userId); }
 function confirmLeave() { if (window.confirm("确定离开当前房间？")) emit("leave"); }
 function confirmClose() { if (window.confirm("关闭房间会移出所有玩家，确定继续？")) emit("close"); }
+const copied = ref(false);
+async function copyRoomCode() { try { await navigator.clipboard?.writeText(props.snapshot.roomCode); copied.value = true; setTimeout(() => { copied.value = false; }, 1500); } catch { /* 忽略剪贴板失败 */ } }
 </script>
 
 <template>
   <section class="room-layout">
-    <header class="room-summary"><div><p class="eyebrow">ROOM {{ snapshot.roomCode }}</p><h2>{{ snapshot.settings.roomName }}</h2></div><div class="summary-pills"><span>{{ snapshot.players.length }} / 4</span><span>{{ readyCount }} 已准备</span><span>v{{ snapshot.settings.rulesetVersion }}</span></div></header>
+    <header class="room-summary"><div><p class="eyebrow">房间号</p><div class="room-code-row"><strong class="room-code">{{ snapshot.roomCode }}</strong><button type="button" class="room-code__copy" @click="copyRoomCode">复制</button><span v-if="copied" class="room-code__copied">已复制</span></div><h2>{{ snapshot.settings.roomName }}</h2></div><div class="summary-pills"><span>{{ snapshot.players.length }} / 4</span><span>{{ readyCount }} 已准备</span><span>v{{ snapshot.settings.rulesetVersion }}</span></div></header>
     <div class="seat-ring" aria-label="固定四人座位">
       <div v-for="seat in seats" :key="seat" class="seat-position" :data-position="positionFor(seat)"><SeatCard :seat="seat" :player="playerAt(seat)" /></div>
       <div class="ring-center"><span class="direction-arrow">↺</span><strong>逆时针</strong><small>本地座位始终在下方</small></div>

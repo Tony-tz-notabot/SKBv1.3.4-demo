@@ -14,6 +14,7 @@ const settings:AppSettings={roomName:"计时",allowGuests:true,allowSpectators:f
 const users:Record<Seat,AppUser>={1:{userId:"u1",displayName:"昵称1"},2:{userId:"u2",displayName:"昵称2"},3:{userId:"u3",displayName:"昵称3"},4:{userId:"u4",displayName:"昵称4"}};
 beforeAll(async()=>{ruleset=await loadFrozenRuleset(resolve(import.meta.dirname,"../../../rulesets/v1.3.4"));});
 function prePlayState(seed:number):AuthoritativeGameState{let state=createInitialSetup(ruleset,{gameId:`timing-${seed}`,firstSeat:1,seed,usersBySeat:{1:"u1",2:"u2",3:"u3",4:"u4"},characterIdsBySeat:{1:"character.knight",2:"character.alchemist",3:"character.ranger",4:"character.wizard"}});for(const seat of[1,2,3,4]as Seat[])state=resolveInitialRedraw(state,seat,false,ruleset).state;return state;}
+function relocate(state:AuthoritativeGameState,ref:string,to:string){const card=state.cards[ref]!,from=state.zones[card.zoneRef]!;from.orderedCardRefs.splice(from.orderedCardRefs.indexOf(ref),1);state.zones[to]!.orderedCardRefs.push(ref);card.zoneRef=to;card.ownerSeat=state.zones[to]!.ownerSeat;card.controllerSeat=state.zones[to]!.ownerSeat;card.faceUp=!(["drawPile","hand"].includes(state.zones[to]!.zoneType));}
 function makeRoom(state:AuthoritativeGameState):AppRoom{return{roomId:state.gameId,roomCode:"TIME",revision:1,phase:"inGame",settings,passwordHash:null,players:state.players.map(player=>({userId:player.userId,displayName:users[player.seat]!.displayName,username:`账号${player.seat}`,seat:player.seat,team:player.team,isHost:player.seat===1,ready:true,connection:"online",latencyMs:null,selectionState:"revealed",candidates:[],preselectedCharacterId:null,lockedCharacterId:null,selectionDeadlineAt:null})),spectators:[],chat:[],gameChat:[],game:state,createdAt:0,updatedAt:0};}
 
 describe("window deadlines",()=>{
@@ -22,6 +23,16 @@ describe("window deadlines",()=>{
   const w=ran.state.pendingWindows[0];
   expect(w?.kind).toBe("playPhaseAction");
   expect(w!.deadlineAt,`play window must use turnTimeSeconds (1060), got ${w!.deadlineAt}`).toBe(1060);
+ });
+ it("discard phase window uses responseTimeSeconds, not turnTimeSeconds",()=>{
+  const state=prePlayState(405);
+  Object.assign(state,{activeSeat:1,phase:"discard" as const,phaseBoundary:"body" as const,phaseMode:"manual" as const,phaseBodyResolved:false,pendingWindows:[]});
+  const kill=Object.values(state.cards).find(card=>card.templateId.startsWith("basic.kill."))!.cardRef;
+  relocate(state,kill,"hand:1");
+  const ran=runAutomaticScheduler(state,ruleset,()=>1020,()=>1060);
+  const w=ran.state.pendingWindows[0];
+  expect(w?.kind).toBe("discardPhaseAction");
+  expect(w!.deadlineAt,`discard window must use responseTimeSeconds (1020), got ${w!.deadlineAt}`).toBe(1020);
  });
 });
 describe("player card nickname",()=>{
