@@ -5,7 +5,7 @@
 - Ubuntu 22.04 / 24.04（或兼容 Debian 系）；
 - 公网端口：**8787**（默认）需在云控制台安全组放行。
 
-## 一键部署（pm2 守护）
+## 一键部署（pm2 守护，服务器只跑游戏服务，不托管前端）
 
 ```bash
 sudo bash deploy/deploy.sh
@@ -17,7 +17,29 @@ sudo PORT=9000 bash deploy/deploy.sh
 
 脚本会依次完成：安装 Node 22 → clone 仓库 → 构建 server（tsc）与 client（vite）→ pm2 启动。
 
+> 服务端默认 **不托管静态资源**（`SKB_SERVE_STATIC` 未设为 `1` 时 `/` 返回 404，只提供 `/health`、`/api/session`、`/ws` 与游戏快照广播，带宽只消耗游戏消息）。前端以**离线包**分发给客户（见下）。
+
 > `server/dist` 与 `client/dist` 均被 .gitignore 忽略、不入库，**必须在服务器上构建**，因此部署脚本执行完整 `npm install`（含 devDependencies），需要几分钟。
+
+## 给客户端的离线包（推荐分发方式）
+
+```bash
+# 在本机或服务器上执行（需要先 npm install 客户端依赖）：
+cd client && npm install
+node ../deploy/offline/build-offline.mjs "ws://<ECS公网IP>:8787/ws"  ../deploy/offline/out/skb-client-offline
+```
+
+产出 `deploy/offline/out/skb-client-offline/`，把**整个目录**压缩发给客户：
+解压 → 双击「启动客户端.bat」→ 浏览器打开 http://localhost:8080。
+
+- 客户机**只跑本地静态界面**（图片/页面零云流量），游戏消息走注入的云服务器地址；
+- 需要 Node.js ≥ 20 的客户机；
+- 若服务器端口不是默认 8787，按实际修改构建命令中的地址；
+- 若服务器通过 Nginx/HTTPS 提供，使用 `wss://域名/ws` 并确保反向代理支持 WebSocket 升级头。
+
+## 传统模式（服务器同时托管前端，可选）
+
+需要服务器直接提供网页时：`SKB_SERVE_STATIC=1` 启动（`deploy.sh` 中可加该环境变量），浏览器直接访问 `http://<IP>:<端口>/` 即可，无需离线包。
 
 ## 验证
 

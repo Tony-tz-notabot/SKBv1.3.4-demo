@@ -44,7 +44,7 @@ describe("reconnect and static hosting",()=>{
    }finally{second.close();}
   }finally{first.close();await server.close();}
  },30000);
- it("serves health and the built client SPA when dist exists",async()=>{const dir=await mkdtemp(join(tmpdir(),"skb-static-")),persistence=new JsonPersistence(join(dir,"state.json")),rooms=new RoomService(ruleset,persistence);dirs.push(dir);await rooms.restore();const server=new SkbApplicationServer(rooms,ruleset);await server.listen(0);const port=(server.http.address() as AddressInfo).port,base=`http://127.0.0.1:${port}`;
+ it("serves health and the built client SPA when dist exists and static hosting is enabled",async()=>{const dir=await mkdtemp(join(tmpdir(),"skb-static-")),persistence=new JsonPersistence(join(dir,"state.json")),rooms=new RoomService(ruleset,persistence);dirs.push(dir);await rooms.restore();const server=new SkbApplicationServer(rooms,ruleset,{}, {serveStatic:true});await server.listen(0);const port=(server.http.address() as AddressInfo).port,base=`http://127.0.0.1:${port}`;
   try{
    const health=await fetch(`${base}/health`);expect(health.status).toBe(200);expect((await health.json()).ok).toBe(true);
    const distIndex=resolve(import.meta.dirname,"../../../client/dist/index.html");

@@ -36,12 +36,12 @@ npm run build
 echo "client/dist 构建完成"
 cd ..
 
-echo "==> [5/5] 启动服务（pm2）"
+echo "==> [5/5] 启动服务（pm2，服务器只跑游戏服务，不托管前端静态资源）"
 if ! command -v pm2 >/dev/null 2>&1; then
   npm install -g pm2
 fi
 pm2 delete skb-server 2>/dev/null || true
-PORT="$PORT" pm2 start server/dist/app/main.js --name skb-server
+PORT="$PORT" SKB_SERVE_STATIC="${SKB_SERVE_STATIC:-0}" pm2 start server/dist/app/main.js --name skb-server
 pm2 save
 
 echo
