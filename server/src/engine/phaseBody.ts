@@ -28,6 +28,7 @@ export function resolvePhaseBody(
   state: AuthoritativeGameState,
   ruleset: LoadedRuleset,
   deadlineAt: number,
+  turnDeadlineAt: (() => number) | undefined = undefined,
 ): TransactionCommit<AuthoritativeGameState> {
   if (
     state.lifecycle !== "inProgress" ||
@@ -40,7 +41,8 @@ export function resolvePhaseBody(
   const tx = new EngineTransaction(state),
     draft = tx.draft,
     seat = draft.activeSeat!,
-    player = draft.players.find((item) => item.seat === seat)!;
+    player = draft.players.find((item) => item.seat === seat)!,
+    playDeadline = turnDeadlineAt ? turnDeadlineAt() : deadlineAt;
   if (draft.phase === "prepare") {
     if (player.markers["demonmancer.prepareDurationsTicked"] !== true)
       tickDemonmancerPrepareDurations(tx, seat);
@@ -141,7 +143,7 @@ export function resolvePhaseBody(
       kind,
       prioritySeat: seat,
       mandatory: false,
-      deadlineAt,
+      deadlineAt: playDeadline,
       timeoutPolicy: "pass",
       legalOfferIds: [`offer:${kind}:finish`],
       context: {},
@@ -158,7 +160,7 @@ export function resolvePhaseBody(
         kind,
         prioritySeat: seat,
         mandatory: count > 0,
-        deadlineAt,
+        deadlineAt: playDeadline,
         timeoutPolicy: "randomLegal",
         legalOfferIds: [
           ...(count > 0 ? [`offer:${kind}:submit`] : [`offer:${kind}:finish`]),

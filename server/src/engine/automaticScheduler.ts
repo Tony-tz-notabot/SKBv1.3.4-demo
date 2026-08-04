@@ -24,6 +24,7 @@ export function runAutomaticScheduler(
   state: AuthoritativeGameState,
   ruleset: LoadedRuleset,
   deadlineAt: () => number = Date.now,
+  turnDeadlineAt: () => number = deadlineAt,
 ): AutomaticSchedulerResult {
   let current = state,
     steps = 0;
@@ -69,7 +70,7 @@ export function runAutomaticScheduler(
       : hasImmediateDamageEffect(current)
         ? executeNextImmediateDamageEffect(current, ruleset, deadlineAt())
         : current.phaseBoundary === "body" && !current.phaseBodyResolved
-          ? resolvePhaseBody(current, ruleset, deadlineAt())
+          ? resolvePhaseBody(current, ruleset, deadlineAt(), turnDeadlineAt)
           : advanceTimeline(current, { kind: "normal" }, ruleset, deadlineAt());
     current = committed.state;
     events.push(...committed.events);
