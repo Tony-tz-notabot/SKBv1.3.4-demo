@@ -176,13 +176,12 @@ export function completeGoldenMaskReplacement(
   });
 }
 
-export function continueGoldenMaskAfterJudgment(
-  state: AuthoritativeGameState,
+export function continueGoldenMaskAfterJudgmentInTransaction(
+  tx: EngineTransaction<AuthoritativeGameState>,
   ruleset: LoadedRuleset,
   context: Record<string, JsonValue>,
   finalColor: PrintedColor | null,
-) {
-  const tx = new EngineTransaction(state);
+): void {
   openGoldenMaskTargetWindowAfterJudgment(tx, ruleset, context, finalColor);
   if (!finalColor || finalColor === "white")
     completeGoldenMaskReplacement(
@@ -192,6 +191,20 @@ export function continueGoldenMaskAfterJudgment(
       String(context.goldenMaskPhase) as Phase,
       Number(context.goldenMaskDeadlineAt ?? 0),
     );
+}
+export function continueGoldenMaskAfterJudgment(
+  state: AuthoritativeGameState,
+  ruleset: LoadedRuleset,
+  context: Record<string, JsonValue>,
+  finalColor: PrintedColor | null,
+) {
+  const tx = new EngineTransaction(state);
+  continueGoldenMaskAfterJudgmentInTransaction(
+    tx,
+    ruleset,
+    context,
+    finalColor,
+  );
   const committed = tx.commit();
   committed.state.history.domainEvents.push(...committed.events);
   validateAuthoritativeState(committed.state);

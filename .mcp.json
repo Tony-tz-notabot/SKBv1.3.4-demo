@@ -2,11 +2,11 @@
   "mcpServers": {
     "agent-lsp": {
       "type": "stdio",
-      "command": "C:/Users/zhang/.local/bin/agent-lsp.exe",
+      "command": "agent-lsp",
       "args": [
-        "typescript:typescript-language-server"
-      ],
-      "env": {}
+        "javascript:typescript-language-server.cmd,--stdio",
+        "typescript:typescript-language-server.cmd,--stdio"
+      ]
     }
   }
 }

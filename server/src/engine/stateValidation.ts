@@ -24,6 +24,6 @@ export function validateAuthoritativeState(state:AuthoritativeGameState):Authori
     for(const seat of [1,2,3,4] as Seat[]){const decided=setup.redrawBySeat[seat].decided;const hasWindow=state.pendingWindows.some(window=>window.kind==="initialRedraw"&&window.prioritySeat===seat);if(decided===hasWindow)fail("STATE_REDRAW_WINDOW_MISMATCH");}
   }
   if(state.lifecycle==="inProgress"&&(state.round<1||state.activeSeat===null||state.phase===null||state.phaseBoundary===null||state.phaseMode===null||state.phaseBodyResolved===null))fail("STATE_GAME_FLOW_INVALID");
-  if(state.lifecycle==="ended"&&state.winnerTeam===null)fail("STATE_ENDED_WITHOUT_WINNER");
+  if(state.lifecycle==="ended"&&state.winnerTeam===null&&!state.forfeited)fail("STATE_ENDED_WITHOUT_WINNER");
   return state;
 }

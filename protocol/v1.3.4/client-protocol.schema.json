@@ -216,12 +216,16 @@
       "required": [
         "weapon1",
         "weapon2",
+        "weapon3",
         "thirdWeapon",
         "armor",
         "mountOffense",
         "mountDefense",
         "talents",
-        "boss"
+        "boss",
+        "tripleWield",
+        "mountOccupied",
+        "mountDual"
       ],
       "properties": {
         "weapon1": {
@@ -235,6 +239,16 @@
           ]
         },
         "weapon2": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CardView"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "weapon3": {
           "anyOf": [
             {
               "$ref": "#/$defs/CardView"
@@ -299,6 +313,18 @@
               "type": "null"
             }
           ]
+        },
+        "tripleWield": {
+          "type": "boolean"
+        },
+        "mountOccupied": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mountDual": {
+          "type": "boolean"
         }
       }
     },
@@ -312,6 +338,7 @@
         "connected",
         "lifeState",
         "handCount",
+        "handLimit",
         "equipment",
         "equipmentSlots",
         "judgmentZone",
@@ -367,6 +394,10 @@
           "type": "integer"
         },
         "handCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "handLimit": {
           "type": "integer",
           "minimum": 0
         },
@@ -546,6 +577,53 @@
             "randomLegal",
             "useDefault",
             "abortRemaining"
+          ]
+        }
+      }
+    },
+    "ActiveWindowView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "prioritySeat",
+        "deadlineAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "prioritySeat": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Seat"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deadlineAt": {
+          "type": "integer"
+        },
+        "attackerSeat": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Seat"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "abilityId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
           ]
         }
       }
@@ -1012,6 +1090,7 @@
         "publicView",
         "privateView",
         "interaction",
+        "activeWindow",
         "chat"
       ],
       "properties": {
@@ -1077,6 +1156,16 @@
         },
         "interaction": {
           "$ref": "#/$defs/InteractionView"
+        },
+        "activeWindow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ActiveWindowView"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "chat": {
           "type": "array",
@@ -1155,6 +1244,10 @@
           "maxLength": 500
         }
       }
+    },
+    "ForfeitPayload": {
+      "type": "object",
+      "additionalProperties": false
     },
     "GameCommand": {
       "type": "object",

@@ -24,10 +24,11 @@ function respondedHit(weaponId: string): AuthoritativeGameState {
   let state = createInitialSetup(ruleset, {
     gameId: `weapon-timing-${weaponId}`, firstSeat: 1, seed: 515,
     usersBySeat: { 1: "u1", 2: "u2", 3: "u3", 4: "u4" },
-    characterIdsBySeat: { 1: "character.knight", 2: "character.wizard", 3: "character.ranger", 4: "character.alchemist" },
+    characterIdsBySeat: { 1: "character.knight", 2: "character.wizard", 3: "character.shaman", 4: "character.alchemist" },
   });
   for (const seat of [1, 2, 3, 4] as const) state = resolveInitialRedraw(state, seat, false, ruleset).state;
   Object.assign(state, { phase: "play", phaseBoundary: "body", phaseMode: "manual", activeSeat: 1 });
+  state.players[2]!.markers.defyFateUsed = true;
   state.players[0]!.limits.attackCountRemaining = 1;
   state.players[1]!.shield = 20;
   state.players[1]!.maxShield = 20;

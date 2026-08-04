@@ -80,7 +80,7 @@ describe("real four-player full match without state mutation",()=>{
    // ---- 自动对局主循环（纯真实命令，不改状态） ----
    const deadline=Date.now()+240000;let guard=0,totalCommands=0,attackCount=0,lastRevision=-1,stall=0;
    for(;Date.now()<deadline&&guard<8000;guard+=1){
-    const current=rooms.roomForUser(sessions[0]!.userId)!.game!;
+    const current=room.game!;
     if(current.winnerTeam)break;
     const w=current.pendingWindows[0];
     if(!w){await delay(20);continue;}
@@ -101,9 +101,13 @@ describe("real four-player full match without state mutation",()=>{
     lastRevision=result.stateRevision;
     if(stall>25)throw new Error(`FULL stalled: repeated stateRevision ${lastRevision} at window ${w.kind} seat ${seat} offer ${decision.offerId}`);
    }
-   const finalGame=rooms.roomForUser(sessions[0]!.userId)!.game!;
+   const finalGame=room.game!;
    expect(finalGame.winnerTeam,`expected a legal winner after ${guard} loops / ${totalCommands} commands / ${attackCount} attacks, last window=${finalGame.pendingWindows[0]?.kind}`).toBeTruthy();
    expect(["A","B"]).toContain(finalGame.winnerTeam);
+   // 对局结束后房间解散：所有玩家被移出房间、房间置 closed，客户端回到大厅
+   expect(room.phase).toBe("closed");
+   expect(room.players).toHaveLength(0);
+   expect(rooms.roomForUser(sessions[0]!.userId)).toBeNull();
    const eventSeqs=clients.flatMap(client=>client.messages.filter(entry=>entry.type==="MESSAGE"&&entry.channel==="game"&&entry.message.type==="PRESENTATION_EVENT").map(entry=>entry.message.eventSeq));
    expect(eventSeqs.length).toBeGreaterThan(0);
    for(const client of clients){const seqs=client.messages.filter(entry=>entry.type==="MESSAGE"&&entry.channel==="game"&&entry.message.type==="PRESENTATION_EVENT").map(entry=>entry.message.eventSeq);for(let i=1;i<seqs.length;i+=1)expect(seqs[i]!).toBeGreaterThan(seqs[i-1]!);}

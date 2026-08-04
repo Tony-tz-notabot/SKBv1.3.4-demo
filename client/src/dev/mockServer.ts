@@ -38,14 +38,14 @@ const weaponCard=card("public:seat2:weapon1","weapon.w01","火焰之鹰","weapon
 const armorCard=card("public:seat1:armor","armor.a01","圆盾","armor","none","card.armor.a01","防具");
 const discardCard=card("public:discard:1","basic.dodge.blue","闪","basic","blue","card.basic.dodge.blue","抵消攻击");
 const judgmentCard=card("public:seat3:judgment1","special.sp12","鲜血诅咒","special","red","card.special.sp12","准备阶段前结算");
-const emptySlots=()=>({weapon1:null,weapon2:null,thirdWeapon:null,armor:null,mountOffense:null,mountDefense:null,talents:[],boss:null});
+const emptySlots=()=>({weapon1:null,weapon2:null,weapon3:null,thirdWeapon:null,armor:null,mountOffense:null,mountDefense:null,talents:[],boss:null,tripleWield:false,mountOccupied:[],mountDual:false});
 const gameSnapshot:GameSnapshot={
   type:"GAME_SNAPSHOT",gameId:"game_01",rulesetVersion:"1.3.4",stateRevision:20,lastEventSeq:40,serverTime:Date.now(),viewer:{userId:"u2",seat:2,team:"B"},
   publicView:{round:2,activeSeat:2,phase:"play",headline:"你的出牌阶段",drawPileCount:312,discardTop:[discardCard],centralCards:[],winnerTeam:null,players:[
-    {seat:1,team:"A",nickname:"一号玩家",connected:true,characterId:"character.knight",lifeState:"inPlay",hp:6,maxHp:6,shield:4,maxShield:5,ironShield:0,handCount:4,equipment:[armorCard],equipmentSlots:{...emptySlots(),armor:armorCard},judgmentZone:[],statuses:[]},
-    {seat:2,team:"B",nickname:"Kurisu",connected:true,characterId:"character.alchemist",lifeState:"inPlay",hp:6,maxHp:6,shield:5,maxShield:5,ironShield:0,handCount:2,equipment:[weaponCard],equipmentSlots:{...emptySlots(),weapon1:weaponCard},judgmentZone:[],statuses:[]},
-    {seat:3,team:"B",nickname:"三号玩家",connected:true,characterId:"character.wizard",lifeState:"inPlay",hp:5,maxHp:5,shield:5,maxShield:5,ironShield:0,handCount:5,equipment:[],equipmentSlots:emptySlots(),judgmentZone:[judgmentCard],statuses:["冰冻"]},
-    {seat:4,team:"A",nickname:"四号玩家",connected:false,characterId:"character.ranger",lifeState:"inPlay",hp:6,maxHp:6,shield:3,maxShield:4,ironShield:1,handCount:3,equipment:[],equipmentSlots:emptySlots(),judgmentZone:[],statuses:[]}
+    {seat:1,team:"A",nickname:"一号玩家",connected:true,characterId:"character.knight",lifeState:"inPlay",hp:6,maxHp:6,shield:4,maxShield:5,ironShield:0,handCount:4,handLimit:4,equipment:[armorCard],equipmentSlots:{...emptySlots(),armor:armorCard},judgmentZone:[],statuses:[]},
+    {seat:2,team:"B",nickname:"Kurisu",connected:true,characterId:"character.alchemist",lifeState:"inPlay",hp:6,maxHp:6,shield:5,maxShield:5,ironShield:0,handCount:2,handLimit:4,equipment:[weaponCard],equipmentSlots:{...emptySlots(),weapon1:weaponCard},judgmentZone:[],statuses:[]},
+    {seat:3,team:"B",nickname:"三号玩家",connected:true,characterId:"character.wizard",lifeState:"inPlay",hp:5,maxHp:5,shield:5,maxShield:5,ironShield:0,handCount:5,handLimit:4,equipment:[],equipmentSlots:emptySlots(),judgmentZone:[judgmentCard],statuses:["冰冻"]},
+    {seat:4,team:"A",nickname:"四号玩家",connected:false,characterId:"character.ranger",lifeState:"inPlay",hp:6,maxHp:6,shield:3,maxShield:4,ironShield:1,handCount:3,handLimit:4,equipment:[],equipmentSlots:emptySlots(),judgmentZone:[],statuses:[]}
   ]},
   privateView:{hand:[killCard,potionCard],preselectedWeaponSlot:"weapon1",preselectedModeId:null,preselectableWeaponSlots:["weapon1","weapon2","thirdWeapon"],concealedChoices:[]},
   interaction:{prompt:{promptId:"prompt_play_20",kind:"playAction",mandatory:false,deadlineAt:Date.now()+60000,prioritySeat:2,timeoutPolicy:"pass"},offers:[
@@ -53,7 +53,7 @@ const gameSnapshot:GameSnapshot={
     {offerId:"offer_potion",kind:"useCard",sourceRefs:["private:hand:potion"],legalTargetRefs:["public:seat_2"],selectionSpecs:[],preview:{costSummary:"药水×1"}},
     {offerId:"offer_color",kind:"resolveChoice",sourceRefs:[],legalTargetRefs:[],selectionSpecs:[{key:"color",kind:"color",min:1,max:1,options:["red","blue","green"]},{key:"confirm",kind:"confirm",min:1,max:1,options:[true,false]}],preview:{costSummary:"测试通用选择"}},
     {offerId:"offer_end",kind:"endPhase",sourceRefs:[],legalTargetRefs:[],selectionSpecs:[],preview:{}}
-  ],disabledHints:[{subjectRef:"public:seat1:armor",reasonCode:"NOT_CURRENTLY_USABLE",messageKey:"game.hint.notCurrentWindow"}]},chat:[]
+  ],disabledHints:[{subjectRef:"public:seat1:armor",reasonCode:"NOT_CURRENTLY_USABLE",messageKey:"game.hint.notCurrentWindow"}]},activeWindow:{kind:"playAction",prioritySeat:2,deadlineAt:Date.now()+60000,attackerSeat:null,abilityId:null},chat:[]
 };
 
 const setupSnapshot:SetupSnapshot={type:"SETUP_SNAPSHOT",gameId:"game_setup_01",rulesetVersion:"1.3.4",stateRevision:0,lastEventSeq:0,serverTime:Date.now(),lifecycle:"setupRedraw",viewer:{userId:"u2",seat:2,team:"B"},firstSeat:1,drawPileCount:321,discardPile:[],seats:[1,2,3,4].map(seat=>({seat:seat as 1|2|3|4,handCount:4,redrawDecided:false})),hand:[

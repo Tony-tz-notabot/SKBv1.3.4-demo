@@ -39,12 +39,13 @@ function ready(color: "white" | "green" | "blue" | "orange" | "red") {
     characterIdsBySeat: {
       1: "character.knight",
       2: "character.alchemist",
-      3: "character.ranger",
+      3: "character.shaman",
       4: "character.wizard",
     },
   });
   for (const seat of [1, 2, 3, 4] as const)
     state = resolveInitialRedraw(state, seat, false, ruleset).state;
+  state.players[2]!.markers.defyFateUsed = true;
   const boss = Object.values(state.cards).find(
       (card) => card.templateId === "boss.golden_mask",
     )!.cardRef,
@@ -79,19 +80,17 @@ function ready(color: "white" | "green" | "blue" | "orange" | "red") {
 
 function finishBranchJudgment(state: AuthoritativeGameState) {
   const session = new JudgmentInterventionSession(state, ruleset);
-  for (let index = 0; index < 4; index++) {
-    const window = session.state.pendingWindows.find(
-      (item) => item.kind === "judgmentIntervention",
-    )!;
-    session.handle({
-      commandId: `judge-pass-${index}`,
-      gameId: state.gameId,
-      expectedStateRevision: session.state.stateRevision,
-      actorUserId: `u${window.prioritySeat}`,
-      promptId: window.promptId,
-      offerId: window.legalOfferIds[0]!,
-    });
-  }
+  const window = session.state.pendingWindows.find(
+    (item) => item.kind === "judgmentIntervention",
+  )!;
+  session.handle({
+    commandId: "judge-pass",
+    gameId: state.gameId,
+    expectedStateRevision: session.state.stateRevision,
+    actorUserId: `u${window.prioritySeat}`,
+    promptId: window.promptId,
+    offerId: window.legalOfferIds[0]!,
+  });
   return session.state;
 }
 

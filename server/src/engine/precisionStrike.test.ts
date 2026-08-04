@@ -36,12 +36,13 @@ describe("precision strike", () => {
       characterIdsBySeat: {
         1: "character.knight",
         2: "character.ranger",
-        3: "character.wizard",
+        3: "character.shaman",
         4: "character.druid",
       },
     });
     for (const n of [1, 2, 3, 4] as const)
       s = resolveInitialRedraw(s, n, false, r).state;
+    s.players[2]!.markers.defyFateUsed = true;
     Object.assign(s, {
       activeSeat: 1,
       phase: "play",

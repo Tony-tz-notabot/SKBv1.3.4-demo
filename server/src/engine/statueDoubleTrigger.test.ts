@@ -25,11 +25,12 @@ describe("statue double trigger", () => {
       characterIdsBySeat: {
         1: "character.knight",
         2: "character.ranger",
-        3: "character.wizard",
+        3: "character.shaman",
         4: "character.druid",
       },
     });
     for(const seat of [1,2,3,4] as const)s=resolveInitialRedraw(s,seat,false,r).state;
+    s.players[2]!.markers.defyFateUsed = true;
     Object.assign(s,{activeSeat:1,phase:"play",phaseBoundary:"body",phaseMode:"manual",phaseBodyResolved:false});
     s.pendingWindows=[{promptId:"play",kind:"playPhaseAction",prioritySeat:1,mandatory:false,deadlineAt:900,timeoutPolicy:"pass",legalOfferIds:["offer:playPhaseAction:finish"],context:{}}];
     s.players[0]!.initialTalentIds.push("talent.statue_double_trigger");

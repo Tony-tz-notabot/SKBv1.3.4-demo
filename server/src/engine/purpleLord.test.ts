@@ -15,7 +15,7 @@ const users = { 1: "u1", 2: "u2", 3: "u3", 4: "u4" } as const,
   characters = {
     1: "character.knight",
     2: "character.alchemist",
-    3: "character.ranger",
+    3: "character.shaman",
     4: "character.wizard",
   } as const;
 beforeAll(async () => {
@@ -79,6 +79,7 @@ describe("Purple Lord scripted attacks", () => {
     state.phaseBodyResolved = true;
     state.players[1]!.ironShield = 2;
     state = advanceTimeline(state, { kind: "normal" }, ruleset, 700).state;
+    state.players[2]!.markers.defyFateUsed = true;
     expect(state.activeSeat).toBe(2);
     expect(state.combat.attack).toMatchObject({
       attackerSeat: 1,

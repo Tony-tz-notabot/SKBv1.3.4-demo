@@ -87,7 +87,7 @@
       "kind": "pipeline",
       "listen": "judgment.replaced",
       "effects": [{"op": "moveCard", "target": "$judgment.previousCard", "params": {"to": "discardPile", "moveKind": "discard"}}, {"op": "judgeColor", "params": {"drawRealCard": true, "reopenIntervention": true}}],
-      "assertions": ["old card discarded before new real card"]
+      "assertions": ["old card discarded before new real card", "intervention window opens iff a living shaman is present", "replace costs 2 same-color hand cards", "at most one replace per judgment; without shaman the judgment finalizes immediately"]
     },
     {
       "ruleId": "general.judgment.designate",

@@ -4,6 +4,7 @@ import type { CharacterCandidateView, RoomSnapshot, Seat } from "@skb-protocol/r
 import SeatCard from "../components/SeatCard.vue";
 import ResourceImage from "../components/ResourceImage.vue";
 import CharacterDetailDrawer from "../components/CharacterDetailDrawer.vue";
+import { abilityDisplayName } from "../localization/descriptions";
 
 const props = defineProps<{ snapshot: DeepReadonly<RoomSnapshot> }>();
 const seats: Seat[] = [1, 2, 3, 4];
@@ -37,7 +38,7 @@ function activateCandidate(characterId: string) {
     <div class="candidate-grid">
       <article v-for="candidate in snapshot.characterSelection?.candidates ?? []" :key="candidate.characterId" class="candidate-card" :class="{ 'candidate-card--selected': snapshot.characterSelection?.preselectedCharacterId === candidate.characterId }" @click="activateCandidate(candidate.characterId)" @contextmenu.prevent.stop="openDetail(candidate)" @pointerdown="startLongPress(candidate)" @pointerup="cancelLongPress" @pointercancel="cancelLongPress" @pointerleave="cancelLongPress">
         <div class="candidate-art"><ResourceImage :resource-key="candidate.portraitResourceKey" :alt="candidate.displayName" /><button class="candidate-detail-button" type="button" @pointerdown.stop @click.stop="openDetail(candidate)">详情</button></div>
-        <div class="candidate-body"><div><p class="eyebrow">难度 {{ candidate.difficulty }}</p><h3>{{ candidate.displayName }}</h3></div><div class="vitals"><span>HP {{ candidate.initialHp }}</span><span>SH {{ candidate.initialShield }}</span></div><p>初始天赋 · {{ candidate.initialTalentId }}</p><p>技能 · {{ candidate.abilityIds.join(" / ") }}</p></div>
+        <div class="candidate-body"><div><p class="eyebrow">难度 {{ candidate.difficulty }}</p><h3>{{ candidate.displayName }}</h3></div><div class="vitals"><span>HP {{ candidate.initialHp }}</span><span>SH {{ candidate.initialShield }}</span></div><p>初始天赋 · {{ abilityDisplayName(candidate.initialTalentId) }}</p><p>技能 · {{ candidate.abilityIds.map(abilityDisplayName).join(" / ") }}</p></div>
       </article>
     </div>
     <div class="selection-footer"><div class="selection-seats"><SeatCard v-for="seat in rotatedSeats" :key="seat" :seat="seat" :player="playerAt(seat)" compact /></div><button type="button" class="button button--primary" :disabled="!snapshot.characterSelection?.preselectedCharacterId || !!snapshot.characterSelection?.lockedCharacterId" @click="lockSelected">{{ snapshot.characterSelection?.lockedCharacterId ? "已锁定" : "锁定角色" }}</button></div>

@@ -1,5 +1,9 @@
 import type { LoadedRuleset } from "../ruleset/types.js";
 import { ensureDrawPileInTransaction } from "./deck.js";
+import { continueGoldenMaskAfterJudgmentInTransaction } from "./goldenMask.js";
+import { continueInternetArmorJudgmentInTransaction } from "./internetAddiction.js";
+import { facts, findShaman, sameColorRefs } from "./judgmentShared.js";
+import { continueSheepArmorJudgmentInTransaction } from "./sheep.js";
 import { openStatueResolutionFromJudgment } from "./statueDoubleTrigger.js";
 import type { AuthoritativeGameState, Seat } from "./state.js";
 import { validateAuthoritativeState } from "./stateValidation.js";
@@ -14,20 +18,12 @@ export interface BeginJudgmentInput {
   matchColors: PrintedColor[];
   context?: Record<string, JsonValue>;
 }
-interface CardFact {
-  cardId: string;
-  color: PrintedColor;
-}
 const commit = (tx: EngineTransaction<AuthoritativeGameState>) => {
   const result = tx.commit();
   result.state.history.domainEvents.push(...result.events);
   validateAuthoritativeState(result.state);
   return result;
 };
-function facts(ruleset: LoadedRuleset): Map<string, CardFact> {
-  const document = ruleset.documents.get("cards.json") as { items: CardFact[] };
-  return new Map(document.items.map((item) => [item.cardId, item]));
-}
 function revealIntoFrame(
   tx: EngineTransaction<AuthoritativeGameState>,
   ruleset: LoadedRuleset,
@@ -69,9 +65,9 @@ function openInterventionWindow(
   tx: EngineTransaction<AuthoritativeGameState>,
   context: Record<string, JsonValue>,
   deadlineAt: number,
+  shamanSeat: Seat,
 ): void {
   const draft = tx.draft,
-    startSeat = draft.activeSeat ?? (Number(context.controllerSeat) as Seat),
     judgmentId = String(context.judgmentId),
     promptId = `prompt:judgment-intervention:${judgmentId}:${draft.stateRevision + 1}`;
   draft.pendingWindows = draft.pendingWindows.filter(
@@ -80,23 +76,28 @@ function openInterventionWindow(
   draft.pendingWindows.push({
     promptId,
     kind: "judgmentIntervention",
-    prioritySeat: startSeat,
+    prioritySeat: shamanSeat,
     mandatory: false,
     deadlineAt,
     timeoutPolicy: "pass",
-    legalOfferIds: [`offer:judgment-intervention:pass:${judgmentId}`],
-    context: { judgmentId, passedSeats: [], startSeat },
+    legalOfferIds: [
+      `offer:judgment-intervention:pass:${judgmentId}`,
+      ...(context.replaced === true
+        ? []
+        : [`offer:judgment-intervention:replace:${judgmentId}`]),
+    ],
+    context: { judgmentId, shamanSeat, replaced: context.replaced === true },
   });
   tx.emit("response.window.opened", {
     kind: "judgmentIntervention",
     judgmentId,
     promptId,
-    prioritySeat: startSeat,
+    prioritySeat: shamanSeat,
   });
   tx.emit("response.priority.granted", {
     kind: "judgmentIntervention",
     judgmentId,
-    seat: startSeat,
+    seat: shamanSeat,
   });
 }
 export function beginJudgment(
@@ -151,7 +152,53 @@ export function beginJudgmentInTransaction(
     purpose: input.purpose,
   });
   revealIntoFrame(tx, ruleset, context, "judgment.card.revealed");
-  openInterventionWindow(tx, context, deadlineAt);
+  const shaman = findShaman(tx.draft);
+  if (shaman === null) {
+    finalizeJudgmentInTransaction(tx, context);
+    if (context.goldenMaskReplacement === true)
+      continueGoldenMaskAfterJudgmentInTransaction(
+        tx,
+        ruleset,
+        context,
+        context.finalColor as PrintedColor | null,
+      );
+    if (context.specialInternetArmorJudgment === true) {
+      const colors = Array.isArray(context.matchColors)
+          ? context.matchColors
+          : [],
+        finalColor =
+          typeof context.finalColor === "string"
+            ? context.finalColor
+            : null,
+        matched = finalColor !== null && colors.includes(finalColor);
+      continueInternetArmorJudgmentInTransaction(
+        tx,
+        ruleset,
+        context,
+        matched,
+        deadlineAt,
+      );
+    }
+    if (context.specialSheepArmorJudgment === true) {
+      const colors = Array.isArray(context.matchColors)
+          ? context.matchColors
+          : [],
+        finalColor =
+          typeof context.finalColor === "string"
+            ? context.finalColor
+            : null,
+        matched = finalColor !== null && colors.includes(finalColor);
+      continueSheepArmorJudgmentInTransaction(
+        tx,
+        ruleset,
+        context,
+        matched,
+        deadlineAt,
+      );
+    }
+    return;
+  }
+  openInterventionWindow(tx, context, deadlineAt, shaman);
 }
 export function beginDesignatedJudgmentChoice(
   state: AuthoritativeGameState,
@@ -220,19 +267,49 @@ export function beginDesignatedJudgmentChoice(
   });
   return commit(tx);
 }
-export function replaceJudgmentCard(
-  state: AuthoritativeGameState,
+export function replaceJudgmentCardInTransaction(
+  tx: EngineTransaction<AuthoritativeGameState>,
   ruleset: LoadedRuleset,
+  cardRefs: string[],
   deadlineAt?: number,
-): TransactionCommit<AuthoritativeGameState> {
-  const frame = state.resolutionStack.at(-1);
-  if (!frame || frame.frameType !== "judgment")
-    throw new Error("JUDGMENT_FRAME_MISSING");
-  const tx = new EngineTransaction(state),
-    draft = tx.draft,
+): void {
+  const draft = tx.draft,
     draftFrame = draft.resolutionStack.at(-1)!,
-    context = draftFrame.context,
-    oldRef = typeof context.cardRef === "string" ? context.cardRef : null;
+    context = draftFrame.context;
+  if (draftFrame.frameType !== "judgment")
+    throw new Error("JUDGMENT_FRAME_MISSING");
+  if (context.replaced === true)
+    throw new Error("JUDGMENT_ALREADY_REPLACED");
+  const shamanSeat = findShaman(draft);
+  if (shamanSeat === null) throw new Error("SHAMAN_MISSING");
+  if (
+    cardRefs.length !== 2 ||
+    new Set(cardRefs).size !== 2 ||
+    cardRefs.some((ref) => !sameColorRefs(draft, ruleset, shamanSeat).includes(ref))
+  )
+    throw new Error("JUDGMENT_REPLACE_COST_INVALID");
+  for (const ref of cardRefs) {
+    const hand = draft.zones[`hand:${shamanSeat}`]!,
+      index = hand.orderedCardRefs.indexOf(ref);
+    hand.orderedCardRefs.splice(index, 1);
+    draft.zones.discardPile!.orderedCardRefs.push(ref);
+    const card = draft.cards[ref]!;
+    card.zoneRef = "discardPile";
+    card.ownerSeat = null;
+    card.controllerSeat = null;
+    card.faceUp = true;
+    tx.emit("card.played", {
+      cardRef: ref,
+      seat: shamanSeat,
+      purpose: "judgmentReplacement",
+    });
+  }
+  tx.emit("ability.activation.committed", {
+    seat: shamanSeat,
+    abilityId: "skill.shaman.judgment_replace",
+    cardRefs,
+  });
+  const oldRef = typeof context.cardRef === "string" ? context.cardRef : null;
   if (oldRef) {
     const card = draft.cards[oldRef]!;
     if (card.zoneRef !== "resolving")
@@ -255,24 +332,33 @@ export function replaceJudgmentCard(
     });
   }
   revealIntoFrame(tx, ruleset, context, "judgment.replaced");
+  context.replaced = true;
   openInterventionWindow(
     tx,
     context,
     deadlineAt ?? Number(context.interventionDeadlineAt ?? 0),
+    shamanSeat,
   );
-  return commit(tx);
 }
-export function finalizeJudgment(
+export function replaceJudgmentCard(
   state: AuthoritativeGameState,
-  overrideColor?: PrintedColor,
+  ruleset: LoadedRuleset,
+  cardRefs: string[] = [],
+  deadlineAt?: number,
 ): TransactionCommit<AuthoritativeGameState> {
   const frame = state.resolutionStack.at(-1);
   if (!frame || frame.frameType !== "judgment")
     throw new Error("JUDGMENT_FRAME_MISSING");
-  const tx = new EngineTransaction(state),
-    draft = tx.draft,
-    draftFrame = draft.resolutionStack.at(-1)!,
-    context = draftFrame.context,
+  const tx = new EngineTransaction(state);
+  replaceJudgmentCardInTransaction(tx, ruleset, cardRefs, deadlineAt);
+  return commit(tx);
+}
+export function finalizeJudgmentInTransaction(
+  tx: EngineTransaction<AuthoritativeGameState>,
+  context: Record<string, JsonValue>,
+  overrideColor?: PrintedColor,
+): void {
+  const draft = tx.draft,
     judgmentId = String(context.judgmentId),
     cardRef = typeof context.cardRef === "string" ? context.cardRef : null,
     printedColor =
@@ -510,5 +596,17 @@ export function finalizeJudgment(
       ) || item.context?.judgmentId !== judgmentId,
   );
   draft.resolutionStack.pop();
+}
+export function finalizeJudgment(
+  state: AuthoritativeGameState,
+  overrideColor?: PrintedColor,
+): TransactionCommit<AuthoritativeGameState> {
+  const frame = state.resolutionStack.at(-1);
+  if (!frame || frame.frameType !== "judgment")
+    throw new Error("JUDGMENT_FRAME_MISSING");
+  const tx = new EngineTransaction(state),
+    draft = tx.draft,
+    draftFrame = draft.resolutionStack.at(-1)!;
+  finalizeJudgmentInTransaction(tx, draftFrame.context, overrideColor);
   return commit(tx);
 }

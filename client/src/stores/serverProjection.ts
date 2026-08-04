@@ -15,7 +15,13 @@ export const useServerProjectionStore = defineStore("serverProjection", () => {
   const screen = computed(() => gameSnapshot.value ? "game" : setupSnapshot.value ? "setup" : roomSnapshot.value ? "room" : "lobby");
 
   function acceptRoomMessage(message: RoomProtocolMessage) {
-    if (message.type === "LOBBY_SNAPSHOT") lobbySnapshot.value = message;
+    if (message.type === "LOBBY_SNAPSHOT") {
+      lobbySnapshot.value = message;
+      roomSnapshot.value = null;
+      gameSnapshot.value = null;
+      setupSnapshot.value = null;
+      eventQueue.value = [];
+    }
     if (message.type === "ROOM_SNAPSHOT") roomSnapshot.value = message;
   }
 

@@ -15,7 +15,7 @@ const users = { 1: "u1", 2: "u2", 3: "u3", 4: "u4" } as const,
   characters = {
     1: "character.knight",
     2: "character.alchemist",
-    3: "character.ranger",
+    3: "character.shaman",
     4: "character.wizard",
   } as const;
 beforeAll(async () => {
@@ -50,6 +50,7 @@ function hitState() {
     state = resolveInitialRedraw(state, seat, false, ruleset).state;
   state.phase = "play";
   state.phaseMode = "manual";
+  state.players[2]!.markers.defyFateUsed = true;
   state.players[0]!.limits.attackCountRemaining = 1;
   const kill = refFor(state, "basic.kill.");
   relocate(state, kill, "hand:1");

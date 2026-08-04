@@ -462,13 +462,13 @@ export class SheepSession {
   }
 }
 
-export function continueSheepArmorJudgment(
-  state: AuthoritativeGameState,
+export function continueSheepArmorJudgmentInTransaction(
+  tx: EngineTransaction<AuthoritativeGameState>,
   ruleset: LoadedRuleset,
   rawContext: Record<string, JsonValue>,
   matched: boolean,
   deadlineAt: number,
-): TransactionCommit<AuthoritativeGameState> {
+): void {
   const value = rawContext.sheepContext as Record<string, JsonValue>,
     context: SheepContext = {
       cardRef: String(value.cardRef),
@@ -479,7 +479,6 @@ export function continueSheepArmorJudgment(
       armorAttempted: [...(value.armorAttempted as unknown as Seat[])],
       resumeDeadlineAt: Number(value.resumeDeadlineAt),
     },
-    tx = new EngineTransaction(state),
     seat = context.order[context.index]!;
   if (matched) {
     context.responded.push(seat);
@@ -503,6 +502,22 @@ export function continueSheepArmorJudgment(
     });
     openResponse(tx, ruleset, context, deadlineAt);
   }
+}
+export function continueSheepArmorJudgment(
+  state: AuthoritativeGameState,
+  ruleset: LoadedRuleset,
+  rawContext: Record<string, JsonValue>,
+  matched: boolean,
+  deadlineAt: number,
+): TransactionCommit<AuthoritativeGameState> {
+  const tx = new EngineTransaction(state);
+  continueSheepArmorJudgmentInTransaction(
+    tx,
+    ruleset,
+    rawContext,
+    matched,
+    deadlineAt,
+  );
   const committed = tx.commit();
   committed.state.history.domainEvents.push(...committed.events);
   validateAuthoritativeState(committed.state);

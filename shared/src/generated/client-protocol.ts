@@ -50,12 +50,16 @@ export type CardView = {
 export type EquipmentSlotsView = {
   "weapon1": CardView | null;
   "weapon2": CardView | null;
+  "weapon3": CardView | null;
   "thirdWeapon": CardView | null;
   "armor": CardView | null;
   "mountOffense": CardView | null;
   "mountDefense": CardView | null;
   "talents": Array<CardView>;
   "boss": CardView | null;
+  "tripleWield": boolean;
+  "mountOccupied": Array<string>;
+  "mountDual": boolean;
 };
 
 export type PlayerView = {
@@ -71,6 +75,7 @@ export type PlayerView = {
   "maxShield"?: number | null;
   "ironShield"?: number;
   "handCount": number;
+  "handLimit": number;
   "equipment": Array<CardView>;
   "equipmentSlots": EquipmentSlotsView;
   "judgmentZone": Array<CardView>;
@@ -107,6 +112,14 @@ export type PromptView = {
   "timeoutPolicy": "pass" | "randomLegal" | "useDefault" | "abortRemaining";
 };
 
+export type ActiveWindowView = {
+  "kind": string;
+  "prioritySeat": Seat | null;
+  "deadlineAt": number;
+  "attackerSeat"?: Seat | null;
+  "abilityId"?: string | null;
+};
+
 export type TargetRule = {
   "min": number;
   "max": number;
@@ -130,6 +143,7 @@ export type OfferPreview = {
   "distanceByTarget"?: Record<string, number>;
   "damageStructure"?: string | null;
   "costSummary"?: string | null;
+  "slot"?: string | null;
 };
 
 export type InteractionOffer = {
@@ -214,6 +228,7 @@ export type GameSnapshot = {
   "publicView": PublicView;
   "privateView": PrivateView;
   "interaction": InteractionView;
+  "activeWindow": ActiveWindowView | null;
   "chat": Array<ChatMessage>;
 };
 
@@ -232,6 +247,10 @@ export type SendChatPayload = {
   "text": string;
 };
 
+export type ForfeitPayload = {
+
+};
+
 export type GameCommand = {
   "type": "GAME_COMMAND";
   "commandId": string;
@@ -240,7 +259,9 @@ export type GameCommand = {
   "promptId"?: string | null;
   "offerId"?: string | null;
   "command": "EXECUTE_OFFER" | "SET_PRESELECTION" | "SEND_CHAT" | "FORFEIT";
-  "payload": ExecuteOfferPayload | SetPreselectionPayload | SendChatPayload | Record<string, never>;
+  "payload": ExecuteOfferPayload | SetPreselectionPayload | SendChatPayload | {
+
+};
 };
 
 export type CommandAccepted = {

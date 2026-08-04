@@ -15,8 +15,9 @@ beforeAll(async () => { ruleset = await loadFrozenRuleset(resolve(import.meta.di
 function ready() {
   let s = createInitialSetup(ruleset, { gameId: "traveler", firstSeat: 1, seed: 401,
     usersBySeat: { 1: "u1", 2: "u2", 3: "u3", 4: "u4" },
-    characterIdsBySeat: { 1: "character.interdimensional_traveler", 2: "character.knight", 3: "character.ranger", 4: "character.wizard" } });
+    characterIdsBySeat: { 1: "character.interdimensional_traveler", 2: "character.knight", 3: "character.shaman", 4: "character.wizard" } });
   for (const seat of [1,2,3,4] as const) s = resolveInitialRedraw(s, seat, false, ruleset).state;
+  s.players[2]!.markers.defyFateUsed = true;
   s.activeSeat=1; s.phase="play"; s.phaseMode="manual"; s.phaseBoundary="body"; s.phaseBodyResolved=false;
   s.players[0]!.limits.attackCountRemaining=1;
   s.pendingWindows=[{promptId:"play",kind:"playPhaseAction",prioritySeat:1,mandatory:false,deadlineAt:99,timeoutPolicy:"pass",legalOfferIds:[]}];

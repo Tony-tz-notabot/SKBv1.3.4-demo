@@ -517,13 +517,13 @@ export class InternetAddictionSession {
   }
 }
 
-export function continueInternetArmorJudgment(
-  state: AuthoritativeGameState,
+export function continueInternetArmorJudgmentInTransaction(
+  tx: EngineTransaction<AuthoritativeGameState>,
   ruleset: LoadedRuleset,
   rawContext: Record<string, JsonValue>,
   matched: boolean,
   deadlineAt: number,
-): TransactionCommit<AuthoritativeGameState> {
+): void {
   const value = rawContext.internetContext as Record<string, JsonValue>,
     context = {
       cardRef: String(value.cardRef),
@@ -538,7 +538,6 @@ export function continueInternetArmorJudgment(
         ? { resolvedFamilyId: value.resolvedFamilyId as ResolvedFamilyId }
         : {}),
     },
-    tx = new EngineTransaction(state),
     seat = context.order[context.index]!;
   if (matched) {
     context.responded.push(seat);
@@ -558,6 +557,22 @@ export function continueInternetArmorJudgment(
     });
     openResponse(tx, ruleset, context, deadlineAt);
   }
+}
+export function continueInternetArmorJudgment(
+  state: AuthoritativeGameState,
+  ruleset: LoadedRuleset,
+  rawContext: Record<string, JsonValue>,
+  matched: boolean,
+  deadlineAt: number,
+): TransactionCommit<AuthoritativeGameState> {
+  const tx = new EngineTransaction(state);
+  continueInternetArmorJudgmentInTransaction(
+    tx,
+    ruleset,
+    rawContext,
+    matched,
+    deadlineAt,
+  );
   const committed = tx.commit();
   committed.state.history.domainEvents.push(...committed.events);
   validateAuthoritativeState(committed.state);
