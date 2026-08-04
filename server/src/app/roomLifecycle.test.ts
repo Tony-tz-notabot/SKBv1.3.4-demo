@@ -47,12 +47,20 @@ describe("room lifecycle",()=>{
   await expect(rooms.handle(users[1]!,{commandId:"disband-nh",roomId:room.roomId,expectedRoomRevision:room.revision,command:"DISBAND_ROOM",payload:{}})).rejects.toMatchObject({code:"HOST_PERMISSION_REQUIRED"});
   expect(room.phase).toBe("inGame");
  });
- it("ends the room when all players are offline for the idle window, even mid-game",async()=>{
+ it("ends the room shortly after all players are offline, even mid-game",async()=>{
   const rooms=await service(),room=await startGame(rooms);
   const now=Date.now();
   for(const p of room.players){p.connection="offline";p.disconnectDeadlineAt=null;}
-  room.updatedAt=now-61*60*1000;
+  room.updatedAt=now-61*1000;
   expect(rooms.cleanupRooms(now)).toBe(true);
   expect(rooms.rooms.has(room.roomId)).toBe(false);
+ });
+ it("keeps the room while all players are offline but under the idle threshold",async()=>{
+  const rooms=await service(),room=await startGame(rooms);
+  const now=Date.now();
+  for(const p of room.players){p.connection="offline";p.disconnectDeadlineAt=null;}
+  room.updatedAt=now-10*1000;
+  expect(rooms.cleanupRooms(now)).toBe(false);
+  expect(rooms.rooms.has(room.roomId)).toBe(true);
  });
 });
