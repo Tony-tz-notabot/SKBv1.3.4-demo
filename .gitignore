@@ -21,3 +21,4 @@ reasonix.toml
 .DS_Store
 Thumbs.db
 desktop.ini
+deploy/offline/out/
