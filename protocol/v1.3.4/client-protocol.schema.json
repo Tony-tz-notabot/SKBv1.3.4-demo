@@ -133,6 +133,12 @@
             "null"
           ]
         },
+        "modeIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "charge": {
           "type": [
             "integer",
@@ -786,7 +792,9 @@
             "rescueDying",
             "resolveChoice",
             "pass",
-            "endPhase"
+            "endPhase",
+            "chargeWeapon",
+            "activateWeapon"
           ]
         },
         "sourceRefs": {

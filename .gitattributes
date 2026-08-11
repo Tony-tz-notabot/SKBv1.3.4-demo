@@ -1,0 +1,3 @@
+# 规则集冻结文件哈希按 LF 计算（tools/build-ruleset.mjs 在 LF 下生成 freeze.json）。
+# 禁止行尾转换，否则 loadFrozenRuleset 的 sha256 校验在 Windows 上必然失败。
+rulesets/** text eol=lf

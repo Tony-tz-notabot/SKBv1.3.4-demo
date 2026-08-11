@@ -27,12 +27,13 @@ describe("window timeout coverage",()=>{
    expect(source,kind).toMatch(new RegExp(`${kind}:standard\\(`));
   }
  });
- it("times out a pass-policy wizard spell strike window by passing",()=>{
-  let state=engineState(332,"character.wizard");state.pendingWindows=[{promptId:"prompt:wss:1",kind:"wizardSpellStrike",prioritySeat:1,mandatory:false,deadlineAt:1,timeoutPolicy:"pass",legalOfferIds:["offer:wizard-spell-strike:pass","offer:wizard-spell-strike:activate"],context:{attackId:"a:1",targetRef:"character:2",legalCardRefs:[]}}];
+ it("times out a pass-policy wizard spell strike window by passing even when legal cards exist",()=>{
+  let state=engineState(332,"character.wizard");const cards=[...state.zones["hand:1"]!.orderedCardRefs];expect(cards.length).toBeGreaterThan(0);
+  state.pendingWindows=[{promptId:"prompt:wss:1",kind:"wizardSpellStrike",prioritySeat:1,mandatory:false,deadlineAt:1,timeoutPolicy:"pass",legalOfferIds:["offer:wizard-spell-strike:pass","offer:wizard-spell-strike:activate"],context:{attackId:"a:1",targetRef:"character:2",legalCardRefs:cards}}];
   const room=makeRoom(state),service=new GameService(ruleset,()=>1000);
   expect(room.game!.pendingWindows[0]!.kind).toBe("wizardSpellStrike");
   const result=service.timeout(room);
-  expect(result).toBe(true);expect(room.game!.pendingWindows.some(w=>w.kind==="wizardSpellStrike")).toBe(false);
+  expect(result,"pass 超时不得携带卡牌选择（否则 Session 以 COST_SELECTION_INVALID 拒绝，窗口永不推进）").toBe(true);expect(room.game!.pendingWindows.some(w=>w.kind==="wizardSpellStrike")).toBe(false);
  });
  it("times out a random-legal engineer mech choice through the authoritative random source",()=>{
   let state=engineState(333,"character.engineer");state.players.find(p=>p.seat===1)!.markers["engineer.mechActive"]=true;state.players.find(p=>p.seat===1)!.markers["engineer.mechKind"]="prototype";

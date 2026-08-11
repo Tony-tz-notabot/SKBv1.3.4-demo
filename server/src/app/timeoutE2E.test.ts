@@ -65,9 +65,10 @@ describe("timeout and reconnect within one E2E script",()=>{
    // 阶段超时：把当前 playPhaseAction 窗口 deadline 设为过去，等待服务器 tick 超时处理
    const beforeTimeout=rooms.roomForUser(sessions[0]!.userId)!.game!.pendingWindows[0]!;
    beforeTimeout.deadlineAt=Date.now()-1;
-   await delay(800);
-   const afterTimeout=rooms.roomForUser(sessions[0]!.userId)!.game!.pendingWindows[0]!;
-   expect(afterTimeout.promptId).not.toBe(beforeTimeout.promptId);
+   const beforePrompt=beforeTimeout.promptId,waitDeadline=Date.now()+8000;
+   let afterTimeout=rooms.roomForUser(sessions[0]!.userId)!.game!.pendingWindows[0]!;
+   while(afterTimeout.promptId===beforePrompt&&Date.now()<waitDeadline){await delay(50);afterTimeout=rooms.roomForUser(sessions[0]!.userId)!.game!.pendingWindows[0]!;}
+   expect(afterTimeout.promptId).not.toBe(beforePrompt);
    reconnected.close();
   }finally{for(const client of clients)client.close();await server.close();}
  },120000);

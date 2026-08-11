@@ -1,86 +1,354 @@
 {
-  "cases": [
-    {
-      "name": "valid room snapshot during private selection",
-      "valid": true,
-      "message": {
-        "type": "ROOM_SNAPSHOT", "roomId": "room_1", "roomCode": "7KQ9MT", "roomRevision": 6, "serverTime": 1785480000000, "phase": "characterSelection",
-        "settings": { "roomName": "SKB测试局", "allowGuests": true, "allowSpectators": false, "turnTimeSeconds": 60, "responseTimeSeconds": 20, "reserveTimeSeconds": 30, "rulesetVersion": "1.3.4", "dismantleBossEnabled": true },
-        "players": [
-          { "userId": "u1", "displayName": "一号", "seat": 1, "team": "A", "isHost": true, "ready": true, "connection": "online", "latencyMs": 20, "selectionState": "locked", "revealedCharacterId": null },
-          { "userId": "u2", "displayName": "二号", "seat": 2, "team": "B", "isHost": false, "ready": true, "connection": "online", "latencyMs": 25, "selectionState": "choosing", "revealedCharacterId": null }
-        ],
-        "viewerUserId": "u1", "viewerSeat": 1,
-        "permissions": { "canChangeSeat": true, "canUpdateSettings": true, "canKick": true, "canTransferHost": true, "canStartGame": false, "canCloseRoom": true },
-        "characterSelection": {
-          "candidates": [
-            { "characterId": "character.knight", "displayName": "骑士", "portraitResourceKey": "character.knight.portrait", "initialHp": 7, "initialShield": 6, "initialTalentId": "talent.a", "abilityIds": ["ability.a"], "difficulty": 1 },
-            { "characterId": "character.rogue", "displayName": "游侠", "portraitResourceKey": "character.rogue.portrait", "initialHp": 6, "initialShield": 4, "initialTalentId": "talent.b", "abilityIds": ["ability.b"], "difficulty": 2 },
-            { "characterId": "character.witch", "displayName": "法师", "portraitResourceKey": "character.witch.portrait", "initialHp": 5, "initialShield": 6, "initialTalentId": "talent.c", "abilityIds": ["ability.c"], "difficulty": 2 },
-            { "characterId": "character.alchemist", "displayName": "炼金术士", "portraitResourceKey": "character.alchemist.portrait", "initialHp": 6, "initialShield": 6, "initialTalentId": "talent.d", "abilityIds": ["ability.d"], "difficulty": 2 }
-          ],
-          "preselectedCharacterId": "character.knight", "lockedCharacterId": "character.knight", "deadlineAt": 1785480010000
-        },
-        "chat": []
+ "cases": [
+  {
+   "name": "valid room snapshot during private selection",
+   "valid": true,
+   "message": {
+    "type": "ROOM_SNAPSHOT",
+    "roomId": "room_1",
+    "roomCode": "7KQ9MT",
+    "roomRevision": 6,
+    "serverTime": 1785480000000,
+    "phase": "characterSelection",
+    "settings": {
+     "roomName": "SKB测试局",
+     "allowGuests": true,
+     "allowSpectators": false,
+     "turnTimeSeconds": 60,
+     "responseTimeSeconds": 20,
+     "reserveTimeSeconds": 30,
+     "rulesetVersion": "1.3.4",
+     "dismantleBossEnabled": true
+    },
+    "players": [
+     {
+      "userId": "u1",
+      "displayName": "一号",
+      "seat": 1,
+      "team": "A",
+      "isHost": true,
+      "ready": true,
+      "connection": "online",
+      "latencyMs": 20,
+      "selectionState": "locked",
+      "revealedCharacterId": null
+     },
+     {
+      "userId": "u2",
+      "displayName": "二号",
+      "seat": 2,
+      "team": "B",
+      "isHost": false,
+      "ready": true,
+      "connection": "online",
+      "latencyMs": 25,
+      "selectionState": "choosing",
+      "revealedCharacterId": null
+     }
+    ],
+    "viewerUserId": "u1",
+    "viewerSeat": 1,
+    "permissions": {
+     "canChangeSeat": true,
+     "canUpdateSettings": true,
+     "canKick": true,
+     "canTransferHost": true,
+     "canStartGame": false,
+     "canCloseRoom": true,
+     "canDisbandRoom": true
+    },
+    "characterSelection": {
+     "candidates": [
+      {
+       "characterId": "character.knight",
+       "displayName": "骑士",
+       "portraitResourceKey": "character.knight.portrait",
+       "initialHp": 7,
+       "initialShield": 6,
+       "initialTalentId": "talent.a",
+       "abilityIds": [
+        "ability.a"
+       ],
+       "difficulty": 1
+      },
+      {
+       "characterId": "character.rogue",
+       "displayName": "游侠",
+       "portraitResourceKey": "character.rogue.portrait",
+       "initialHp": 6,
+       "initialShield": 4,
+       "initialTalentId": "talent.b",
+       "abilityIds": [
+        "ability.b"
+       ],
+       "difficulty": 2
+      },
+      {
+       "characterId": "character.witch",
+       "displayName": "法师",
+       "portraitResourceKey": "character.witch.portrait",
+       "initialHp": 5,
+       "initialShield": 6,
+       "initialTalentId": "talent.c",
+       "abilityIds": [
+        "ability.c"
+       ],
+       "difficulty": 2
+      },
+      {
+       "characterId": "character.alchemist",
+       "displayName": "炼金术士",
+       "portraitResourceKey": "character.alchemist.portrait",
+       "initialHp": 6,
+       "initialShield": 6,
+       "initialTalentId": "talent.d",
+       "abilityIds": [
+        "ability.d"
+       ],
+       "difficulty": 2
       }
+     ],
+     "preselectedCharacterId": "character.knight",
+     "lockedCharacterId": "character.knight",
+     "deadlineAt": 1785480010000
     },
-    {
-      "name": "valid join room command",
-      "valid": true,
-      "message": { "type": "ROOM_COMMAND", "commandId": "room_cmd_1", "roomId": null, "expectedRoomRevision": null, "command": "JOIN_ROOM", "payload": { "roomCode": "7KQ9MT", "password": null, "asSpectator": false } }
-    },
-    {
-      "name": "invalid room command payload mismatch",
-      "valid": false,
-      "message": { "type": "ROOM_COMMAND", "commandId": "room_cmd_bad_1", "roomId": "room_1", "expectedRoomRevision": 6, "command": "SET_READY", "payload": { "userId": "u2" } }
-    },
-    {
-      "name": "invalid duplicate seat and wrong team",
-      "valid": false,
-      "message": {
-        "type": "ROOM_SNAPSHOT", "roomId": "room_1", "roomCode": "7KQ9MT", "roomRevision": 7, "serverTime": 1785480000000, "phase": "waiting",
-        "settings": { "roomName": "测试", "allowGuests": true, "allowSpectators": false, "turnTimeSeconds": 60, "responseTimeSeconds": 20, "reserveTimeSeconds": 30, "rulesetVersion": "1.3.4", "dismantleBossEnabled": true },
-        "players": [
-          { "userId": "u1", "displayName": "一号", "seat": 1, "team": "A", "isHost": true, "ready": false, "connection": "online", "latencyMs": 20, "selectionState": "notStarted", "revealedCharacterId": null },
-          { "userId": "u2", "displayName": "二号", "seat": 1, "team": "B", "isHost": false, "ready": false, "connection": "online", "latencyMs": 20, "selectionState": "notStarted", "revealedCharacterId": null }
-        ],
-        "viewerUserId": "u1", "viewerSeat": 1,
-        "permissions": { "canChangeSeat": true, "canUpdateSettings": true, "canKick": true, "canTransferHost": true, "canStartGame": false, "canCloseRoom": true },
-        "characterSelection": null, "chat": []
-      }
-    },
-    {
-      "name": "invalid locked character revealed early",
-      "valid": false,
-      "message": {
-        "type": "ROOM_SNAPSHOT", "roomId": "room_1", "roomCode": "7KQ9MT", "roomRevision": 8, "serverTime": 1785480000000, "phase": "characterSelection",
-        "settings": { "roomName": "测试", "allowGuests": true, "allowSpectators": false, "turnTimeSeconds": 60, "responseTimeSeconds": 20, "reserveTimeSeconds": 30, "rulesetVersion": "1.3.4", "dismantleBossEnabled": true },
-        "players": [{ "userId": "u1", "displayName": "一号", "seat": 1, "team": "A", "isHost": true, "ready": true, "connection": "online", "latencyMs": 20, "selectionState": "locked", "revealedCharacterId": "character.knight" }],
-        "viewerUserId": "u1", "viewerSeat": 1,
-        "permissions": { "canChangeSeat": true, "canUpdateSettings": true, "canKick": true, "canTransferHost": true, "canStartGame": false, "canCloseRoom": true },
-        "characterSelection": null, "chat": []
-      }
-    },
-    {
-      "name": "invalid private selection outside candidates",
-      "valid": false,
-      "message": {
-        "type": "ROOM_SNAPSHOT", "roomId": "room_1", "roomCode": "7KQ9MT", "roomRevision": 9, "serverTime": 1785480000000, "phase": "characterSelection",
-        "settings": { "roomName": "测试", "allowGuests": true, "allowSpectators": false, "turnTimeSeconds": 60, "responseTimeSeconds": 20, "reserveTimeSeconds": 30, "rulesetVersion": "1.3.4", "dismantleBossEnabled": true },
-        "players": [{ "userId": "u1", "displayName": "一号", "seat": 1, "team": "A", "isHost": true, "ready": true, "connection": "online", "latencyMs": 20, "selectionState": "choosing", "revealedCharacterId": null }],
-        "viewerUserId": "u1", "viewerSeat": 1,
-        "permissions": { "canChangeSeat": true, "canUpdateSettings": true, "canKick": true, "canTransferHost": true, "canStartGame": false, "canCloseRoom": true },
-        "characterSelection": {
-          "candidates": [
-            { "characterId": "c1", "displayName": "1", "portraitResourceKey": "p1", "initialHp": 1, "initialShield": 1, "initialTalentId": "t1", "abilityIds": [], "difficulty": 1 },
-            { "characterId": "c2", "displayName": "2", "portraitResourceKey": "p2", "initialHp": 1, "initialShield": 1, "initialTalentId": "t2", "abilityIds": [], "difficulty": 1 },
-            { "characterId": "c3", "displayName": "3", "portraitResourceKey": "p3", "initialHp": 1, "initialShield": 1, "initialTalentId": "t3", "abilityIds": [], "difficulty": 1 },
-            { "characterId": "c4", "displayName": "4", "portraitResourceKey": "p4", "initialHp": 1, "initialShield": 1, "initialTalentId": "t4", "abilityIds": [], "difficulty": 1 }
-          ],
-          "preselectedCharacterId": "c5", "lockedCharacterId": null, "deadlineAt": null
-        },
-        "chat": []
-      }
+    "chat": []
+   }
+  },
+  {
+   "name": "valid join room command",
+   "valid": true,
+   "message": {
+    "type": "ROOM_COMMAND",
+    "commandId": "room_cmd_1",
+    "roomId": null,
+    "expectedRoomRevision": null,
+    "command": "JOIN_ROOM",
+    "payload": {
+     "roomCode": "7KQ9MT",
+     "password": null,
+     "asSpectator": false
     }
-  ]
+   }
+  },
+  {
+   "name": "invalid room command payload mismatch",
+   "valid": false,
+   "message": {
+    "type": "ROOM_COMMAND",
+    "commandId": "room_cmd_bad_1",
+    "roomId": "room_1",
+    "expectedRoomRevision": 6,
+    "command": "SET_READY",
+    "payload": {
+     "userId": "u2"
+    }
+   }
+  },
+  {
+   "name": "invalid duplicate seat and wrong team",
+   "valid": false,
+   "message": {
+    "type": "ROOM_SNAPSHOT",
+    "roomId": "room_1",
+    "roomCode": "7KQ9MT",
+    "roomRevision": 7,
+    "serverTime": 1785480000000,
+    "phase": "waiting",
+    "settings": {
+     "roomName": "测试",
+     "allowGuests": true,
+     "allowSpectators": false,
+     "turnTimeSeconds": 60,
+     "responseTimeSeconds": 20,
+     "reserveTimeSeconds": 30,
+     "rulesetVersion": "1.3.4",
+     "dismantleBossEnabled": true
+    },
+    "players": [
+     {
+      "userId": "u1",
+      "displayName": "一号",
+      "seat": 1,
+      "team": "A",
+      "isHost": true,
+      "ready": false,
+      "connection": "online",
+      "latencyMs": 20,
+      "selectionState": "notStarted",
+      "revealedCharacterId": null
+     },
+     {
+      "userId": "u2",
+      "displayName": "二号",
+      "seat": 1,
+      "team": "B",
+      "isHost": false,
+      "ready": false,
+      "connection": "online",
+      "latencyMs": 20,
+      "selectionState": "notStarted",
+      "revealedCharacterId": null
+     }
+    ],
+    "viewerUserId": "u1",
+    "viewerSeat": 1,
+    "permissions": {
+     "canChangeSeat": true,
+     "canUpdateSettings": true,
+     "canKick": true,
+     "canTransferHost": true,
+     "canStartGame": false,
+     "canCloseRoom": true,
+     "canDisbandRoom": true
+    },
+    "characterSelection": null,
+    "chat": []
+   }
+  },
+  {
+   "name": "invalid locked character revealed early",
+   "valid": false,
+   "message": {
+    "type": "ROOM_SNAPSHOT",
+    "roomId": "room_1",
+    "roomCode": "7KQ9MT",
+    "roomRevision": 8,
+    "serverTime": 1785480000000,
+    "phase": "characterSelection",
+    "settings": {
+     "roomName": "测试",
+     "allowGuests": true,
+     "allowSpectators": false,
+     "turnTimeSeconds": 60,
+     "responseTimeSeconds": 20,
+     "reserveTimeSeconds": 30,
+     "rulesetVersion": "1.3.4",
+     "dismantleBossEnabled": true
+    },
+    "players": [
+     {
+      "userId": "u1",
+      "displayName": "一号",
+      "seat": 1,
+      "team": "A",
+      "isHost": true,
+      "ready": true,
+      "connection": "online",
+      "latencyMs": 20,
+      "selectionState": "locked",
+      "revealedCharacterId": "character.knight"
+     }
+    ],
+    "viewerUserId": "u1",
+    "viewerSeat": 1,
+    "permissions": {
+     "canChangeSeat": true,
+     "canUpdateSettings": true,
+     "canKick": true,
+     "canTransferHost": true,
+     "canStartGame": false,
+     "canCloseRoom": true,
+     "canDisbandRoom": true
+    },
+    "characterSelection": null,
+    "chat": []
+   }
+  },
+  {
+   "name": "invalid private selection outside candidates",
+   "valid": false,
+   "message": {
+    "type": "ROOM_SNAPSHOT",
+    "roomId": "room_1",
+    "roomCode": "7KQ9MT",
+    "roomRevision": 9,
+    "serverTime": 1785480000000,
+    "phase": "characterSelection",
+    "settings": {
+     "roomName": "测试",
+     "allowGuests": true,
+     "allowSpectators": false,
+     "turnTimeSeconds": 60,
+     "responseTimeSeconds": 20,
+     "reserveTimeSeconds": 30,
+     "rulesetVersion": "1.3.4",
+     "dismantleBossEnabled": true
+    },
+    "players": [
+     {
+      "userId": "u1",
+      "displayName": "一号",
+      "seat": 1,
+      "team": "A",
+      "isHost": true,
+      "ready": true,
+      "connection": "online",
+      "latencyMs": 20,
+      "selectionState": "choosing",
+      "revealedCharacterId": null
+     }
+    ],
+    "viewerUserId": "u1",
+    "viewerSeat": 1,
+    "permissions": {
+     "canChangeSeat": true,
+     "canUpdateSettings": true,
+     "canKick": true,
+     "canTransferHost": true,
+     "canStartGame": false,
+     "canCloseRoom": true,
+     "canDisbandRoom": true
+    },
+    "characterSelection": {
+     "candidates": [
+      {
+       "characterId": "c1",
+       "displayName": "1",
+       "portraitResourceKey": "p1",
+       "initialHp": 1,
+       "initialShield": 1,
+       "initialTalentId": "t1",
+       "abilityIds": [],
+       "difficulty": 1
+      },
+      {
+       "characterId": "c2",
+       "displayName": "2",
+       "portraitResourceKey": "p2",
+       "initialHp": 1,
+       "initialShield": 1,
+       "initialTalentId": "t2",
+       "abilityIds": [],
+       "difficulty": 1
+      },
+      {
+       "characterId": "c3",
+       "displayName": "3",
+       "portraitResourceKey": "p3",
+       "initialHp": 1,
+       "initialShield": 1,
+       "initialTalentId": "t3",
+       "abilityIds": [],
+       "difficulty": 1
+      },
+      {
+       "characterId": "c4",
+       "displayName": "4",
+       "portraitResourceKey": "p4",
+       "initialHp": 1,
+       "initialShield": 1,
+       "initialTalentId": "t4",
+       "abilityIds": [],
+       "difficulty": 1
+      }
+     ],
+     "preselectedCharacterId": "c5",
+     "lockedCharacterId": null,
+     "deadlineAt": null
+    },
+    "chat": []
+   }
+  }
+ ]
 }

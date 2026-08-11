@@ -28,6 +28,7 @@ export type CardStateView = {
   "effective": boolean;
   "selected": boolean;
   "modeId"?: string | null;
+  "modeIds"?: Array<string>;
   "charge"?: number | null;
   "durability"?: number | null;
   "cooldown"?: number | null;
@@ -148,7 +149,7 @@ export type OfferPreview = {
 
 export type InteractionOffer = {
   "offerId": string;
-  "kind": "declareAttack" | "useCard" | "activateAbility" | "respond" | "equip" | "discardEquipment" | "dismantle" | "synthesize" | "interveneJudgment" | "rescueDying" | "resolveChoice" | "pass" | "endPhase";
+  "kind": "declareAttack" | "useCard" | "activateAbility" | "respond" | "equip" | "discardEquipment" | "dismantle" | "synthesize" | "interveneJudgment" | "rescueDying" | "resolveChoice" | "pass" | "endPhase" | "chargeWeapon" | "activateWeapon";
   "sourceRefs": Array<ObjectRef>;
   "legalTargetRefs": Array<ObjectRef>;
   "selectionSpecs": Array<SelectionSpec>;
