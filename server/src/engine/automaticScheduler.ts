@@ -9,6 +9,7 @@ import {
 } from "./directDamage.js";
 import { openDyingRescue } from "./dying.js";
 import { runCombatUntilBlocked } from "./combatScheduler.js";
+import { settleElectricMarks } from "./electricMark.js";
 import { consumeLaserFishAttackCount } from "./laserFishWeapon.js";
 
 export type SchedulerStopReason =
@@ -65,13 +66,50 @@ export function runAutomaticScheduler(
         };
       continue;
     }
-    const committed = current.combat.dyingStack.length
-      ? openDyingRescue(current, deadlineAt(), ruleset)
-      : hasImmediateDamageEffect(current)
-        ? executeNextImmediateDamageEffect(current, ruleset, deadlineAt())
-        : current.phaseBoundary === "body" && !current.phaseBodyResolved
-          ? resolvePhaseBody(current, ruleset, deadlineAt(), turnDeadlineAt)
-          : advanceTimeline(current, { kind: "normal" }, ruleset, deadlineAt());
+    if (current.combat.dyingStack.length) {
+      const committed = openDyingRescue(current, deadlineAt(), ruleset);
+      current = committed.state;
+      events.push(...committed.events);
+      steps += 1;
+      continue;
+    }
+    if (hasImmediateDamageEffect(current)) {
+      const committed = executeNextImmediateDamageEffect(
+        current,
+        ruleset,
+        deadlineAt(),
+      );
+      current = committed.state;
+      events.push(...committed.events);
+      steps += 1;
+      continue;
+    }
+    if (current.phaseBoundary === "body" && !current.phaseBodyResolved) {
+      const committed = resolvePhaseBody(
+        current,
+        ruleset,
+        deadlineAt(),
+        turnDeadlineAt,
+      );
+      current = committed.state;
+      events.push(...committed.events);
+      steps += 1;
+      continue;
+    }
+    // 攻击/效果结束后感电标记结算（先多人后单人，循环）
+    const settled = settleElectricMarks(current, ruleset);
+    if (settled) {
+      current = settled.state;
+      events.push(...settled.events);
+      steps += 1;
+      continue;
+    }
+    const committed = advanceTimeline(
+      current,
+      { kind: "normal" },
+      ruleset,
+      deadlineAt(),
+    );
     current = committed.state;
     events.push(...committed.events);
     steps += 1;

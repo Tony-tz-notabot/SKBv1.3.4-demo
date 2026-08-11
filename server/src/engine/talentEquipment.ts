@@ -5,6 +5,7 @@ import { validateAuthoritativeState } from "./stateValidation.js";
 import { EngineTransaction } from "./transaction.js";
 import type { DomainEvent } from "./types.js";
 import { moveCardInTransaction } from "./zoneMovement.js";
+import { clearElectricMarkInTransaction } from "./electricMark.js";
 import { applyTalentEquipContribution, resolveTalentContribution } from "./talentContributions.js";
 const PREFIX = "talent.";
 function player(s: AuthoritativeGameState, n: Seat) {
@@ -177,6 +178,8 @@ export class TalentEquipSession {
         moveKind: "equip",
         faceUp: true,
       });
+      if (id === "talent.electric_shield")
+        clearElectricMarkInTransaction(tx, p.seat);
       const talentZone = tx.draft.zones[`talent:${p.seat}`]!,
         fromIndex = talentZone.orderedCardRefs.indexOf(c.cardRef);
       if (fromIndex >= 0) talentZone.orderedCardRefs.splice(fromIndex, 1);

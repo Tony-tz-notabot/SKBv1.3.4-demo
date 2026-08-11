@@ -142,12 +142,17 @@ describe("Internet-addiction twins", () => {
       expect(state.players.map((player) => player.shield)).toEqual([
         10, 10, 10, 10,
       ]);
-      expect(state.scheduledEffects).toHaveLength(4);
+      expect(state.scheduledEffects).toHaveLength(7);
       while (state.scheduledEffects.length)
         state = executeNextImmediateDamageEffect(state, ruleset).state;
       expect(state.players.map((player) => player.shield)).toEqual([
         10, 7, 7, 7,
       ]);
+      expect(
+        state.players
+          .slice(1)
+          .map((p) => Number(p.markers.electricMark ?? 0)),
+      ).toEqual([1, 1, 1]);
       expect(state.cards[prepared.cardRef]!.zoneRef).toBe("discardPile");
       expect(state.pendingWindows[0]).toMatchObject({
         kind: "playPhaseAction",

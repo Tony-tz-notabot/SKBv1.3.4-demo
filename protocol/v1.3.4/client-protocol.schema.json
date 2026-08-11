@@ -399,6 +399,10 @@
         "ironShield": {
           "type": "integer"
         },
+        "electricMark": {
+          "type": "integer",
+          "minimum": 0
+        },
         "handCount": {
           "type": "integer",
           "minimum": 0

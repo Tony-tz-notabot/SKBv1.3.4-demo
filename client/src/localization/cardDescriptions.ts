@@ -36,7 +36,7 @@ const cardMap: Record<string, string> = {
   "talent.blue_shield": "蓝盾（蓝）：每段开始仍有盾时，该段普通伤害不溢出血量。",
   "talent.ice_shield": "冰盾（蓝）：免疫冰冻；实际使目标获得/刷新冰冻后追加毒 1；冰冻被免疫则不追加。",
   "talent.mana_siphon": "吸蓝（蓝）：一次攻击对每名目标累计实际血量伤害≥2 时摸 1 张；每目标每攻击一次。",
-  "talent.electric_shield": "电盾（蓝）：免疫电击；激光攻击破除防具；每目标感电总伤+1。",
+  "talent.electric_shield": "电盾（蓝）：免疫电击；你不会获得感电标记，装备时立即清除已有感电标记；你的激光武器攻击附加破除防具效果。",
   "talent.combo_up": "连击增加（蓝）：明确标注连击的对应维度+1。",
   "talent.fire_shield": "火盾（红）：免疫火；每次攻击对每目标的火伤段数+1。",
   "talent.spike_shield": "刺盾（红）：一次近战攻击第一个正数伤害段-1，最低 0。",

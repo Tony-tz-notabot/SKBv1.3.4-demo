@@ -1,4 +1,5 @@
 import { applyDirectDamageInTransaction } from "./damage.js";
+import { addElectricMarkInTransaction } from "./electricMark.js";
 import { openDivineBarrierDirectDamageWindow } from "./divineBarrier.js";
 import {
   beginParallelTraversalJudgment,
@@ -298,6 +299,22 @@ export function executeNextImmediateDamageEffect(
         String(effect.cardRef),
         Number(effect.sourceSeat) as Seat,
       );
+    const committed = tx.commit();
+    committed.state.history.domainEvents.push(...committed.events);
+    validateAuthoritativeState(committed.state);
+    return committed;
+  }
+  if (effect.op === "addElectricMark") {
+    const tx = new EngineTransaction(state),
+      draftScheduled = tx.draft.scheduledEffects.find(
+        (item) => item.scheduledId === scheduled.scheduledId,
+      )!;
+    tx.draft.scheduledEffects = tx.draft.scheduledEffects.filter(
+      (item) => item.scheduledId !== draftScheduled.scheduledId,
+    );
+    const seat = seatFromTarget(String(effect.targetRef));
+    if (seat !== null)
+      addElectricMarkInTransaction(tx, seat, Number(effect.amount ?? 1));
     const committed = tx.commit();
     committed.state.history.domainEvents.push(...committed.events);
     validateAuthoritativeState(committed.state);

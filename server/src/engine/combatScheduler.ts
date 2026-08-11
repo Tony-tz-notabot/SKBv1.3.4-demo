@@ -28,6 +28,7 @@ import { beginPrecisionStrikeJudgment } from "./precisionStrike.js";
 import { openWrenchChoiceAfterHit, openWrenchChoiceFromState } from "./wrenchWeapon.js";
 import { openTemporaryCoinChoiceAfterHit } from "./coinGun.js";
 import { beginAnubisCurseResolution, recordAnubisProjectileHit } from "./anubisWeapon.js";
+import { applyElectricMarkOnAttackHit, settleElectricMarks } from "./electricMark.js";
 
 export type CombatStopReason =
   | "responseWindow"
@@ -91,8 +92,17 @@ export function runCombatUntilBlocked(
       steps++;
       continue;
     }
-    if (!current.combat.attack)
+    if (!current.combat.attack) {
+      // 攻击/效果结束后感电标记结算（先多人后单人，循环）；产生濒死则交由下方调度处理
+      const settled = settleElectricMarks(current, ruleset);
+      if (settled) {
+        current = settled.state;
+        events.push(...settled.events);
+        steps++;
+        continue;
+      }
       return { state: current, events, steps, stoppedReason: "combatComplete" };
+    }
     const status = attackStatus(current);
     const pendingJudgmentEffects = applyPendingAttackJudgmentEffects(
       current,
@@ -170,6 +180,7 @@ export function runCombatUntilBlocked(
     if(committed.events.some(event=>event.eventType==="attack.hit"))committed=recordAnubisProjectileHit(committed);
     if(committed.events.some(event=>event.eventType==="attack.hit"))committed=openWrenchChoiceAfterHit(committed,deadlineAt());
     if(committed.events.some(event=>event.eventType==="attack.hit"))committed=openTemporaryCoinChoiceAfterHit(committed,deadlineAt());
+    if(committed.events.some(event=>event.eventType==="attack.hit"))committed=applyElectricMarkOnAttackHit(committed,ruleset);
     if(committed.events.some(event=>event.eventType==="attack.resolved"))committed=beginAnubisCurseResolution(committed,ruleset,deadlineAt());
     let bridged = committed.events.some(
       (event) => event.eventType === "attack.hit",

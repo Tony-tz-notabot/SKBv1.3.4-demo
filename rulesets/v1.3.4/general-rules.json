@@ -348,6 +348,57 @@
       "listen": "command.received",
       "effects": [{"op": "validateCommand", "params": {"allowPayloadClass": "intentOnly", "denyFields": ["finalHp", "finalShield", "judgmentResult", "randomResult", "damageResult"]}}, {"op": "rejectCommand", "params": {"when": "$validation.failed", "reason": "authoritativeField"}}],
       "assertions": ["server computes all resulting state"]
+    },
+    {
+      "ruleId": "general.electricMark.attackHit",
+      "testIds": ["G044"],
+      "kind": "pipeline",
+      "listen": "attack.hit",
+      "effects": [
+        {
+          "op": "if",
+          "params": {
+            "condition": {
+              "hasElement": ["$attack", "electric"]
+            },
+            "then": {
+              "op": "forEach",
+              "params": {
+                "items": "$attack.targets.hit",
+                "mode": "serial",
+                "maxIterations": 4
+              },
+              "effects": [
+                {
+                  "op": "addElectricMark",
+                  "target": "$item",
+                  "params": {
+                    "amount": 1,
+                    "perAttackOnce": true
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "assertions": ["整一次攻击每命中目标叠加1层感电标记，不按伤害段重复；0伤命中仍叠加；未命中不叠加"]
+    },
+    {
+      "ruleId": "general.electricMark.settle",
+      "testIds": ["G045"],
+      "kind": "pipeline",
+      "listen": "attack.resolved",
+      "effects": [
+        {
+          "op": "settleElectricMarks",
+          "params": {
+            "multiTargetPriority": true,
+            "recheck": true
+          }
+        }
+      ],
+      "assertions": ["攻击结束后检查：先多人≥2标记全部结算（-2并受2点真实伤害无来源，循环），再单人≥3标记（-3并受2点真实伤害无来源，循环）"]
     }
   ]
 }

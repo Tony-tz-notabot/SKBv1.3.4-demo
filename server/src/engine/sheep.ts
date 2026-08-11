@@ -1,5 +1,6 @@
 import type { LoadedRuleset } from "../ruleset/types.js";
 import { applyDirectDamageInTransaction } from "./damage.js";
+import { addElectricMarkInTransaction } from "./electricMark.js";
 import { startNestedInternetAddictionInTransaction } from "./internetAddiction.js";
 import { beginJudgment } from "./judgment.js";
 import { openPreJudgmentWindow } from "./preJudgment.js";
@@ -556,6 +557,7 @@ export function applySheepPhaseOneTargetInTransaction(
     ignoreArmor: false,
     ruleset,
   });
+  addElectricMarkInTransaction(tx, seat, 1);
   player.markers.cannotDodgeUntilTurnEnd = true;
   const durationId = `duration:sheep-dodge-lock:${input.cardRef}:${seat}:${tx.draft.stateRevision + 1}`;
   tx.draft.durations.push({

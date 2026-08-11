@@ -1321,17 +1321,10 @@
           ]
         }
       ],
-      "modifiers": [
-        {
-          "query": "attack.elementDamageTotal",
-          "scope": "perTargetPerAttack",
-          "element": "electric",
-          "operation": {
-            "add": 1,
-            "placement": "firstPositiveElectricSegment"
-          }
-        }
-      ]
+      "electricMark": {
+        "immuneToGain": true,
+        "clearOnEquip": true
+      }
     },
     {
       "familyId": "talent.combo_up",
@@ -2756,12 +2749,26 @@
                   }
                 },
                 {
+                  "op": "addElectricMark",
+                  "target": "$item",
+                  "params": {
+                    "amount": 1
+                  }
+                },
+                {
                   "op": "checkDying",
                   "target": "$item",
                   "mode": "completeNestedFirst"
                 }
               ]
             }
+          }
+        },
+        {
+          "op": "settleElectricMarks",
+          "params": {
+            "multiTargetPriority": true,
+            "recheck": true
           }
         }
       ]
@@ -2834,12 +2841,26 @@
                   }
                 },
                 {
+                  "op": "addElectricMark",
+                  "target": "$item",
+                  "params": {
+                    "amount": 1
+                  }
+                },
+                {
                   "op": "checkDying",
                   "target": "$item",
                   "mode": "completeNestedFirst"
                 }
               ]
             }
+          }
+        },
+        {
+          "op": "settleElectricMarks",
+          "params": {
+            "multiTargetPriority": true,
+            "recheck": true
           }
         }
       ]
@@ -2906,6 +2927,13 @@
               }
             },
             {
+              "op": "addElectricMark",
+              "target": "$item",
+              "params": {
+                "amount": 1
+              }
+            },
+            {
               "op": "applyRestriction",
               "target": "$item",
               "params": {
@@ -2944,6 +2972,13 @@
             "invokeEffectFamily": "special.sp01",
             "asNestedPhase": true,
             "independentResponseCollection": true
+          }
+        },
+        {
+          "op": "settleElectricMarks",
+          "params": {
+            "multiTargetPriority": true,
+            "recheck": true
           }
         }
       ]
@@ -5363,7 +5398,7 @@
         "talent.electric_shield"
       ],
       "scenario": "电盾",
-      "assertion": "每目标感电总伤+1，放入首个正数段",
+      "assertion": "免疫电击；不获得感电标记且装备时清除；激光武器攻击附加破除防具",
       "encodingStatus": "effect_dsl_encoded"
     },
     {
@@ -5611,7 +5646,7 @@
         "special.sp02"
       ],
       "scenario": "网瘾少年/少女",
-      "assertion": "两者效果完全相同；均造成x点感电伤害，且x=0不创建伤害",
+      "assertion": "两者效果完全相同；均造成x点感电伤害并叠加1层感电标记，x=0不创建伤害",
       "encodingStatus": "effect_dsl_encoded"
     },
     {
@@ -5623,7 +5658,7 @@
         "special.sp03"
       ],
       "scenario": "羊叫兽",
-      "assertion": "阶段一全部完成后才发动阶段二",
+      "assertion": "阶段一全部完成后才发动阶段二；两阶段感电伤害各叠1层标记",
       "encodingStatus": "effect_dsl_encoded"
     },
     {

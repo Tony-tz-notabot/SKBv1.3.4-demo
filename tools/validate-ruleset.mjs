@@ -250,7 +250,7 @@ for (const rule of generalRules) {
   if (!eventTypes.includes(rule.listen)) fail(`unknown rule listen event ${rule.ruleId}: ${rule.listen}`);
   walkEffects(rule.effects);
 }
-const expectedGeneralTests = Array.from({ length: 43 }, (_, index) =>
+const expectedGeneralTests = Array.from({ length: 45 }, (_, index) =>
   `G${String(index + 1).padStart(3, "0")}`);
 const mappedGeneralTests = generalRules.flatMap((rule) => rule.testIds);
 unique(mappedGeneralTests, "general test mapping");

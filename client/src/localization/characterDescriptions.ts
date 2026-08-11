@@ -73,7 +73,7 @@ const abilityMap: Record<string, AbilityEntry> = {
   "skill.demonmancer.demonic_nature": { displayName: "恶魔本性", description: "限定，整局 1 次：仍有 x 次可攻击次数时选择 2 名不同在场角色并消耗全部 x 次，按逆时针逐个发动烈焰焚烧（不可近战格挡、破除防具、命中 3 点普通伤害）。两名目标处理完后回复 2 血、护盾上限+1 并回复 1 盾。被命中目标连续 x+1 次准备阶段不能自动回盾。" },
   "talent.soul_strike": { displayName: "灵魂打击", description: "锁定：按死灵法师实际造成的伤害点数获得等量能量，上限 8；0 伤和修改数值不获得。" },
   "skill.necromancer.mark": { displayName: "死灵标记", description: "主动：自己的出牌阶段消耗 8 能量标记一名在场角色。标记令其铁盾-1 并记录因此增加的伤害（累计上限 8），持续到死灵法师两个回合后的准备阶段开始前。同一目标再次施加刷新持续期并重置额外伤害累计。" },
-  "talent.electric_shield": { displayName: "电盾", description: "锁定：免疫电击。激光攻击破除防具；激光本身不可近战格挡。每次攻击对每名目标造成感电伤害时，使该目标感电总伤+1，增加到第一个正数感电段。" },
+  "talent.electric_shield": { displayName: "电盾", description: "锁定：免疫电击；你不会获得感电标记，装备时立即清除已有感电标记；你的激光武器攻击附加破除防具效果。" },
   "skill.robot.energy_overload": { displayName: "能量过载", description: "主动：自己的出牌阶段限一次，弃置 2 张手牌，对机器人之外所有在场角色按逆时针逐个发起距离不限、激光 2 攻击；可闪、不可近战格挡、不破除防具，不受电盾或其他天赋加成。" },
   "talent.melee_counter": { displayName: "近反", description: "触发：刺客使用近战武器格挡攻击后，按反弹规则对原攻击者发起反弹攻击。" },
   "skill.assassin.creed_dodge": { displayName: "刺客信条·闪", description: "响应，每轮 1 次：需要出闪时，将 2 张同色手牌当【闪】打出；随后获得防御距离+1，持续到刺客下个准备阶段开始前。" },

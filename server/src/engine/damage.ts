@@ -126,8 +126,6 @@ function offensiveElementSegments(
     });
   }
   const totalBonuses: Record<string, number> = {};
-  if (hasEffectiveTalent(tx.draft, attackerSeat, "talent.electric_shield"))
-    totalBonuses.electric = (totalBonuses.electric ?? 0) + 1;
   if (hasEffectiveTalent(tx.draft, attackerSeat, "talent.elemental_burst"))
     for (const element of ["fire", "poison", "electric"])
       totalBonuses[element] = (totalBonuses[element] ?? 0) + 1;

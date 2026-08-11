@@ -196,7 +196,7 @@ function finishResponses(
     ),
     amount = nonResponders.length;
   if (amount > 0)
-    for (const [index, seat] of nonResponders.entries())
+    for (const [index, seat] of nonResponders.entries()) {
       tx.draft.scheduledEffects.push({
         scheduledId: `scheduled:internet-addiction:${context.cardRef}:${seat}:${index}`,
         sourceRef: context.cardRef,
@@ -213,6 +213,19 @@ function finishResponses(
         },
         cancelled: false,
       });
+      tx.draft.scheduledEffects.push({
+        scheduledId: `scheduled:internet-addiction:${context.cardRef}:${seat}:mark:${index}`,
+        sourceRef: context.cardRef,
+        controllerSeat: context.sourceSeat,
+        executeAt: "immediate.damagePipeline",
+        effect: {
+          op: "addElectricMark",
+          targetRef: `character:${seat}`,
+          amount: 1,
+        },
+        cancelled: false,
+      });
+    }
   tx.draft.scheduledEffects.push({
     scheduledId: `scheduled:internet-addiction:cleanup:${context.cardRef}`,
     sourceRef: context.cardRef,

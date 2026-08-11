@@ -307,9 +307,9 @@ describe("damage segments", () => {
       ),
     ).toHaveLength(1);
     const electric = resolveCurrentAttackTarget(
-      prepare(["talent.electric_shield", "talent.elemental_burst"], "electric"),
+      prepare(["talent.elemental_burst"], "electric"),
     );
-    expect(electric.state.players[1]!.shield).toBe(6);
+    expect(electric.state.players[1]!.shield).toBe(7);
   });
   it("does not apply offensive element talents to attacks that explicitly ignore talent modifiers", () => {
     const state = hitState(),

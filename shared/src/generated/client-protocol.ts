@@ -75,6 +75,7 @@ export type PlayerView = {
   "shield"?: number | null;
   "maxShield"?: number | null;
   "ironShield"?: number;
+  "electricMark"?: number;
   "handCount": number;
   "handLimit": number;
   "equipment": Array<CardView>;

@@ -116,5 +116,22 @@
       "skipPolicy": "ignoreSkip"
     }
   },
-  "effects": []
+  "effects": [],
+  "electricMark": {
+    "markerId": "electricMark",
+    "stackPolicy": "stackCount",
+    "permanent": true,
+    "perAttackOnce": true,
+    "settlement": {
+      "multiTargetCount": 2,
+      "multiTargetReduce": 2,
+      "singleTargetCount": 3,
+      "singleTargetReduce": 3,
+      "damageAmount": 2,
+      "damageType": "true",
+      "source": "none",
+      "multiTargetPriority": true,
+      "recheckAfterSettlement": true
+    }
+  }
 }

@@ -296,8 +296,7 @@ const talentFamilies = {
     immunities: [{ status: "status.electrified" }],
     attackModifiers: [{ filter: { sourceIsController: true, attackType: "laser" },
       addTags: ["ignoreArmor", "cannotMeleeBlock"] }],
-    modifiers: [{ query: "attack.elementDamageTotal", scope: "perTargetPerAttack", element: "electric",
-      operation: { add: 1, placement: "firstPositiveElectricSegment" } }]
+    electricMark: { immuneToGain: true, clearOnEquip: true }
   }),
   "talent.combo_up": talent("talent.combo_up", "连击增加", {
     modifiers: [{ query: "weapon.attackDimension", dimension: "combo", requiresExplicitDimension: true,
@@ -558,7 +557,9 @@ const specialFamilies = {
         params: { items: "$nonResponders.counterclockwise", mode: "serial", maxIterations: 25 },
         effects: [{ op: "createDamage", target: "$item", params: { source: "$controller",
           deliveryType: "direct", damageType: "normal", element: "electric", amount: "$x" } },
-          { op: "checkDying", target: "$item", mode: "completeNestedFirst" }] } } }]
+          { op: "addElectricMark", target: "$item", params: { amount: 1 } },
+          { op: "checkDying", target: "$item", mode: "completeNestedFirst" }] } } },
+      { op: "settleElectricMarks", params: { multiTargetPriority: true, recheck: true } }]
   }),
   "special.sp02": special("special.sp02", "网瘾少女", {
     effects: [specialDodgeCollection("otherInPlayCharacters"),
@@ -567,7 +568,9 @@ const specialFamilies = {
         params: { items: "$nonResponders.counterclockwise", mode: "serial", maxIterations: 25 },
         effects: [{ op: "createDamage", target: "$item", params: { source: "$controller",
           deliveryType: "direct", damageType: "normal", element: "electric", amount: "$x" } },
-          { op: "checkDying", target: "$item", mode: "completeNestedFirst" }] } } }]
+          { op: "addElectricMark", target: "$item", params: { amount: 1 } },
+          { op: "checkDying", target: "$item", mode: "completeNestedFirst" }] } } },
+      { op: "settleElectricMarks", params: { multiTargetPriority: true, recheck: true } }]
   }),
   "special.sp03": special("special.sp03", "羊叫兽", {
     synthesis: { inputsFromHand: ["special.sp01", "special.sp02"], window: "owner.phase.play",
@@ -578,7 +581,8 @@ const specialFamilies = {
       { op: "forEach", params: { items: "$nonResponders.counterclockwise", mode: "serial",
         maxIterations: 25 }, effects: [{ op: "createDamage", target: "$item", params: {
           source: "$controller", deliveryType: "direct", damageType: "normal",
-          element: "electric", amount: 2 } }, { op: "applyRestriction", target: "$item", params: {
+          element: "electric", amount: 2 } }, { op: "addElectricMark", target: "$item",
+        params: { amount: 1 } }, { op: "applyRestriction", target: "$item", params: {
           restrictionId: "cannotDodge", appliesToAllDodgeMethods: true } },
         { op: "checkDying", target: "$item", mode: "completeNestedFirst" }] },
       { op: "resolveTriggerWindow", params: { barrier: "allPhaseOneResponsesAndConsequencesComplete",
@@ -587,7 +591,8 @@ const specialFamilies = {
         bindsExistingRestrictions: "cannotDodge" }, expiry: {
         point: "currentTurn.end", skipPolicy: "expireOnSkippedBoundary" } },
       { op: "sequence", params: { invokeEffectFamily: "special.sp01", asNestedPhase: true,
-        independentResponseCollection: true } }]
+        independentResponseCollection: true } },
+      { op: "settleElectricMarks", params: { multiTargetPriority: true, recheck: true } }]
   }),
   "special.sp04": special("special.sp04", "死亡笔记", {
     targetRule: { selector: "inPlayCharacter", min: 1, max: 1, range: "unlimited" },
