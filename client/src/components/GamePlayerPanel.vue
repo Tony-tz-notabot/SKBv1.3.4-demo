@@ -5,7 +5,9 @@ import GameCard from "./GameCard.vue";
 import ResourceImage from "./ResourceImage.vue";
 const props=defineProps<{ player: DeepReadonly<PlayerView>; active: boolean; local: boolean; legalTarget?: boolean; selectedTarget?: boolean; selectedOrder?: number; preselectedWeaponSlot?: string | null; preselectableWeaponSlots?: readonly string[]; legalCardRefs?:ReadonlySet<string>; selectedCardRefs?:ReadonlySet<string> }>();
 const emit=defineEmits<{ select: [playerRef: string]; slotSelect:[slotId:string,card:DeepReadonly<CardView>|null]; cardSelect:[cardRef:string]; detail:[card:DeepReadonly<CardView>]; characterDetail:[characterId:string|null] }>();
-function chooseSlot(slotId:string,card:DeepReadonly<CardView>|null){if(props.preselectableWeaponSlots?.includes(slotId)){emit("slotSelect",slotId,card);return;}if(card&&props.legalCardRefs?.has(card.ref))emit("cardSelect",card.ref);}const eq=computed(()=>props.player.equipmentSlots);
+// 点击装备槽：若当前操作（activeOffer）需要选中该装备区牌，则作为选择处理，绝不打断为预选；
+// 仅当该牌不属于当前操作的选择范围时，才在空闲状态下执行预选/装备路由。
+function chooseSlot(slotId:string,card:DeepReadonly<CardView>|null){if(card&&props.legalCardRefs?.has(card.ref)){emit("cardSelect",card.ref);return;}if(props.preselectableWeaponSlots?.includes(slotId)){emit("slotSelect",slotId,card);return;}}const eq=computed(()=>props.player.equipmentSlots);
 // 占双槽坐骑（mountDual 或 攻/防指向同一张）合并为单个"坐骑"槽；否则攻骑/防骑分开显示（仅显示已装备的）。
 const mountSlots=computed(()=>{const s=eq.value,off=s.mountOffense,def=s.mountDefense,merged=s.mountDual===true||(off&&def&&off.ref===def.ref);if(merged&&(off||def))return[{slotId:"mountDual",label:"坐骑",card:off??def}];return[{slotId:"mountOffense",label:"攻骑",card:off},{slotId:"mountDefense",label:"防骑",card:def}].filter((item)=>item.card!==null);});
 // 第一行：武1 武2 [武3常规槽（仅三持）] [三武（仅装备了第三武器）] 坐骑（攻骑/防骑）。
