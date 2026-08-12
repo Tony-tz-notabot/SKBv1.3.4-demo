@@ -30,13 +30,11 @@ const activeOffer = computed(() => props.snapshot.interaction.offers.find((offer
 watch(() => props.snapshot.stateRevision, () => { activeOfferId.value=null; clearSelections(); });
 watch(activeOfferId, clearSelections);
 function clearSelections() { for(const key of Object.keys(selected)) delete selected[key]; }
-// 4 角站位：己方在下、敌方在上。viewer 1/4：左下4 右下1 右上2 左上3；
-// viewer 2/3：左下2 右下3 右上4 左上1。逆时针围绕牌桌。
+// 4 角站位：本地玩家始终在右下角，其余按逆时针（座位递增）从右下→右上→左上→左下排布。
+// 逆时针 = 座位+1：viewer 的逆时针下家在他右上，再下一家在左上，再下一家在左下。
 const playerPosition = (seat: Seat): typeof positions[number] => {
-  const layout = (viewerSeat.value === 1 || viewerSeat.value === 4)
-    ? { 1: "bottomRight", 2: "topRight", 3: "topLeft", 4: "bottomLeft" } as const
-    : { 1: "topLeft", 2: "bottomLeft", 3: "bottomRight", 4: "topRight" } as const;
-  return layout[seat];
+  const offset = (seat - viewerSeat.value + 4) % 4;
+  return ["bottomRight", "topRight", "topLeft", "bottomLeft"][offset] as typeof positions[number];
 };
 const playerAt = (position: typeof positions[number]) => props.snapshot.publicView.players.find((p) => playerPosition(p.seat) === position) as DeepReadonly<PlayerView> | undefined;
 const cardSpecs = computed(() => activeOffer.value?.selectionSpecs.filter((spec) => spec.kind === "cards") ?? []);

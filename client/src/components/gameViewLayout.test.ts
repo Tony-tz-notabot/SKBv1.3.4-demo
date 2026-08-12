@@ -42,7 +42,7 @@ describe("GameView 页面布局（task6）",()=>{
   const minHeight=parseFloat(getComputedStyle(panel).minHeight);
   expect(minHeight, "操作区 min-height 应足够容纳 3 行按钮，过矮会挤压/溢出").toBeGreaterThanOrEqual(300);
  });
- it("日志与聊天上下平分原手牌区（纵向排列）",async()=>{
+ it("日志与聊天上下平分（纵向排列），且与主战斗区同排：左 3/4 战斗、右 1/4 活动区等高",async()=>{
   const wrapper=mountView(snapshotWith([]));
   const activity=wrapper.find(".game-activity");
   expect(activity.exists()).toBe(true);
@@ -54,6 +54,14 @@ describe("GameView 页面布局（task6）",()=>{
   const chat=wrapper.find(".game-chat").element as HTMLElement;
   expect(feed.parentElement===activity.element, "事件流应直接位于 activity 容器内").toBe(true);
   expect(chat.parentElement===activity.element, "聊天应直接位于 activity 容器内").toBe(true);
+  const css=readFileSync(join(process.cwd(),"src","styles","base.css"),"utf8");
+  // 主战斗区宽度 3/4、活动区 1/4：布局列按 3fr/1fr
+  expect(css, "游戏布局应为 3fr/1fr 双列（主战斗区 3/4、日志+聊天 1/4）").toMatch(/\.game-layout\s*\{[^}]*grid-template-columns:[^}]*3fr[^}]*1fr[^}]*\}/);
+  // 主战斗区在左列、活动区在右列，且同一行（grid-row 相同 → 等高）
+  const tableRule=/\.game-table\s*\{[^}]*grid-column:\s*1;?[^}]*grid-row:\s*3;?[^}]*\}/;
+  const activityRule=/\.game-activity\s*\{[^}]*grid-column:\s*2;?[^}]*grid-row:\s*3;?[^}]*\}/;
+  expect(tableRule.test(css),"game-table 应在左列第 3 行").toBe(true);
+  expect(activityRule.test(css),"game-activity 应在右列第 3 行（与主战斗区同排等高）").toBe(true);
  });
 });
 
@@ -87,40 +95,42 @@ describe("GameView 角色站位 4 角（task19）",()=>{
   expect(panel,`seat ${seat} 应有角色面板`).toBeTruthy();
   return (panel!.element.parentElement as HTMLElement).getAttribute("data-position");
  };
- it("viewer 1：左下4 右下1 右上2 左上3",()=>{
-  const snapshot=snapshotWith([]);
-  snapshot.publicView.players=allSeats();
-  const wrapper=mountView(snapshot);
-  expect(cornerOf(wrapper,4)).toBe("bottomLeft");
-  expect(cornerOf(wrapper,1)).toBe("bottomRight");
-  expect(cornerOf(wrapper,2)).toBe("topRight");
-  expect(cornerOf(wrapper,3)).toBe("topLeft");
- });
- it("viewer 2：左下2 右下3 右上4 左上1",()=>{
-  const snapshot=snapshotWith([]);
-  snapshot.viewer={userId:"u2",seat:2 as const,team:"B" as const};
-  snapshot.publicView.players=allSeats();
-  const wrapper=mountView(snapshot);
-  expect(cornerOf(wrapper,2)).toBe("bottomLeft");
-  expect(cornerOf(wrapper,3)).toBe("bottomRight");
-  expect(cornerOf(wrapper,4)).toBe("topRight");
-  expect(cornerOf(wrapper,1)).toBe("topLeft");
- });
- it("viewer 4 与 viewer 1 同布局；viewer 3 与 viewer 2 同布局",()=>{
-  const snap4=snapshotWith([]);
-  snap4.viewer={userId:"u4",seat:4 as const,team:"A" as const};
-  snap4.publicView.players=allSeats();
-  const w4=mountView(snap4);
-  expect(cornerOf(w4,4)).toBe("bottomLeft");
-  expect(cornerOf(w4,1)).toBe("bottomRight");
-  expect(cornerOf(w4,2)).toBe("topRight");
-  expect(cornerOf(w4,3)).toBe("topLeft");
+ it("viewer 恒右下，其余按逆时针：右下→右上→左上→左下（座位递增）",()=>{
+  // viewer 1：右下1 右上2 左上3 左下4
+  const snap1=snapshotWith([]);
+  snap1.publicView.players=allSeats();
+  const w1=mountView(snap1);
+  expect(cornerOf(w1,1),"viewer 必须始终在右下角").toBe("bottomRight");
+  expect(cornerOf(w1,2)).toBe("topRight");
+  expect(cornerOf(w1,3)).toBe("topLeft");
+  expect(cornerOf(w1,4)).toBe("bottomLeft");
+  // viewer 2：右下2 右上3 左上4 左下1（逆时针下家=座位+1）
+  const snap2=snapshotWith([]);
+  snap2.viewer={userId:"u2",seat:2 as const,team:"B" as const};
+  snap2.publicView.players=allSeats();
+  const w2=mountView(snap2);
+  expect(cornerOf(w2,2),"viewer=2 必须在右下角（旧实现在左下）").toBe("bottomRight");
+  expect(cornerOf(w2,3)).toBe("topRight");
+  expect(cornerOf(w2,4)).toBe("topLeft");
+  expect(cornerOf(w2,1)).toBe("bottomLeft");
+  // viewer 3：右下3 右上4 左上1 左下2
   const snap3=snapshotWith([]);
   snap3.viewer={userId:"u3",seat:3 as const,team:"B" as const};
   snap3.publicView.players=allSeats();
   const w3=mountView(snap3);
-  expect(cornerOf(w3,2)).toBe("bottomLeft");
+  expect(cornerOf(w3,3),"viewer=3 必须在右下角").toBe("bottomRight");
+  expect(cornerOf(w3,4)).toBe("topRight");
   expect(cornerOf(w3,1)).toBe("topLeft");
+  expect(cornerOf(w3,2)).toBe("bottomLeft");
+  // viewer 4：右下4 右上1 左上2 左下3
+  const snap4=snapshotWith([]);
+  snap4.viewer={userId:"u4",seat:4 as const,team:"A" as const};
+  snap4.publicView.players=allSeats();
+  const w4=mountView(snap4);
+  expect(cornerOf(w4,4),"viewer=4 必须在右下角").toBe("bottomRight");
+  expect(cornerOf(w4,1)).toBe("topRight");
+  expect(cornerOf(w4,2)).toBe("topLeft");
+  expect(cornerOf(w4,3)).toBe("bottomLeft");
  });
  it("4 角位置样式：每个角都落在角落（left/top 组合），而非四边中间",()=>{
   const snapshot=snapshotWith([]);
