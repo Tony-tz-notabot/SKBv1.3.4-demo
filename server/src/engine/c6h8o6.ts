@@ -750,3 +750,262 @@ export class C6FocusedBombardmentSession {
     });
   }
 }
+
+
+export interface C6BombardmentUseCommand {
+  commandId: string;
+  gameId: string;
+  expectedStateRevision: number;
+  actorUserId: string;
+  promptId: string;
+  cardRef: string;
+  targetRef: string;
+  mode: Family;
+}
+export type C6BombardmentUseCommandResult =
+  | {
+      accepted: true;
+      commandId: string;
+      previousRevision: number;
+      stateRevision: number;
+      events: DomainEvent[];
+    }
+  | {
+      accepted: false;
+      commandId: string;
+      stateRevision: number;
+      reasonCode: string;
+      refreshRequired: boolean;
+    };
+const c6UseMarker = "boss.lastUsedGlobalTurn";
+export function legalC6BombardmentUses(
+  state: AuthoritativeGameState,
+  ruleset: LoadedRuleset,
+  actorSeat: Seat,
+): Array<{ cardRef: string; legalTargetRefs: string[] }> {
+  try {
+    if (
+      state.players.find((item) => item.seat === actorSeat)?.markers[
+        c6UseMarker
+      ] === turnKey(state)
+    )
+      return [];
+    const occupant = state.zones[`boss:${actorSeat}`]!.orderedCardRefs[0],
+      actor = state.players.find((item) => item.seat === actorSeat)!;
+    if (
+      occupant &&
+      (state.cards[occupant]!.templateId !== "boss.iron_pirate_king" ||
+        actor.lifeState === "deadNotEliminated")
+    )
+      return [];
+    const limitId = ruleset.settings.combat.attackCountLimitId;
+    if (Number(actor.limits[limitId] ?? 0) < 1) return [];
+    const targets = state.players
+      .filter(
+        (p) =>
+          p.lifeState !== "eliminated" &&
+          p.presence === "inPlay" &&
+          calculateEffectiveDistance(state, actorSeat, p.seat) <= 1,
+      )
+      .map((p) => `character:${p.seat}`);
+    if (!targets.length) return [];
+    return state.zones[`hand:${actorSeat}`]!
+      .orderedCardRefs.filter(
+        (ref) => state.cards[ref]!.templateId === "boss.c6h8o6",
+      )
+      .map((cardRef) => ({ cardRef, legalTargetRefs: targets }));
+  } catch {
+    return [];
+  }
+}
+
+export function legalC6LaserSweepUses(
+  state: AuthoritativeGameState,
+  ruleset: LoadedRuleset,
+  actorSeat: Seat,
+): string[] {
+  try {
+    if (
+      state.players.find((item) => item.seat === actorSeat)?.markers[
+        c6UseMarker
+      ] === turnKey(state)
+    )
+      return [];
+    const actor = state.players.find((item) => item.seat === actorSeat)!;
+    if (
+      actor.lifeState === "eliminated" ||
+      actor.presence !== "inPlay"
+    )
+      return [];
+    const limitId = ruleset.settings.combat.attackCountLimitId;
+    if (Number(actor.limits[limitId] ?? 0) < 1) return [];
+    return state.zones[`hand:${actorSeat}`]!.orderedCardRefs.filter(
+      (ref) => state.cards[ref]!.templateId === "boss.c6h8o6",
+    );
+  } catch {
+    return [];
+  }
+}
+export class C6LaserSweepUseCommandSession {
+  #state: AuthoritativeGameState;
+  readonly #results = new Map<string, C6BombardmentUseCommandResult>();
+  constructor(
+    state: AuthoritativeGameState,
+    private readonly ruleset: LoadedRuleset,
+  ) {
+    this.#state = state;
+  }
+  get state() {
+    return this.#state;
+  }
+  handle(command: C6BombardmentUseCommand): C6BombardmentUseCommandResult {
+    const prior = this.#results.get(command.commandId);
+    if (prior) return structuredClone(prior);
+    const reject = (
+      reasonCode: string,
+      refreshRequired: boolean,
+    ): C6BombardmentUseCommandResult => ({
+      accepted: false,
+      commandId: command.commandId,
+      stateRevision: this.#state.stateRevision,
+      reasonCode,
+      refreshRequired,
+    });
+    if (command.gameId !== this.#state.gameId)
+      return reject("GAME_NOT_FOUND", false);
+    if (command.expectedStateRevision !== this.#state.stateRevision)
+      return reject("STALE_REVISION", true);
+    const actor = this.#state.players.find(
+        (item) => item.userId === command.actorUserId,
+      ),
+      window = this.#state.pendingWindows.find(
+        (item) =>
+          item.kind === "playPhaseAction" && item.prioritySeat === actor?.seat,
+      );
+    if (!actor) return reject("NOT_YOUR_PRIORITY", false);
+    if (!window || window.promptId !== command.promptId)
+      return reject("PROMPT_CLOSED", true);
+    if (command.mode !== "kill" && command.mode !== "dodge")
+      return reject("C6_FAMILY_INVALID", true);
+    if (
+      this.#state.players.find((item) => item.seat === actor.seat)?.markers[
+        c6UseMarker
+      ] === turnKey(this.#state)
+    )
+      return reject("BOSS_USE_ILLEGAL", true);
+    if (
+      !legalC6LaserSweepUses(this.#state, this.ruleset, actor.seat).includes(
+        command.cardRef,
+      )
+    )
+      return reject("C6_USE_ILLEGAL", true);
+    let committed;
+    try {
+      committed = commitC6LaserSweep(this.#state, this.ruleset, {
+        actorSeat: actor.seat,
+        cardRef: command.cardRef,
+        family: command.mode,
+        deadlineAt: 0,
+      });
+    } catch (error) {
+      return reject(
+        error instanceof Error ? error.message : "C6_USE_FAILED",
+        true,
+      );
+    }
+    this.#state = committed.state;
+    const result = {
+      accepted: true as const,
+      commandId: command.commandId,
+      previousRevision: committed.previousRevision,
+      stateRevision: committed.state.stateRevision,
+      events: committed.events,
+    };
+    this.#results.set(command.commandId, result);
+    return structuredClone(result);
+  }
+}
+export class C6BombardmentUseCommandSession {
+  #state: AuthoritativeGameState;
+  readonly #results = new Map<string, C6BombardmentUseCommandResult>();
+  constructor(
+    state: AuthoritativeGameState,
+    private readonly ruleset: LoadedRuleset,
+  ) {
+    this.#state = state;
+  }
+  get state() {
+    return this.#state;
+  }
+  handle(command: C6BombardmentUseCommand): C6BombardmentUseCommandResult {
+    const prior = this.#results.get(command.commandId);
+    if (prior) return structuredClone(prior);
+    const reject = (
+      reasonCode: string,
+      refreshRequired: boolean,
+    ): C6BombardmentUseCommandResult => ({
+      accepted: false,
+      commandId: command.commandId,
+      stateRevision: this.#state.stateRevision,
+      reasonCode,
+      refreshRequired,
+    });
+    if (command.gameId !== this.#state.gameId)
+      return reject("GAME_NOT_FOUND", false);
+    if (command.expectedStateRevision !== this.#state.stateRevision)
+      return reject("STALE_REVISION", true);
+    const actor = this.#state.players.find(
+        (item) => item.userId === command.actorUserId,
+      ),
+      window = this.#state.pendingWindows.find(
+        (item) =>
+          item.kind === "playPhaseAction" && item.prioritySeat === actor?.seat,
+      );
+    if (!actor) return reject("NOT_YOUR_PRIORITY", false);
+    if (!window || window.promptId !== command.promptId)
+      return reject("PROMPT_CLOSED", true);
+    const seatMatch = /^character:([1-4])$/.exec(command.targetRef ?? "");
+    if (!seatMatch) return reject("C6_TARGET_INVALID", true);
+    const targetSeat = Number(seatMatch[1]) as Seat;
+    if (command.mode !== "kill" && command.mode !== "dodge")
+      return reject("C6_FAMILY_INVALID", true);
+    if (
+      this.#state.players.find((item) => item.seat === actor.seat)?.markers[
+        c6UseMarker
+      ] === turnKey(this.#state)
+    )
+      return reject("BOSS_USE_ILLEGAL", true);
+    if (
+      !legalC6BombardmentUses(this.#state, this.ruleset, actor.seat).some(
+        (item) =>
+          item.cardRef === command.cardRef &&
+          item.legalTargetRefs.includes(command.targetRef),
+      )
+    )
+      return reject("C6_USE_ILLEGAL", true);
+    let committed;
+    try {
+      committed = commitC6FocusedBombardment(this.#state, this.ruleset, {
+        actorSeat: actor.seat,
+        cardRef: command.cardRef,
+        family: command.mode,
+        targetSeat,
+      });
+    } catch (error) {
+      return reject(
+        error instanceof Error ? error.message : "C6_USE_FAILED",
+        true,
+      );
+    }
+    this.#state = committed.state;
+    const result = {
+      accepted: true as const,
+      commandId: command.commandId,
+      previousRevision: committed.previousRevision,
+      stateRevision: committed.state.stateRevision,
+      events: committed.events,
+    };
+    this.#results.set(command.commandId, result);
+    return structuredClone(result);
+  }
+}

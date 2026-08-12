@@ -6,7 +6,7 @@ import { validateAuthoritativeState } from "./stateValidation.js";
 import { EngineTransaction } from "./transaction.js";
 import { moveCardInTransaction } from "./zoneMovement.js";
 import type { DomainEvent, JsonValue } from "./types.js";
-import { buildStatueResolutionOffers, StatueResolutionSession } from "./statueEffects.js";
+import { beginStatueResolution, buildStatueResolutionOffers, StatueResolutionSession } from "./statueEffects.js";
 const ID = "talent.statue_double_trigger";
 function active(s: AuthoritativeGameState, n: Seat) {
   const p = s.players.find((x) => x.seat === n)!;
@@ -52,16 +52,22 @@ export class StatuePlaySession {
     if(resolutionOffers.length)paid.state.cards[c.cardRef]!.runtime.pendingStatueResolutionOffers=resolutionOffers as unknown as JsonValue;
     const judgment=beginStatueDoubleTrigger(paid.state,this.ruleset,actor.seat,c.cardRef,deadlineAt);
     let state=judgment?.state??paid.state,events=[...paid.events,...(judgment?.events??[])];
-    // 无双触判定：直接启动效果解析窗口
+    // 无双触判定：需要选择（目标/模式）的雕像打开效果解析窗口；无需选择的自动结算
     if(!judgment&&resolutionOffers.length){
-      const opened=openStatueResolutionWindow(state,c.cardRef,actor.seat,deadlineAt,resolutionOffers);
-      if(opened){state=opened.state;events.push(...opened.events);}
+      const needsChoice=resolutionOffers.some(o=>o.targetRef!==undefined||o.modeId!==undefined);
+      if(needsChoice){
+        const opened=openStatueResolutionWindow(state,c.cardRef,actor.seat,deadlineAt,resolutionOffers);
+        if(opened){state=opened.state;events.push(...opened.events);}
+      }else{
+        const auto=beginStatueResolution(state,this.ruleset,c.cardRef,{deadlineAt});
+        state=auto.state;events.push(...auto.events);
+      }
     }
     this.#state=state;const result:StatueResult={accepted:true,commandId:c.commandId,previousRevision:paid.previousRevision,stateRevision:state.stateRevision,events};this.#results.set(c.commandId,result);return structuredClone(result);
   }
 }
-export function openStatueResolutionWindow(s:AuthoritativeGameState,statueRef:string,seat:Seat,deadlineAt:number,offers:ReturnType<typeof buildStatueResolutionOffers>){const tx=new EngineTransaction(s),promptId=`prompt:statueResolutionChoice:${tx.draft.stateRevision+1}`;const targetRefs=[...new Set(offers.map(o=>o.targetRef).filter((x):x is string=>typeof x==="string"))],modeOptions=[...new Set(offers.map(o=>o.modeId).filter((x):x is string=>typeof x==="string"))];tx.draft.pendingWindows.push({promptId,kind:"statueResolutionChoice",prioritySeat:seat,mandatory:true,deadlineAt,timeoutPolicy:"randomLegal",legalOfferIds:offers.map(o=>o.offerId),context:{statueRef,offers:offers as unknown as JsonValue,legalTargetRefs:targetRefs,modeOptions}});tx.emit("choice.requested",{kind:"statueResolutionChoice",promptId,seat,legalTargetRefs:targetRefs});const out=tx.commit();out.state.history.domainEvents.push(...out.events);validateAuthoritativeState(out.state);return out;}
-export function openStatueResolutionFromJudgment(tx:EngineTransaction<AuthoritativeGameState>,statueRef:string){const card=tx.draft.cards[statueRef],offers=card?.runtime.pendingStatueResolutionOffers;if(!card||!Array.isArray(offers)||!offers.length||tx.draft.pendingWindows.some(w=>w.kind==="statueResolutionChoice"))return;const owner=Number(card.runtime.statueOwnerSeat??card.controllerSeat) as Seat,deadline=Number(card.runtime.statueResumePlayDeadlineAt??0),promptId=`prompt:statueResolutionChoice:${tx.draft.stateRevision+1}`;const targetRefs=[...new Set(offers.map(o=>(o as Record<string,JsonValue>).targetRef).filter((x):x is string=>typeof x==="string"))],modeOptions=[...new Set(offers.map(o=>(o as Record<string,JsonValue>).modeId).filter((x):x is string=>typeof x==="string"))];tx.draft.pendingWindows.push({promptId,kind:"statueResolutionChoice",prioritySeat:owner,mandatory:true,deadlineAt:deadline,timeoutPolicy:"randomLegal",legalOfferIds:offers.map(o=>String((o as Record<string,JsonValue>).offerId)),context:{statueRef,offers,legalTargetRefs:targetRefs,modeOptions}});tx.emit("choice.requested",{kind:"statueResolutionChoice",promptId,seat:owner,legalTargetRefs:targetRefs});}
+export function openStatueResolutionWindow(s:AuthoritativeGameState,statueRef:string,seat:Seat,deadlineAt:number,offers:ReturnType<typeof buildStatueResolutionOffers>){const needsChoice=offers.some(o=>o.targetRef!==undefined||o.modeId!==undefined);if(!offers.length||!needsChoice)return false;const tx=new EngineTransaction(s),promptId=`prompt:statueResolutionChoice:${tx.draft.stateRevision+1}`;const targetRefs=[...new Set(offers.map(o=>o.targetRef).filter((x):x is string=>typeof x==="string"))],modeOptions=[...new Set(offers.map(o=>o.modeId).filter((x):x is string=>typeof x==="string"))];tx.draft.pendingWindows.push({promptId,kind:"statueResolutionChoice",prioritySeat:seat,mandatory:true,deadlineAt,timeoutPolicy:"randomLegal",legalOfferIds:offers.map(o=>o.offerId),context:{statueRef,offers:offers as unknown as JsonValue,legalTargetRefs:targetRefs,modeOptions}});tx.emit("choice.requested",{kind:"statueResolutionChoice",promptId,seat,legalTargetRefs:targetRefs});const out=tx.commit();out.state.history.domainEvents.push(...out.events);validateAuthoritativeState(out.state);return out;}
+export function openStatueResolutionFromJudgment(tx:EngineTransaction<AuthoritativeGameState>,statueRef:string){const card=tx.draft.cards[statueRef],offers=card?.runtime.pendingStatueResolutionOffers;if(!card||!Array.isArray(offers)||!offers.length||tx.draft.pendingWindows.some(w=>w.kind==="statueResolutionChoice"))return;const needsChoice=(offers as Array<Record<string,JsonValue>>).some(o=>o.targetRef!==undefined||o.modeId!==undefined);if(!needsChoice){card.runtime.autoResolveStatueAfterJudgment=true;return;}const owner=Number(card.runtime.statueOwnerSeat??card.controllerSeat) as Seat,deadline=Number(card.runtime.statueResumePlayDeadlineAt??0),promptId=`prompt:statueResolutionChoice:${tx.draft.stateRevision+1}`;const targetRefs=[...new Set(offers.map(o=>(o as Record<string,JsonValue>).targetRef).filter((x):x is string=>typeof x==="string"))],modeOptions=[...new Set(offers.map(o=>(o as Record<string,JsonValue>).modeId).filter((x):x is string=>typeof x==="string"))];tx.draft.pendingWindows.push({promptId,kind:"statueResolutionChoice",prioritySeat:owner,mandatory:true,deadlineAt:deadline,timeoutPolicy:"randomLegal",legalOfferIds:offers.map(o=>String((o as Record<string,JsonValue>).offerId)),context:{statueRef,offers,legalTargetRefs:targetRefs,modeOptions}});tx.emit("choice.requested",{kind:"statueResolutionChoice",promptId,seat:owner,legalTargetRefs:targetRefs});}
 export function beginStatueDoubleTrigger(
   s: AuthoritativeGameState,
   r: LoadedRuleset,

@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { loadFrozenRuleset } from "../ruleset/loadRuleset.js";
 import type { LoadedRuleset } from "../ruleset/types.js";
 import { finalizeJudgment } from "./judgment.js";
+import { runAutomaticScheduler } from "./automaticScheduler.js";
 import { createInitialSetup, resolveInitialRedraw } from "./setup.js";
 import {
   finishStatueEffectFlow,
@@ -52,13 +53,11 @@ describe("statue double trigger", () => {
     expect(session.state.cards[statue.cardRef]!.zoneRef).toBe("resolving");
     let state = finalizeJudgment(session.state, "blue").state;
     expect(state.cards[statue.cardRef]!.runtime.returnAfterStatue).toBe(true);
-    // 判蓝后自动进入效果解析窗口，执行后按双触回手
-    const window=state.pendingWindows[0]!;
-    expect(window.kind).toBe("statueResolutionChoice");
-    const choice=new StatueResolutionSession(state,r),chosen=choice.handle({commandId:"resolve-statue",gameId:state.gameId,expectedStateRevision:state.stateRevision,actorUserId:"u1",offerId:window.legalOfferIds[0]!,statueRef:statue.cardRef},900);
-    expect(chosen.accepted).toBe(true);
-    state=choice.state;
-    expect(state.cards[statue.cardRef]!.zoneRef).toBe("hand:1");
-    expect(state.pendingWindows[0]).toMatchObject({kind:"playPhaseAction",prioritySeat:1});
+    // 判蓝后无需选择的雕像（巫师）不得出现选目标窗口，由自动调度直接结算并按双触回手
+    expect(state.pendingWindows.some(w=>w.kind==="statueResolutionChoice"),"判蓝后不得出现选目标窗口").toBe(false);
+    expect(state.cards[statue.cardRef]!.runtime.autoResolveStatueAfterJudgment,"判蓝后应标记自动结算").toBe(true);
+    const scheduled=runAutomaticScheduler(state,r,()=>900).state;
+    expect(scheduled.cards[statue.cardRef]!.zoneRef,"自动结算后按双触返回手牌").toBe("hand:1");
+    expect(scheduled.pendingWindows[0]).toMatchObject({kind:"playPhaseAction",prioritySeat:1});
   });
 });

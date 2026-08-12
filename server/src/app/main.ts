@@ -5,5 +5,5 @@ import {RoomService} from "./roomService.js";
 import {SkbApplicationServer} from "./server.js";
 import {startMemoryMonitor} from "./memoryMonitor.js";
 
-const root=resolve(import.meta.dirname,"../../../"),ruleset=await loadFrozenRuleset(resolve(root,"rulesets/v1.3.4")),persistence=new JsonPersistence(process.env.SKB_DATA_FILE??resolve(root,"server/data/skb-state.json")),rooms=new RoomService(ruleset,persistence);await rooms.restore();const server=new SkbApplicationServer(rooms,ruleset,rooms.restoredGameResultsSnapshot()),port=Number(process.env.PORT??8787);await server.listen(port);console.log(`SKB server listening on http://0.0.0.0:${port}`);startMemoryMonitor();
+const root=resolve(import.meta.dirname,"../../../"),ruleset=await loadFrozenRuleset(resolve(root,"rulesets/v1.3.4")),persistence=new JsonPersistence(process.env.SKB_DATA_FILE??resolve(root,"server/data/skb-state.json")),rooms=new RoomService(ruleset,persistence);await rooms.restore();const server=new SkbApplicationServer(rooms,ruleset,rooms.restoredGameResultsSnapshot(),{serveStatic:true}),port=Number(process.env.PORT??8787);await server.listen(port);console.log(`SKB server listening on http://0.0.0.0:${port}`);startMemoryMonitor();
 for(const signal of ["SIGINT","SIGTERM"] as const)process.on(signal,()=>void server.close().then(()=>process.exit(0)));

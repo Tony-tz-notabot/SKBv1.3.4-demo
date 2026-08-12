@@ -10,6 +10,7 @@ import {
 import { openDyingRescue } from "./dying.js";
 import { runCombatUntilBlocked } from "./combatScheduler.js";
 import { settleElectricMarks } from "./electricMark.js";
+import { beginStatueResolution } from "./statueEffects.js";
 import { consumeLaserFishAttackCount } from "./laserFishWeapon.js";
 
 export type SchedulerStopReason =
@@ -46,6 +47,16 @@ export function runAutomaticScheduler(
     if(current.activeSeat){const locked=consumeLaserFishAttackCount(current,current.activeSeat);if(locked){current=locked.state;events.push(...locked.events);steps++;continue;}}
     if (current.pendingWindows.length)
       return { state: current, events, steps, stoppedReason: "manualWindow" };
+    // 双触判定后无需选择的雕像（法师/狂战士/牧师/刺客）自动结算
+    const autoStatue=Object.values(current.cards).find(c=>c.zoneRef==="resolving"&&c.runtime.autoResolveStatueAfterJudgment===true);
+    if (autoStatue) {
+      delete autoStatue.runtime.autoResolveStatueAfterJudgment;
+      const committed = beginStatueResolution(current, ruleset, autoStatue.cardRef, { deadlineAt: deadlineAt() });
+      current = committed.state;
+      events.push(...committed.events);
+      steps += 1;
+      continue;
+    }
     if (current.combat.attack) {
       const combat = runCombatUntilBlocked(current, ruleset, deadlineAt);
       current = combat.state;

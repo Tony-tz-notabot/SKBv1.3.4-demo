@@ -56,10 +56,27 @@ const choiceSpecs=computed(()=>activeOffer.value?.selectionSpecs.filter((spec)=>
 const selectionsValid = computed(() => !!activeOffer.value && selectionsComplete(activeOffer.value.selectionSpecs as SelectionSpec[],selected));
 function offerLabel(offer: DeepReadonly<InteractionOffer>) {
   const generic={ declareAttack:"发动攻击",useCard:"使用卡牌",activateAbility:"发动技能",respond:"响应",equip:"装备",discardEquipment:"丢弃装备",dismantle:"拆除",synthesize:"合成",interveneJudgment:"干预判定",rescueDying:"救援",resolveChoice:"确认选择",pass:"放弃",endPhase:"结束阶段",chargeWeapon:"蓄力",activateWeapon:"使用武器能力" } as Record<string,string>;
+  const satchelMode=/(^|:)skill\.ancient_elementalist\.element_satchel:(frozen|electrified|flame)($|:)/.exec(offer.offerId)?.[2];
+  if(satchelMode)return{frozen:"冰冻锦囊",electrified:"雷电锦囊",flame:"烈焰锦囊"}[satchelMode];
+  const c6Mode=/^offer:boss-use:c6-(sweep|bomb):/.exec(offer.offerId)?.[1];
+  if(c6Mode)return c6Mode==="sweep"?"使用C6·激光扫射":"使用C6·定点轰击";
   const skillAbilityId=/^offer:skill\.[^:]+(?=$|:)/.exec(offer.offerId)?.[0]?.slice(6);
   if(skillAbilityId)return abilityDisplayName(skillAbilityId);
+  const perCard=/^offer:(statue-card|trigger-card|statue-priest|statue-paladin|statue-knight)(?::[^:]*)?:\d+$/.test(offer.offerId);
+  const concealedMatch=perCard?/^concealed:[^:]+:(\d+)$/.exec(offer.sourceRefs[0]??""):null;
+  if(concealedMatch)return`手牌${Number(concealedMatch[1])+1}`;
   const cardName=offer.sourceRefs[0]?cardDisplayName(offer.sourceRefs[0]):undefined;
-  if(cardName){if(offer.kind==="equip")return`装备${cardName}`;if(offer.kind==="discardEquipment")return`弃置${cardName}`;if(offer.kind==="dismantle")return`拆除${cardName}`;if(offer.kind==="synthesize")return`合成${cardName}`;if(offer.kind==="useCard")return`使用${cardName}`;if(offer.kind==="chargeWeapon")return`蓄力${cardName}`;if(offer.kind==="activateWeapon")return`使用${cardName}`;}
+  if(cardName){if(offer.kind==="equip")return`装备${cardName}`;if(offer.kind==="discardEquipment")return`弃置${cardName}`;if(offer.kind==="dismantle")return`拆除${cardName}`;if(offer.kind==="synthesize")return`合成${cardName}`;if(offer.kind==="useCard")return`使用${cardName}`;if(offer.kind==="chargeWeapon")return`蓄力${cardName}`;if(offer.kind==="activateWeapon")return`使用${cardName}`;if(perCard)return cardName;}
+  if(offer.kind==="respond"){
+    if(offer.offerId.includes(":meleeBlock:"))return cardName?`近战格挡·${cardName}`:"近战格挡";
+    if(offer.offerId.includes(":dodge:"))return"出【闪】";
+    if(offer.offerId.includes(":armorKillBlock:"))return cardName?`防具无效杀·${cardName}`:"防具无效杀";
+    if(offer.offerId.includes(":armorJudgment:"))return cardName?`判定防具·${cardName}`:"判定防具";
+    if(offer.offerId.includes(":prayer:"))return"祈祷救援";
+    if(offer.offerId.includes(":resurrectionCross:"))return"重生十字章";
+    if(offer.offerId.includes(":rescue:"))return"救援";
+    return"响应";
+  }
   return generic[offer.kind] ?? offer.kind;
 }
 function cardDisplayName(ref: string): string | undefined {
