@@ -53,7 +53,7 @@ const disabledByRef=computed(()=>new Map(props.snapshot.interaction.disabledHint
 const choiceSpecs=computed(()=>activeOffer.value?.selectionSpecs.filter((spec)=>spec.kind!=="cards"&&spec.kind!=="targets")??[]);
 const selectionsValid = computed(() => !!activeOffer.value && selectionsComplete(activeOffer.value.selectionSpecs as SelectionSpec[],selected));
 function offerLabel(offer: DeepReadonly<InteractionOffer>) {
-  const generic={ declareAttack:"发动攻击",useCard:"使用卡牌",activateAbility:"发动技能",respond:"响应",equip:"装备",discardEquipment:"丢弃装备",dismantle:"拆除",synthesize:"合成",interveneJudgment:"干预判定",rescueDying:"救援",resolveChoice:"确认选择",pass:"放弃",endPhase:"结束阶段",chargeWeapon:"蓄力",activateWeapon:"使用武器能力" } as Record<string,string>;
+  const generic={ declareAttack:"发动攻击",useCard:"使用卡牌",activateAbility:"发动技能",respond:"响应",equip:"装备",discardEquipment:"丢弃装备",dismantle:"拆除",synthesize:"合成",interveneJudgment:"干预判定",rescueDying:"救援",resolveChoice:"确认选择",pass:"放弃",endPhase:"结束阶段",chargeWeapon:"蓄力",activateWeapon:"使用武器能力",createBlackSword:"制造黑剑",blackSwordAttack:"黑剑攻击" } as Record<string,string>;
   const satchelMode=/(^|:)skill\.ancient_elementalist\.element_satchel:(frozen|electrified|flame)($|:)/.exec(offer.offerId)?.[2];
   if(satchelMode)return{frozen:"冰冻锦囊",electrified:"雷电锦囊",flame:"烈焰锦囊"}[satchelMode];
   const c6Mode=/^offer:boss-use:c6-(sweep|bomb):/.exec(offer.offerId)?.[1];
@@ -80,7 +80,7 @@ function offerLabel(offer: DeepReadonly<InteractionOffer>) {
 function cardDisplayName(ref: string): string | undefined {
   const name=(card:DeepReadonly<CardView>|undefined)=>card?.displayName;
   const find=(refs:readonly DeepReadonly<CardView>[]|undefined)=>refs?.find((item)=>item.ref===ref);
-  return name(find(props.snapshot.privateView.hand))??name(find(props.snapshot.publicView.players.flatMap((p)=>p.equipment)))??name(find(props.snapshot.publicView.discardTop))??undefined;
+  return name(find(props.snapshot.privateView.hand))??name(find(props.snapshot.publicView.players.flatMap((p)=>p.equipment)))??name(find(props.snapshot.publicView.discardTop))??name(find(props.snapshot.publicView.centralCards))??undefined;
 }
 function slotLabel(slot:string|undefined){if(!slot)return null;const weapon=/^weapon:([1-3]):/.exec(slot),talent=/^talent:(\d):/.exec(slot);if(weapon)return`武${weapon[1]}`;if(/^thirdWeapon:/.test(slot))return"武3";if(/^armor(\:\d+)?$/.test(slot))return"甲";if(talent)return`赋${Number(talent[1])+1}`;return null;}
 const equipSlotOf=(offer:DeepReadonly<InteractionOffer>)=>{const slot=(offer.preview as any)?.slot;if(typeof slot!=="string")return null;return /^armor(\:\d+)?$/.test(slot)?"armor":slot;};

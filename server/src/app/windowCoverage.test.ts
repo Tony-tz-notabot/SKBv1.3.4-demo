@@ -91,6 +91,15 @@ describe("window coverage matrix",()=>{
 });
 
 describe("new registry adapters",()=>{
+ it("routes extra gem death transfer through GameService (windowRegistry must construct the session with the deadline, not the ruleset)",()=>{
+  const state=engineState(211);state.pendingWindows=[];
+  const kill=Object.values(state.cards).find(card=>card.templateId==="basic.kill.red")!;move(state,kill.cardRef,"hand:1",1);
+  state.pendingWindows=[{promptId:"prompt:extraGem:1",kind:"extraGemDeathTransfer",prioritySeat:1,mandatory:true,deadlineAt:900,timeoutPolicy:"randomLegal",legalOfferIds:["offer:extra-gem-death:character:1","offer:extra-gem-death:character:2","offer:extra-gem-death:character:3","offer:extra-gem-death:character:4"],context:{dyingRef:"character:1",legalTargetRefs:["character:1","character:2","character:3","character:4"],scheduledId:"scheduled:extra-gem:test"}}];
+  const room=makeRoom(state),service=new GameService(ruleset,()=>1000),window=room.game!.pendingWindows[0]!;
+  const result=service.handle(room,users[1]!,{type:"GAME_COMMAND",commandId:"extra-gem-1",gameId:room.game!.gameId,expectedStateRevision:room.game!.stateRevision,promptId:window.promptId,offerId:"offer:extra-gem-death:character:2",command:"EXECUTE_OFFER",payload:{selections:{targets:["public:seat_2"]}}});
+  expect(result.accepted,"额外宝石濒死交付命令应被接受（而非 this.nextDeadlineAt is not a function）").toBe(true);
+  expect(room.game!.cards[kill.cardRef]!.zoneRef,"濒死者的整手牌应交付给目标").toBe("hand:2");
+ });
  it("projects and executes red lord sealing hammer with independent melee and laser targets",()=>{
   const state=activeRedState(),room=makeRoom(state),projector=new GameProjector(ruleset),snapshot=projector.game(room,"u1");
   expect(validateProtocol("game",snapshot)).toEqual({ok:true});

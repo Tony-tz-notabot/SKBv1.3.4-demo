@@ -8,15 +8,16 @@ import type { DomainEvent } from "./types.js";
 
 interface Rule {ruleId:string;effects:Array<{op:string;params?:Record<string,unknown>;effects?:Array<{op:string;params?:Record<string,unknown>}>}>}
 interface Document {rules:Rule[]}
-function dogSquadDefinition(ruleset:LoadedRuleset){const document=ruleset.documents.get("character-rules.json") as Document,rule=document.rules.find(item=>item.ruleId==="character.general.dogSquad"),loop=rule?.effects.find(effect=>effect.op==="forEach"),attack=loop?.effects?.find(effect=>effect.op==="createAttack")?.params;if(loop?.params?.items!=="allInPlay.counterclockwise"||loop.params.mode!=="serial"||attack?.range!=="unlimited"||attack.type!=="melee"||attack.damageType!=="shield"||!Number.isInteger(attack.damage))throw new Error("GENERAL_DOG_SQUAD_RULE_INVALID");return{damage:Number(attack.damage),maxIterations:Number(loop.params.maxIterations??4)};}
+function dogSquadDefinition(ruleset:LoadedRuleset){const document=ruleset.documents.get("character-rules.json") as Document,rule=document.rules.find(item=>item.ruleId==="character.general.dogSquad"),loop=rule?.effects.find(effect=>effect.op==="forEach"),attack=loop?.effects?.find(effect=>effect.op==="createAttack")?.params;if(loop?.params?.items!=="activeCharacter"||loop.params.mode!=="serial"||attack?.range!=="unlimited"||attack.type!=="melee"||attack.damageType!=="shield"||!Number.isInteger(attack.damage))throw new Error("GENERAL_DOG_SQUAD_RULE_INVALID");return{damage:Number(attack.damage)};}
 function counterclockwiseFrom(activeSeat:Seat,seats:Seat[]):Seat[]{return [...seats].sort((a,b)=>((a-activeSeat+4)%4)-((b-activeSeat+4)%4));}
 export function beginGeneralDogSquadAtEndPhase(tx:EngineTransaction<AuthoritativeGameState>,ruleset:LoadedRuleset,activeSeat:Seat):boolean {
   if(tx.draft.combat.attack||tx.draft.pendingWindows.length||tx.draft.resolutionStack.length)return false;
   const general=tx.draft.players.find(player=>player.characterId==="character.general"&&player.initialTalentIds.includes("talent.dog_squad")&&player.presence==="inPlay"&&player.lifeState==="alive");if(!general)return false;
-  const definition=dogSquadDefinition(ruleset),targets=counterclockwiseFrom(activeSeat,tx.draft.players.filter(player=>player.presence==="inPlay"&&player.lifeState!=="eliminated").map(player=>player.seat)).slice(0,definition.maxIterations);if(!targets.length)return false;
+  const active=tx.draft.players.find(player=>player.seat===activeSeat&&player.presence==="inPlay"&&player.lifeState!=="eliminated");if(!active)return false;
+  const definition=dogSquadDefinition(ruleset);
   const segment={segmentId:"general.dogSquad",deliveryType:"attack",attackType:"melee",damageType:"shield",element:"none",amount:definition.damage,repeat:1,isAdditional:false,overflowPolicy:"normal"};
-  createCompositeScriptedAttackInTransaction(tx,{attackId:`attack:general-dog-squad:${tx.draft.round}:${activeSeat}:${tx.draft.stateRevision+1}`,attackerSeat:general.seat,sourceRef:`character:${general.seat}`,weaponId:"talent.dog_squad",modeId:"dogSquad",range:"unlimited",targetGroups:targets.map(seat=>({targetRef:`character:${seat}`,attackTypes:["melee"],damageSegments:[segment as unknown as JsonValue]})),tags:["characterTalentAttack","generalDogSquad"],preserveTargetOrder:true});
-  tx.emit("ability.activation.committed",{seat:general.seat,abilityId:"talent.dog_squad",triggerSeat:activeSeat,targetRefs:targets.map(seat=>`character:${seat}`)});return true;
+  createCompositeScriptedAttackInTransaction(tx,{attackId:`attack:general-dog-squad:${tx.draft.round}:${activeSeat}:${tx.draft.stateRevision+1}`,attackerSeat:general.seat,sourceRef:`character:${general.seat}`,weaponId:"talent.dog_squad",modeId:"dogSquad",range:"unlimited",targetGroups:[{targetRef:`character:${activeSeat}`,attackTypes:["melee"],damageSegments:[segment as unknown as JsonValue]}],tags:["characterTalentAttack","generalDogSquad"],preserveTargetOrder:true});
+  tx.emit("ability.activation.committed",{seat:general.seat,abilityId:"talent.dog_squad",triggerSeat:activeSeat,targetRefs:[`character:${activeSeat}`]});return true;
 }
 
 const MORTAR_COOLDOWN="skill.general.mortar.cooldownOwnPrepares";

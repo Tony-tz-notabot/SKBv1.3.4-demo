@@ -150,7 +150,7 @@ export type OfferPreview = {
 
 export type InteractionOffer = {
   "offerId": string;
-  "kind": "declareAttack" | "useCard" | "activateAbility" | "respond" | "equip" | "discardEquipment" | "dismantle" | "synthesize" | "interveneJudgment" | "rescueDying" | "resolveChoice" | "pass" | "endPhase" | "chargeWeapon" | "activateWeapon";
+  "kind": "declareAttack" | "useCard" | "activateAbility" | "respond" | "equip" | "discardEquipment" | "dismantle" | "synthesize" | "interveneJudgment" | "rescueDying" | "resolveChoice" | "pass" | "endPhase" | "chargeWeapon" | "activateWeapon" | "createBlackSword" | "blackSwordAttack";
   "sourceRefs": Array<ObjectRef>;
   "legalTargetRefs": Array<ObjectRef>;
   "selectionSpecs": Array<SelectionSpec>;

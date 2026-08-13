@@ -31,6 +31,17 @@ describe("按钮可辨识性",()=>{
   const wrapper=mountView(snapshotWith(offers,"statueCardSelection")),texts=labels(wrapper);
   expect(texts.some(t=>t.includes("手里剑")),"按钮应显示目标装备区牌名").toBe(true);
  });
+ it("牧师雕像：展示牌按钮显示具体牌名（从 centralCards 解析，而非无名确认选择）",()=>{
+  const centralCards=[
+   {ref:"public:c-priest",templateId:"statue.priest.blue",displayName:"牧师雕像",category:"statue" as const,printedColor:"blue" as const,coreStats:[],summary:"",resourceKey:"card.statue.priest.blue",badges:[],state:{selected:false,effective:true},detailAvailable:true},
+   {ref:"public:c-kill",templateId:"basic.kill.white",displayName:"杀",category:"basic" as const,printedColor:"white" as const,coreStats:[],summary:"",resourceKey:"card.basic.kill.white",badges:[],state:{selected:false,effective:true},detailAvailable:true}
+  ];
+  const offers=[0,1].map(i=>({offerId:`offer:statue-priest:${i}`,kind:"resolveChoice" as const,sourceRefs:[i===0?"public:c-priest":"public:c-kill"],legalTargetRefs:[],selectionSpecs:[],preview:{costSummary:null}}));
+  const snap=snapshotWith(offers,"statuePriestTake");snap.publicView.centralCards=centralCards;
+  const texts=labels(mountView(snap));
+  expect(texts.some(t=>t.includes("牧师雕像")),"展示牌按钮应显示牌名").toBe(true);
+  expect(texts.some(t=>t==="杀"),"展示牌按钮应显示牌名").toBe(true);
+ });
  it("C6H8O6：激光扫射与定点轰击两个模式按钮可区分",()=>{
   const offers=[{offerId:"offer:boss-use:c6-sweep:card:01",kind:"useCard" as const,sourceRefs:["public:c-c6"],legalTargetRefs:[],selectionSpecs:[],preview:{costSummary:null}},{offerId:"offer:boss-use:c6-bomb:card:01",kind:"useCard" as const,sourceRefs:["public:c-c6"],legalTargetRefs:["public:seat_2"],selectionSpecs:[{key:"targets",kind:"targets",min:1,max:1,distinct:true,legalRefs:["public:seat_2"]}],preview:{costSummary:null}}];
   const wrapper=mountView(snapshotWith(offers)),texts=labels(wrapper);
