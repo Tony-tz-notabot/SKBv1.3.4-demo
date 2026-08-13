@@ -13,6 +13,7 @@ import { useCommandFeedbackStore } from "./stores/commandFeedback";
 import { localizeCommandRejection } from "./localization/commandRejections";
 import GameView from "./views/GameView.vue";
 import SetupRedrawView from "./views/SetupRedrawView.vue";
+import TestDriverView from "./views/TestDriverView.vue";
 import { configureGameCommandSender, gameActions } from "./services/gameActions";
 import { createRealtimeService } from "./network/realtimeService";
 import { resolveApiBase } from "./network/serverAddress";
@@ -28,6 +29,7 @@ const { pendingIds, lastRejection } = storeToRefs(feedbackStore);
 const title = computed(() => screen.value === "game" ? "对局" : screen.value === "setup" ? "开局重摸" : screen.value === "room" ? "房间" : "大厅");
 const isDev = import.meta.env.DEV;
 const mockScene = shallowRef<MockScene>("selection");
+const showHarness = ref(false);
 let showMock: ((scene: MockScene) => void) | undefined;
 
 const savedToken=sessionStorage.getItem("skb.token");
@@ -39,6 +41,7 @@ async function login(){const username=loginUsername.value.trim(),password=loginP
 function logout(){sessionStorage.removeItem("skb.token");sessionStorage.removeItem("skb.userId");sessionStorage.removeItem("skb.displayName");account.value=null;location.reload();}
 
 onMounted(async () => {
+  if (new URLSearchParams(location.search).get("test") === "1") { showHarness.value = true; return; }
   if (import.meta.env.DEV && new URLSearchParams(location.search).get("mock") === "1") {
     const mock = (await import("./dev/mockServer")).createMockServer(); showMock = mock.show;
     configureRoomCommandSender(mock.send); configureGameCommandSender(mock.sendGame); showMock(mockScene.value);
@@ -70,6 +73,8 @@ const localizedRejection = computed(() => lastRejection.value ? localizeCommandR
       </div>
     </header>
 
+    <TestDriverView v-if="showHarness" />
+    <template v-else>
     <section v-if="!account && !(isDev && showMock)" class="login-panel">
       <form class="login-card" @submit.prevent="login">
         <h2>登录 / 注册</h2>
@@ -95,5 +100,6 @@ const localizedRejection = computed(() => lastRejection.value ? localizeCommandR
     <LobbyView v-else :snapshot="lobbySnapshot" @create="(settings,password)=>roomActions.create(settings,password||null)" @join="(code,password,asSpectator)=>roomActions.join(code,password||null,asSpectator)" />
 
     <footer class="boundary-note">Vue 不执行规则，不预测隐藏信息，不直接修改权威状态。</footer>
+    </template>
   </main>
 </template>

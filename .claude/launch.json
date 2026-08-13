@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "SKB-test",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".claude/preview-launch.mjs"],
+      "port": 8787,
+      "autoPort": true
+    }
+  ]
+}
