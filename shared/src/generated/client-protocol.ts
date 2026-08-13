@@ -34,6 +34,15 @@ export type CardStateView = {
   "cooldown"?: number | null;
 };
 
+export type DamageSegmentView = {
+  "amount": number;
+  "repeat": number;
+  "element": string;
+  "damageType": string;
+  "deliveryType": string;
+  "isAdditional"?: boolean;
+};
+
 export type CardView = {
   "ref": ObjectRef;
   "templateId"?: string;
@@ -105,6 +114,8 @@ export type PrivateView = {
   "concealedChoices": Array<ObjectRef>;
 };
 
+export type PromptDataView = Record<string, string | number | boolean | null | Array<string | number | boolean | null> | Array<DamageSegmentView>>;
+
 export type PromptView = {
   "promptId": string;
   "kind": string;
@@ -112,6 +123,7 @@ export type PromptView = {
   "deadlineAt": number;
   "prioritySeat": Seat | null;
   "timeoutPolicy": "pass" | "randomLegal" | "useDefault" | "abortRemaining";
+  "promptData"?: PromptDataView | null;
 };
 
 export type ActiveWindowView = {
@@ -138,13 +150,22 @@ export type SelectionSpec = {
   "options"?: Array<string | number | boolean>;
 };
 
+export type OfferCostsView = {
+  "killCards"?: number;
+  "attackCount"?: number;
+  "attackCountCost"?: number;
+  "attackCountAvailable"?: number;
+  "hpModification"?: number;
+};
+
 export type OfferPreview = {
   "weaponRef"?: ObjectRef | null;
   "modeId"?: string | null;
   "range"?: number | null;
   "distanceByTarget"?: Record<string, number>;
-  "damageStructure"?: string | null;
+  "damageStructure"?: Array<DamageSegmentView> | null;
   "costSummary"?: string | null;
+  "costs"?: OfferCostsView | null;
   "slot"?: string | null;
 };
 

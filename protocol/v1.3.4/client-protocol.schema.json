@@ -159,6 +159,37 @@
         }
       }
     },
+    "DamageSegmentView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "amount",
+        "repeat",
+        "element",
+        "damageType",
+        "deliveryType"
+      ],
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "repeat": {
+          "type": "integer"
+        },
+        "element": {
+          "type": "string"
+        },
+        "damageType": {
+          "type": "string"
+        },
+        "deliveryType": {
+          "type": "string"
+        },
+        "isAdditional": {
+          "type": "boolean"
+        }
+      }
+    },
     "CardView": {
       "type": "object",
       "additionalProperties": false,
@@ -546,6 +577,38 @@
         }
       }
     },
+    "PromptDataView": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/DamageSegmentView"
+            }
+          }
+        ]
+      }
+    },
     "PromptView": {
       "type": "object",
       "additionalProperties": false,
@@ -587,6 +650,16 @@
             "randomLegal",
             "useDefault",
             "abortRemaining"
+          ]
+        },
+        "promptData": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PromptDataView"
+            },
+            {
+              "type": "null"
+            }
           ]
         }
       }
@@ -714,6 +787,27 @@
         }
       }
     },
+    "OfferCostsView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "killCards": {
+          "type": "integer"
+        },
+        "attackCount": {
+          "type": "integer"
+        },
+        "attackCountCost": {
+          "type": "integer"
+        },
+        "attackCountAvailable": {
+          "type": "integer"
+        },
+        "hpModification": {
+          "type": "integer"
+        }
+      }
+    },
     "OfferPreview": {
       "type": "object",
       "additionalProperties": false,
@@ -747,15 +841,32 @@
           }
         },
         "damageStructure": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/DamageSegmentView"
+              }
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "costSummary": {
           "type": [
             "string",
             "null"
+          ]
+        },
+        "costs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OfferCostsView"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "slot": {
