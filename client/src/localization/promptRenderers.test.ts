@@ -18,7 +18,9 @@ describe("promptRenderers L1（S4）",()=>{
   expect(segs.find(s=>s.text.includes("剧毒之鹰"))!.cls).toBe("card-green");
   expect(segs.find(s=>s.text==="2"&&s.cls==="sem-normal")).toBeTruthy();
   expect(segs.find(s=>s.text==="毒"&&s.cls==="sem-poison")).toBeTruthy();
-  expect(segs.find(s=>s.text==="攻击你")!.cls).toBe("rel-self");
+  expect(segs.find(s=>s.text==="你")!.cls).toBe("rel-self");
+  expect(segs.find(s=>s.text==="攻击")!.cls).toBe(null);
+  expect(text).toContain("攻击你");
  });
  it("dyingRescue 显示濒死者血量与来源",()=>{
   const segs=renderPromptSegments({kind:"dyingRescue",promptData:{dyingSeat:3,dyingHp:0,damageSourceSeat:1}},ctx);

@@ -43,3 +43,56 @@ describe("GameView choice selectors",()=>{
   expect(button.text()).toContain("小血瓶");
  });
 });
+
+describe("F2/F3 提示词语义修复",()=>{
+ it("F3: 选牌类窗口按钮显示窗口动作，不显示来源卡效果摘要（弃牌≠使用）",()=>{
+  const snapshot={...snapshotWith([],"resolveChoice" as const,"wizardSpellStrike"),
+   privateView:{hand:[{ref:"private:u1:c1",templateId:"basic.potion.white",displayName:"药水",category:"basic" as const,printedColor:"red" as const,coreStats:[],summary:"回复2血",resourceKey:"card.basic.potion.white",badges:[],state:{selected:false,effective:true},detailAvailable:true}],preselectedWeaponSlot:null,preselectedModeId:null,preselectableWeaponSlots:[],concealedChoices:[]},
+   interaction:{prompt:{promptId:"p:1",kind:"wizardSpellStrike",mandatory:false,deadlineAt:Date.now()+10000,prioritySeat:1 as const,timeoutPolicy:"pass" as const},offers:[{offerId:"offer:wizard-spell-strike:activate",kind:"resolveChoice" as const,sourceRefs:["private:u1:c1"],legalTargetRefs:[],selectionSpecs:[{key:"cards",kind:"cards",min:1,max:1,distinct:true,legalRefs:["private:u1:c1"]}],preview:{costSummary:null}}],disabledHints:[]}};
+  const wrapper=mountView(snapshot);
+  const btn=wrapper.find(".offer-list .button");
+  expect(btn.text()).toContain("法术打击");
+  expect(btn.text()).not.toContain("回复2血");
+  expect(btn.text()).not.toContain("确认选择");
+ });
+ it("F3: 使用类报价仍显示来源卡摘要（药水→回复2血）",()=>{
+  const snapshot={...snapshotWith([],"useCard" as const,"playPhaseAction"),
+   privateView:{hand:[{ref:"private:u1:c1",templateId:"basic.potion.white",displayName:"药水",category:"basic" as const,printedColor:"red" as const,coreStats:[],summary:"回复2血",resourceKey:"card.basic.potion.white",badges:[],state:{selected:false,effective:true},detailAvailable:true}],preselectedWeaponSlot:null,preselectedModeId:null,preselectableWeaponSlots:[],concealedChoices:[]},
+   interaction:{prompt:{promptId:"p:1",kind:"playPhaseAction",mandatory:false,deadlineAt:Date.now()+10000,prioritySeat:1 as const,timeoutPolicy:"pass" as const},offers:[{offerId:"offer:basic-support:potion:private:u1:c1",kind:"useCard" as const,sourceRefs:["private:u1:c1"],legalTargetRefs:[],selectionSpecs:[],preview:{costSummary:null}}],disabledHints:[]}};
+  const wrapper=mountView(snapshot);
+  expect(wrapper.find(".offer-list .button").text()).toContain("使用药水");
+  expect(wrapper.find(".offer-list .button").text()).toContain("回复2血");
+ });
+ it("F2: 雕像效果按钮显示雕像名（血/盾走选择区）",()=>{
+  const snapshot={...snapshotWith([],"resolveChoice" as const,"statueResolutionChoice"),
+   interaction:{prompt:{promptId:"p:1",kind:"statueResolutionChoice",mandatory:false,deadlineAt:Date.now()+10000,prioritySeat:1 as const,timeoutPolicy:"pass" as const,promptData:{statueFamily:"statue.werewolf"}},offers:[{offerId:"offer:statue-resolve:p:1",kind:"resolveChoice" as const,sourceRefs:[],legalTargetRefs:["public:seat_2"],selectionSpecs:[{key:"targets",kind:"targets",min:1,max:1,distinct:true,legalRefs:["public:seat_2"]},{key:"mode",kind:"option",min:1,max:1,options:["shieldDamage","hpDamage"]}],preview:{costSummary:null}}],disabledHints:[]}};
+  const wrapper=mountView(snapshot);
+  const btn=wrapper.find(".offer-list .button");
+  expect(btn.text()).toContain("雕像·狼人雕像");
+  expect(btn.text()).not.toContain("确认选择");
+ });
+ it("F2: 特殊窗口按钮不再显示确认选择",()=>{
+  const snapshot=snapshotWith([{key:"mode",kind:"option",min:1,max:1,options:["prototype","vitaminC"]}],"resolveChoice" as const,"engineerMechChoice");
+  const wrapper=mountView(snapshot);
+  expect(wrapper.find(".offer-list .button").text()).toContain("进入机甲");
+  expect(wrapper.find(".offer-list .button").text()).not.toContain("确认选择");
+ });
+});
+
+describe("F2 逐一排查：特殊窗口按钮不再显示'确认选择'",()=>{
+ const resolveKinds=["optionalTrigger","triggerOrdering","elementSatchelFlameDismantle","berserkerRage","c6LaserSweepRequest","c6FocusedBombardmentRequest","criticalPenetration","crystalCrabActivePincer","darkKnightFinalStrike","divineBarrierDamage","engineerMechChoice","extraGemDeathTransfer","foresightDrawChoice","goldenMaskTarget","minerDigAtPlayEnd","minerNaturalExitTarget","minerSourceDismantle","owlCounterattack","purpleLordHeroBlade","qiBallDismantle","reforgeFurnaceSelection","redLordSealingHammer","temporaryCoinImmediateUse","trapBombDetonation","triggerCardSelection","valkyrieBossResponse","weaponParticleEagleFollowUp","weaponW61Choice","wizardSpellStrike","demolitionOptionalDiscard","demolitionWeaponOverflow","statueResolutionChoice"];
+ it.each(resolveKinds)("%s 的确认按钮有语义标签",(kind)=>{
+  const snapshot={...snapshotWith([],"resolveChoice" as const,kind),
+   interaction:{prompt:{promptId:"p:1",kind,mandatory:false,deadlineAt:Date.now()+10000,prioritySeat:1 as const,timeoutPolicy:"pass" as const,...(kind==="statueResolutionChoice"?{promptData:{statueFamily:"statue.werewolf"}}:{})},offers:[{offerId:"offer:test:1",kind:"resolveChoice" as const,sourceRefs:[],legalTargetRefs:[],selectionSpecs:[],preview:{costSummary:null}}],disabledHints:[]}};
+  const wrapper=mountView(snapshot);
+  const text=wrapper.find(".offer-list .button").text();
+  expect(text,`窗口 ${kind} 按钮不得为'确认选择'`).not.toContain("确认选择");
+  expect(text.length).toBeGreaterThan(0);
+ });
+ it.each(["internetAddictionDodgeRequest","sheepPhaseOneDodgeRequest","superBabyDodgeRequest"])("%s 特殊出闪按钮显示'出【闪】'",(kind)=>{
+  const snapshot={...snapshotWith([],"respond" as const,kind),
+   interaction:{prompt:{promptId:"p:1",kind,mandatory:false,deadlineAt:Date.now()+10000,prioritySeat:1 as const,timeoutPolicy:"pass" as const},offers:[{offerId:"offer:test:1",kind:"respond" as const,sourceRefs:[],legalTargetRefs:[],selectionSpecs:[],preview:{costSummary:null}}],disabledHints:[]}};
+  const wrapper=mountView(snapshot);
+  expect(wrapper.find(".offer-list .button").text()).toBe("出【闪】");
+ });
+});

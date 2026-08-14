@@ -88,7 +88,7 @@ function attackResponsePrompt(data: PromptData | null, ctx: PromptRenderContext)
   const out: PromptSegment[] = [seg(characterName(ctx, attackerSeat), relationshipCls(ctx, attackerSeat))];
   if (typeof data?.weaponLabel === "string" && data.weaponLabel)
     out.push(seg(`用【${data.weaponLabel}】`, cardCls(typeof data.weaponColor === "string" ? data.weaponColor : undefined)));
-  out.push(seg("攻击你", "rel-self"));
+  out.push(seg("攻击"), seg("你", "rel-self"));
   const type = Array.isArray(data?.attackTypes) && typeof data.attackTypes[0] === "string" ? attackTypeText[data.attackTypes[0]] : "";
   if (type) {
     out.push(seg("："), seg(type + (typeof data?.range === "number" ? data.range : "")));

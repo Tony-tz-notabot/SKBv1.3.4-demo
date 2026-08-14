@@ -5,6 +5,8 @@ import type {LoadedRuleset} from "../ruleset/types.js";
 import {createInitialSetup,resolveInitialRedraw} from "../engine/setup.js";
 import type {AuthoritativeGameState,Seat} from "../engine/state.js";
 import {GameProjector} from "./projection.js";
+import {executeWindow} from "./windowRegistry.js";
+import {buildStatueResolutionOffers} from "../engine/statueEffects.js";
 import {validateProtocol} from "./protocol.js";
 import type {AppRoom,AppSettings,AppUser} from "./types.js";
 
@@ -124,5 +126,32 @@ describe("窗口 promptData 投影（S2）",()=>{
   state.pendingWindows=[];
   window(state,{kind:"valkyrieBossResponse",prioritySeat:2,legalOfferIds:["offer:valkyrie:pass:2","offer:valkyrie:use:card:b"],context:{originalTemplateId:"boss.dark_grand_knight"}});
   expect(projected(state,2).interaction.prompt.promptData.templateId).toBe("boss.dark_grand_knight");
+ });
+ it("statueResolutionChoice 合并为单按钮（目标+血/盾走选择区），非 N 个独立按钮",()=>{
+  let state=engineState(412);state.pendingWindows=[];
+  const offers=[{offerId:"offer:statue-resolve:card:s:character:2:shieldDamage",statueRef:"card:s",targetRef:"character:2",modeId:"shieldDamage"},{offerId:"offer:statue-resolve:card:s:character:2:hpDamage",statueRef:"card:s",targetRef:"character:2",modeId:"hpDamage"},{offerId:"offer:statue-resolve:card:s:character:3:shieldDamage",statueRef:"card:s",targetRef:"character:3",modeId:"shieldDamage"}];
+  window(state,{kind:"statueResolutionChoice",prioritySeat:1,legalOfferIds:offers.map(o=>o.offerId),context:{statueRef:"card:s",offers,legalTargetRefs:["character:2","character:3"],modeOptions:["shieldDamage","hpDamage"]}});
+  const snap=projected(state),offers2=snap.interaction.offers;
+  expect(offers2.length,`应合并为单 offer：${JSON.stringify(offers2.map((o:any)=>o.offerId))}`).toBe(1);
+  expect(offers2[0].selectionSpecs.some((s:any)=>s.kind==="targets"&&s.legalRefs.includes("public:seat_2")&&s.legalRefs.includes("public:seat_3"))).toBe(true);
+  expect(offers2[0].selectionSpecs.some((s:any)=>s.kind==="option"&&s.options.includes("shieldDamage")&&s.options.includes("hpDamage"))).toBe(true);
+  expect(validateProtocol("game",snap)).toEqual({ok:true});
+ });
+ it("statueResolutionChoice 合并报价按目标+模式执行（drain_hp 扣血而非扣盾）",()=>{
+  let state=engineState(413);state.pendingWindows=[];
+  const statueRef=Object.values(state.cards).find(c=>c.templateId.startsWith("statue.werewolf"))!.cardRef;
+  const from=state.zones[state.cards[statueRef]!.zoneRef]!;from.orderedCardRefs.splice(from.orderedCardRefs.indexOf(statueRef),1);
+  state.zones["resolving"]!.orderedCardRefs.push(statueRef);
+  Object.assign(state.cards[statueRef]!,{zoneRef:"resolving",ownerSeat:1,controllerSeat:1,faceUp:true});
+  Object.assign(state.cards[statueRef]!.runtime,{statueOwnerSeat:1,statueResumePlayDeadlineAt:900});
+  const offers=buildStatueResolutionOffers(state,ruleset,1,statueRef);
+  expect(offers.length).toBeGreaterThan(1);
+  const target="character:3",mode="drain_hp";const hpBefore=state.players.find(p=>p.seat===3)!.hp!,shieldBefore=state.players.find(p=>p.seat===3)!.shield!;
+  window(state,{kind:"statueResolutionChoice",prioritySeat:1,legalOfferIds:offers.map(o=>o.offerId),context:{statueRef,offers:offers as unknown as any,legalTargetRefs:[...new Set(offers.map(o=>o.targetRef).filter((x):x is string=>!!x))],modeOptions:[...new Set(offers.map(o=>o.modeId).filter((x):x is string=>!!x))]}});
+  const out=executeWindow(state,ruleset,"u1",()=>900,{commandId:"c1",gameId:state.gameId,expectedStateRevision:state.stateRevision,promptId:state.pendingWindows[0]!.promptId,offerId:"offer:statue-resolve:any",selections:{targets:[target],mode:[mode]}});
+  expect(out?.result.accepted,`executeWindow 被拒: ${JSON.stringify(out?.result)}`).toBe(true);
+  const final=out!.session.state;
+  expect(final.players.find(p=>p.seat===3)!.hp).toBe(hpBefore-1);
+  expect(final.players.find(p=>p.seat===3)!.shield).toBe(shieldBefore);
  });
 });

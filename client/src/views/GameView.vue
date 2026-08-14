@@ -14,7 +14,7 @@ import type { CharacterCandidateView } from "@skb-protocol/room-protocol";
 import { selectionsComplete, toggleSelection } from "../interaction/selectionState";
 import { abilityDisplayName } from "../localization/descriptions";
 import { characterCandidate } from "../localization/characterCatalog";
-import { renderPromptSegments, offerPreviewSegments, type PromptSegment } from "../localization/promptRenderers";
+import { renderPromptSegments, offerPreviewSegments, cardNameById, type PromptSegment } from "../localization/promptRenderers";
 
 const props = defineProps<{ snapshot: DeepReadonly<GameSnapshot>; events:readonly DeepReadonly<PresentationEvent>[]; canDisbandRoom?: boolean }>();
 const emit = defineEmits<{ execute: [offerId: string, selections: Record<string, Array<string | number | boolean>>]; preselection: [weaponSlot: string | null, modeId: string | null]; chat:[channel:"all"|"team",text:string]; forfeit: []; disband: [] }>();
@@ -53,6 +53,20 @@ const chooseTarget=(ref:string)=>choose(targetSpecForClick(ref),ref);
 const disabledByRef=computed(()=>new Map(props.snapshot.interaction.disabledHints.map((hint)=>[hint.subjectRef,hint.messageKey])));
 const choiceSpecs=computed(()=>activeOffer.value?.selectionSpecs.filter((spec)=>spec.kind!=="cards"&&spec.kind!=="targets")??[]);
 const selectionsValid = computed(() => !!activeOffer.value && selectionsComplete(activeOffer.value.selectionSpecs as SelectionSpec[],selected));
+const windowActionLabels:Record<string,string>={optionalTrigger:"发动效果",triggerOrdering:"确认排序",elementSatchelFlameDismantle:"拆除烈焰锦囊",berserkerRage:"少摸牌",c6LaserSweepRequest:"打出牌",c6FocusedBombardmentRequest:"打出牌",criticalPenetration:"暴击追击",crystalCrabActivePincer:"钳击",darkKnightFinalStrike:"最后一击",divineBarrierDamage:"神圣屏障",engineerMechChoice:"进入机甲",extraGemDeathTransfer:"交付手牌",foresightDrawChoice:"选择摸牌",goldenMaskTarget:"混乱打击",minerDigAtPlayEnd:"遁地",minerNaturalExitTarget:"自然退出攻击",minerSourceDismantle:"拆除来源",owlCounterattack:"吹箭反击",purpleLordHeroBlade:"魂刀攻击",qiBallDismantle:"拆除",reforgeFurnaceSelection:"选择武器",redLordSealingHammer:"封灵战锤",temporaryCoinImmediateUse:"使用金币",trapBombDetonation:"引爆",triggerCardSelection:"选择",valkyrieBossResponse:"复制BOSS",weaponParticleEagleFollowUp:"追击",weaponW61Choice:"扳手",wizardSpellStrike:"法术打击",demolitionOptionalDiscard:"弃置武器",demolitionWeaponOverflow:"确认弃置"};
+function windowOfferAction(offer:DeepReadonly<InteractionOffer>):string|undefined{
+  const windowKind=props.snapshot.interaction.prompt?.kind??"";
+  if(windowKind==="statueResolutionChoice"){const fam=(props.snapshot.interaction.prompt?.promptData as any)?.statueFamily;return fam?`雕像·${cardNameById(fam)}`:"执行雕像效果";}
+  const id=offer.offerId;
+  if(/^offer:w61:damage$/.test(id))return"扳手·造成伤害";
+  if(/^offer:w61:dismantle$/.test(id))return"扳手·拆除";
+  const rage=/^offer:berserker-rage:(\d+)$/.exec(id);if(rage)return`少摸${rage[1]}`;
+  const mech=/^offer:engineer-mech:(.+)$/.exec(id);if(mech)return`进入机甲·${mech[1]}`;
+  const gem=/^offer:extra-gem-death:character:([1-4])$/.exec(id);if(gem)return`交付给${gem[1]}号`;
+  const bomb=/^offer:trap-detonation:character:([1-4])$/.exec(id);if(bomb)return`引爆${bomb[1]}号`;
+  const miner=/^offer:miner-natural-exit:character:([1-4])$/.exec(id);if(miner)return`攻击${miner[1]}号`;
+  return windowActionLabels[windowKind];
+}
 function offerLabel(offer: DeepReadonly<InteractionOffer>) {
   const generic={ declareAttack:"发动攻击",useCard:"使用卡牌",activateAbility:"发动技能",respond:"响应",equip:"装备",discardEquipment:"丢弃装备",dismantle:"拆除",synthesize:"合成",interveneJudgment:"干预判定",rescueDying:"救援",resolveChoice:"确认选择",pass:"放弃",endPhase:"结束阶段",chargeWeapon:"蓄力",activateWeapon:"使用武器能力",createBlackSword:"制造黑剑",blackSwordAttack:"黑剑攻击" } as Record<string,string>;
   const satchelMode=/(^|:)skill\.ancient_elementalist\.element_satchel:(frozen|electrified|flame)($|:)/.exec(offer.offerId)?.[2];
@@ -67,6 +81,8 @@ function offerLabel(offer: DeepReadonly<InteractionOffer>) {
   const cardName=offer.sourceRefs[0]?cardDisplayName(offer.sourceRefs[0]):undefined;
   if(cardName){if(offer.kind==="equip")return`装备${cardName}`;if(offer.kind==="discardEquipment")return`弃置${cardName}`;if(offer.kind==="dismantle")return`拆除${cardName}`;if(offer.kind==="synthesize")return`合成${cardName}`;if(offer.kind==="useCard")return`使用${cardName}`;if(offer.kind==="chargeWeapon")return`蓄力${cardName}`;if(offer.kind==="activateWeapon")return`使用${cardName}`;if(perCard)return cardName;}
   if(offer.kind==="respond"){
+    const dodgeWindow=props.snapshot.interaction.prompt?.kind;
+    if(dodgeWindow==="internetAddictionDodgeRequest"||dodgeWindow==="sheepPhaseOneDodgeRequest"||dodgeWindow==="superBabyDodgeRequest")return"出【闪】";
     if(offer.offerId.includes(":meleeBlock:"))return cardName?`近战格挡·${cardName}`:"近战格挡";
     if(offer.offerId.includes(":dodge:"))return"出【闪】";
     if(offer.offerId.includes(":armorKillBlock:"))return cardName?`防具无效杀·${cardName}`:"防具无效杀";
@@ -76,6 +92,7 @@ function offerLabel(offer: DeepReadonly<InteractionOffer>) {
     if(offer.offerId.includes(":rescue:"))return"救援";
     return"响应";
   }
+  if(offer.kind==="resolveChoice"){const action=windowOfferAction(offer);if(action)return action;}
   return generic[offer.kind] ?? offer.kind;
 }
 function cardDisplayName(ref: string): string | undefined {
@@ -90,7 +107,8 @@ function cardSummaryOf(ref: string): string | undefined {
 function slotLabel(slot:string|undefined){if(!slot)return null;const weapon=/^weapon:([1-3]):/.exec(slot),talent=/^talent:(\d):/.exec(slot);if(weapon)return`武${weapon[1]}`;if(/^thirdWeapon:/.test(slot))return"武3";if(/^armor(\:\d+)?$/.test(slot))return"甲";if(talent)return`赋${Number(talent[1])+1}`;return null;}
 const equipSlotOf=(offer:DeepReadonly<InteractionOffer>)=>{const slot=(offer.preview as any)?.slot;if(typeof slot!=="string")return null;return /^armor(\:\d+)?$/.test(slot)?"armor":slot;};
 const promptSegments=computed<readonly PromptSegment[]>(()=>renderPromptSegments(props.snapshot.interaction.prompt??null,{viewerSeat:props.snapshot.viewer.seat??null,viewerTeam:props.snapshot.viewer.team??null,players:props.snapshot.publicView.players.map((p)=>({seat:p.seat,team:p.team,characterId:p.characterId}))}));
-const offerPreviewSegs=(offer:DeepReadonly<InteractionOffer>)=>offerPreviewSegments(offer.preview as any,offer.sourceRefs?.[0]?cardSummaryOf(offer.sourceRefs[0]):undefined);
+const shouldShowCardSummary=(offer:DeepReadonly<InteractionOffer>):boolean=>{const k=offer.kind;if(k==="useCard"||k==="equip"||k==="chargeWeapon"||k==="activateWeapon")return true;if(k==="respond"){const id=offer.offerId;return id.includes(":dodge:")||id.includes(":meleeBlock:")||id.includes(":armorKillBlock:")||id.includes(":armorJudgment:")||id.includes(":prayer:")||id.includes(":resurrectionCross:")||id.includes(":rescue:");}return false;};
+const offerPreviewSegs=(offer:DeepReadonly<InteractionOffer>)=>offerPreviewSegments(offer.preview as any,shouldShowCardSummary(offer)&&offer.sourceRefs?.[0]?cardSummaryOf(offer.sourceRefs[0]):undefined);
 function choose(spec: DeepReadonly<SelectionSpec> | undefined,value:string|number|boolean) { if(!spec) return;const next=toggleSelection(selected,spec as SelectionSpec,value);selected[spec.key]=next[spec.key]??[]; }
 function chooseOffer(offer: DeepReadonly<InteractionOffer>) { activeOfferId.value=offer.offerId; if(!offer.selectionSpecs.length) submit(offer); }
 function validFor(offer: DeepReadonly<InteractionOffer>) { return selectionsComplete(offer.selectionSpecs as SelectionSpec[],selected); }
