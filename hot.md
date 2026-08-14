@@ -5,6 +5,22 @@
 ## 当前目标与阶段
 
 - 项目目标：把SKB v1.3.4冻结规则包实现为四人2v2、服务器权威、Vue 3客户端的网页联机游戏。
+- 2026-08 前端 UI/动画阶段（连续 Goal：中央战斗区大改 + 对局动画 + 血盾条 + 动效批次，全部 TDD）：
+  - 作者已确认：log/chat 不做动画；血盾条由作者定规格（细式、单点长=2×高、数值在左、主题提亮、无边框、失去部分加深+低透明、加减闪烁+弹数字、等宽字体、备用条主题紫/蓝、cards/online 移右下角角标）；铁盾等特殊状态图标统一放血盾条下方装备区上方（先文字芯片后图标）。
+  - 中央战斗区大改原始需求已记录：`docs/整理/131-中央战斗区大改原始需求记录.md`；总设计：`docs/整理/132-中央战斗区与对局动画总设计.md`（数据字段 ⏳ 待子代理盘点回填）。
+  - 血盾条预览页：`docs/预览/血盾条预览.html`（浏览器直开，可调上限/加减/主题/刻度线；注意勿用 color-mix，浏览器不兼容会整条消失）。
+  - 已完成动效设计：`docs/整理/130-对局内动效设计稿.md`（A-I 清单 + 血盾条 v1 + 测试安全审计）。
+  - ✅ 中央战斗区 M1 状态机已完成（TDD）：`client/src/stage/` 新增 `stageMachine.ts`（操作组聚合启发式+operationId 双模式、箭头状态机 standby→solid/voided→flow→arrive、嵌套透明度降级 0.35、主区→临时弃牌→弃牌堆牌流 cap12、判定高亮、摸牌正/背面）、`narration.ts`（主区词条 token 段，复用 128 色系）、`effectColors.ts`；stage 3 文件 23 项测试 + 全量 29 文件/215 项全绿、构建通过。
+  - ✅ 中央战斗区 M2/M3 已完成（TDD）：`arrowPath.ts`（作战地图风宽箭头几何：尾凹∨/弧侧C/大箭头/自指环 A 弧）、`components/StageArrow.vue`（standby 白荧光轮廓/solid 实体化/flow 能量流按效果色/arrive/voided 淡出/嵌套透明度/ring）、`components/CombatStage.vue`（四子区：主区+词条/临时弃牌/牌堆卡背+数量/弃牌堆条状 cap12；内部已消费 seq 增量喂状态机）；token 色系作用域已扩到 `.stage-narration`。当前客户端 32 文件/235 测试全绿、构建通过。
+  - ✅ 中央战斗区 M4 已完成（TDD）：`components/StageCard.vue`（正/背面、判定成功边缘色光 --glow 按印刷色、失败变暗、翻牌 rotateY、弃牌堆迷你条状）、`components/StageNarration.vue`（token 渲染）、CombatStage 增加摸牌飞行层（牌堆→座位，正/背面按公开性，800ms 移除）；状态机 StageCard 增 flipIn 标记。当前客户端 34 文件/245 测试全绿、构建通过。
+  - ✅ 中央战斗区 M5 集成已完成：GameView `.game-center` 替换为 `<CombatStage :key="stateRevision">`（快照重置语义）、事件队列经 computed 透传（修复 setup 期陈旧引用 bug）、快照种子 discardTop/centralCards、座位坐标/关系色/角色名接通；task8 弃牌断言迁移至新条状弃牌堆；旧 .game-center/.pile/.discard-stack/.central-cards CSS 移除。**中央区纯客户端五件套（M1-M5）全部完成**：客户端 34 文件/245 测试全绿、构建通过。浏览器实机核对待作者（?test=1）。
+  - ✅ 本轮补充：修复操作结束后箭头残留缺陷（CombatStage 保留窗口 结束事件+1 个事件，之后清理，新增测试）；多目标箭头扇形弯曲（bend ±30px/级）；词条扩至 12 类事件。**M0.5 实施方案已写好**：`docs/整理/133-M0.5服务端投影补齐实施方案.md`（schema/投影改动清单 + TDD 测试清单 + 实施顺序），授权后立即执行。当前客户端 35 文件/263 测试全绿、构建通过。
+  - ✅ **M0.5 服务端最小补齐完成（作者已授权，TDD）**：①PresentationEvent 外层可选 `operationId`（攻击链分组键，投影透传域 attackId）；③`ATTACK_RESOLVED` 必填 `outcome`（hit/miss/invalidated/cancelled）+ 可选 `perTarget`（attack.target.after 的 hpLost/shieldLost 公开汇总）；⑥`publicView.activeActivity`（进行中操作摘要 kind/actorSeat/targetRefs，结算期补 activeWindow 空窗，空闲 null）；⑦修复 `cards.given→CARD_DRAWN` seat 恒 1（取 toSeat）。schema + shared 类型重生成 + 投影实现 + 5 项新测试；服务端 134 文件/659 项全绿、四协议工具全过、两端构建通过、客户端 263 项全绿。详见 `docs/整理/133`。
+  - ✅ **130 动效批次 A-I 全部完成（作者已批，TDD）**：`styles/animations.css`（A1 阶段药丸/A3 行动呼吸光环/B1 摸牌入场/B2 隐藏牌/C1 弃牌堆落卡/C2 主区卡/C3 牌库计数/D4 感电芯片/E1 报价按钮/E3 角标/F1 横幅/H1 抽屉/H2 确认框挂载动画 + main.ts 导入）、GameView（A2 标题过渡/A4 ROUND pop/E1 报价 stagger）、GamePlayerPanel（D2 死亡瞬间抖动 deadNotEliminated——客户端 LifeState 不含 dying 的适配）、PromptBanner（F2 紧急倒计时 ≤10s 变色脉冲）；新增 animations.test.ts 10 项 + E1/D2/F2 测试。客户端 36 文件/277 测试全绿、构建通过。
+  - 剩余：浏览器实机验收（作者免本环节）。中央区 M1-M5、血盾条、M0.5、130 批次均已收束。
+  - ✅ 血盾条 v1 已实施（TDD）：`client/src/components/StatBar.vue`（细式/数值在左/主题提亮/上限>12单点收缩/增减闪烁+change事件）、GamePlayerPanel 接入（HP/SH 两条、特殊状态图标行=铁盾+状态+感电芯片、cards/online 右下角微角标、浮动数字）；新增 statBar.test.ts 10 项、更新 gamePlayerPanelBar 15 项 + gameInteractions 感电断言；客户端 26 文件/192 测试全绿、构建通过。
+  - 已知环境限制：本会话 headless Chrome 截图不可用（曾成功后又失效）；实机核验留给作者用 `?test=1` 打开。
+  - 方法：全部改动 TDD 先红后绿；每阶段 `cd client && npm test && npm run build` 门禁；`?test=1`+headless Chrome 截图核验。
 - 作者已经确认进入“统一完整权威状态模型”；该模型现已完成第一版实现，`SetupGameState`已删除。
 - 阶段正文基础闭环已完成：可复现随机、跨重洗抽牌、统一手牌上限、精确弃牌报价、幂等手动命令、超时随机弃牌和安全自动调度均已接入。
 - 已完成最终规则、机器数据、事件效果DSL和协议边界复习，并进入通用规则引擎大阶段。
@@ -176,4 +192,4 @@
 
 ## 最近文档
 
-- 49—54：开局闭环；55—80：权威状态、时间轴、通用动作/战斗/触发与天赋基础；81—100：BOSS及非BOSS特殊牌；101—112：角色正文；113：天赋；114—118：武器通用、特殊机制与合成；119：坐骑；120：雕像；121：真实应用层与联机链路；122：接手与完成审计清单；123：阶段一注册表与窗口执行验收；124：阶段二进行中转接说明；125：阶段二完成与E2E闭环；126：真实可玩链路Goal审计表；127：账号登录体系与客户端视图修复；128：操作提示词系统；129：对局日志系统；65：判定干预萨满专属裁定。
+- 49—54：开局闭环；55—80：权威状态、时间轴、通用动作/战斗/触发与天赋基础；81—100：BOSS及非BOSS特殊牌；101—112：角色正文；113：天赋；114—118：武器通用、特殊机制与合成；119：坐骑；120：雕像；121：真实应用层与联机链路；122：接手与完成审计清单；123：阶段一注册表与窗口执行验收；124：阶段二进行中转接说明；125：阶段二完成与E2E闭环；126：真实可玩链路Goal审计表；127：账号登录体系与客户端视图修复；128：操作提示词系统；129：对局日志系统；130：对局内动效设计稿（血盾条v1/动效批次）；131：中央战斗区大改原始需求记录；132：中央战斗区与对局动画总设计；65：判定干预萨满专属裁定。

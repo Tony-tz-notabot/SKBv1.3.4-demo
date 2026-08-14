@@ -15,6 +15,8 @@ const estimatedServerNow=computed(()=>anchorServer.value+(now.value-anchorLocal)
 // 用 activeWindow.deadlineAt —— 两者为同一窗口的服务端绝对截止时刻，保证全员可见一致倒计时。
 const remaining=computed(()=>{const deadline=props.prompt?.deadlineAt??props.activeWindow?.deadlineAt;return deadline!=null?Math.max(0,deadline-estimatedServerNow.value):0;});
 const seconds=computed(()=>Math.ceil(remaining.value/1000));
+// F2（130 可选）：剩余 ≤10s 时倒计时变琥珀红 + 脉冲。
+const urgent=computed(()=>seconds.value<=10);
 const policyText=computed(()=>({pass:"超时不操作",randomLegal:"超时随机合法操作",useDefault:"超时采用默认选择",abortRemaining:"超时终止剩余操作"} as Record<string,string>)[props.prompt?.timeoutPolicy??""]??"");
 const nameOf=(seat:number|null|undefined)=>seat!=null?(props.characterNameOf?.(seat)??`${seat}号玩家`):"";
 const abilityOf=(id:string|null|undefined)=>id?(props.abilityNameOf?.(id)??id):"";
@@ -34,7 +36,7 @@ const headline=computed(()=>{
 });
 </script>
 <template>
-  <div v-if="prompt" class="prompt-banner" :class="{'prompt-banner--mine':prompt.prioritySeat===viewerSeat,'prompt-banner--mandatory':prompt.mandatory}"><div><strong>{{ headline }}</strong><span>{{ prompt.kind }} · {{ policyText }}</span></div><time :datetime="`${seconds}s`">{{ seconds }}s</time></div>
-  <div v-else-if="activeWindow" class="prompt-banner prompt-banner--info"><div><strong>{{ headline }}</strong><span>等待该玩家操作</span></div><time :datetime="`${seconds}s`">{{ seconds }}s</time></div>
+  <div v-if="prompt" class="prompt-banner" :class="{'prompt-banner--mine':prompt.prioritySeat===viewerSeat,'prompt-banner--mandatory':prompt.mandatory}"><div><strong>{{ headline }}</strong><span>{{ prompt.kind }} · {{ policyText }}</span></div><time :datetime="`${seconds}s`" :class="{'prompt-banner__time--urgent':urgent}">{{ seconds }}s</time></div>
+  <div v-else-if="activeWindow" class="prompt-banner prompt-banner--info"><div><strong>{{ headline }}</strong><span>等待该玩家操作</span></div><time :datetime="`${seconds}s`" :class="{'prompt-banner__time--urgent':urgent}">{{ seconds }}s</time></div>
   <div v-else class="prompt-banner-placeholder">{{ headline }}</div>
 </template>

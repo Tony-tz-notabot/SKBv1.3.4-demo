@@ -524,6 +524,33 @@
               "type": "null"
             }
           ]
+        },
+        "activeActivity": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "actorSeat": {
+              "$ref": "#/$defs/Seat"
+            },
+            "targetRefs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ObjectRef"
+              }
+            },
+            "attackerSeat": {
+              "$ref": "#/$defs/Seat"
+            }
+          }
         }
       }
     },
@@ -1936,6 +1963,9 @@
               "$ref": "#/$defs/DurabilityChangedPayload"
             }
           ]
+        },
+        "operationId": {
+          "type": "string"
         }
       },
       "x-eventPayloadMap": {
@@ -2058,7 +2088,8 @@
       "additionalProperties": false,
       "required": [
         "attackId",
-        "result"
+        "result",
+        "outcome"
       ],
       "properties": {
         "attackId": {
@@ -2066,6 +2097,38 @@
         },
         "result": {
           "type": "string"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "hit",
+            "miss",
+            "invalidated",
+            "cancelled"
+          ]
+        },
+        "perTarget": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "targetRef"
+            ],
+            "properties": {
+              "targetRef": {
+                "$ref": "#/$defs/ObjectRef"
+              },
+              "hpLost": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "shieldLost": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
         }
       }
     },

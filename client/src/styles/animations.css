@@ -1,0 +1,73 @@
+/* ===== 对局内动效批次（docs/整理/130，批 1 纯 CSS 挂载动画） =====
+ * 原则：只用 transform/opacity/box-shadow；挂载动画随元素出现播放一次；
+ * 常驻动画仅 A3 行动玩家呼吸光环；reduced-motion 全局降级在 base.css。 */
+
+/* A1 阶段药丸切换 */
+.phase-track span { transition: background-color .25s ease, color .25s ease, transform .25s ease; }
+.phase-track span.active { animation: phase-pop .3s ease-out; }
+
+/* A3 行动玩家呼吸光环（唯一常驻动画） */
+.game-player--active { animation: active-breathe 1.4s ease-in-out infinite alternate; }
+
+/* B1 摸牌/获得牌入场（新元素挂载即播放） */
+.hand-cards .game-card { animation: card-in .22s ease-out; }
+
+/* B2 隐藏牌占位 */
+.concealed-choice { animation: fade-in .18s ease-out; }
+
+/* C1 弃牌堆条状卡落入（CombatStage stage-discard） */
+.stage-discard .stage-card { animation: discard-in .26s ease-out; }
+
+/* C2 主区/临时弃牌卡入场 */
+.stage-main__cards .stage-card, .stage-temp .stage-card { animation: card-in .24s ease-out; }
+
+/* C3 牌库计数 pop（CombatStage 随快照重挂载自动重放） */
+.stage-pile .pile-count { animation: pile-pop .28s ease-out; }
+
+/* D4 感电芯片出现 */
+.status-icons .chip--electric { animation: fade-in .4s ease-out; }
+
+/* E1 报价按钮入场（stagger 由 GameView 批 2 以 inline animation-delay 实现） */
+.offer-list .button { animation: offer-in .18s ease-out; }
+
+/* E3 选择顺序角标 */
+.selection-order { animation: badge-pop .25s ease-out; }
+
+/* F1 提示横幅滑入（窗口切换重建） */
+.prompt-banner { animation: banner-in .22s ease-out; }
+
+/* H1 详情抽屉滑入 + 背板淡入（只做入场，不做离场） */
+.detail-drawer { animation: drawer-in .24s cubic-bezier(.2,.8,.2,1); }
+.detail-backdrop { animation: fade-in .2s ease-out; }
+
+/* H2 确认框 */
+.confirm-dialog__card { animation: dialog-in .2s ease-out; }
+.confirm-dialog { animation: fade-in .16s ease-out; }
+
+/* D2 濒死抖动（批 3 由 GamePlayerPanel 瞬态类触发） */
+.game-player--out { transition: filter .5s ease, opacity .5s ease; }
+.game-player.player-shake { animation: player-shake .5s ease; }
+
+/* A2/A4（批 2）：HUD 标题与 ROUND 淡入过渡（Vue Transition） */
+.hud-title-enter-active, .hud-title-leave-active { transition: opacity .22s ease, transform .22s ease; }
+.hud-title-enter-from { opacity: 0; transform: translateY(6px); }
+.hud-title-leave-to { opacity: 0; transform: translateY(-6px); }
+.round-pop-enter-active { transition: opacity .2s ease, transform .2s ease; }
+.round-pop-enter-from { opacity: 0; transform: scale(.7); }
+
+/* F2（批 4 可选）：剩余 ≤10s 紧急倒计时 */
+.prompt-banner__time--urgent { color: #ffb285; animation: urgent-pulse 1s ease-in-out infinite; }
+@keyframes urgent-pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+@keyframes phase-pop { 0%{transform:scale(1)} 40%{transform:scale(1.12)} 100%{transform:scale(1)} }
+@keyframes active-breathe { from{box-shadow:0 0 0 2px #efd27b,0 0 18px rgba(239,210,123,.18)} to{box-shadow:0 0 0 2px #efd27b,0 0 30px rgba(239,210,123,.42)} }
+@keyframes card-in { from{transform:translateY(14px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes fade-in { from{opacity:0} to{opacity:1} }
+@keyframes discard-in { from{transform:translateY(-10px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes pile-pop { 0%{transform:scale(1)} 45%{transform:scale(1.25)} 100%{transform:scale(1)} }
+@keyframes offer-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+@keyframes badge-pop { 0%{transform:scale(.5)} 60%{transform:scale(1.15)} 100%{transform:scale(1)} }
+@keyframes banner-in { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes drawer-in { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes dialog-in { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+@keyframes player-shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 40%{transform:translateX(4px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }

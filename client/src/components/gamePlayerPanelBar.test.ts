@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { mount } from "@vue/test-utils";
-import { beforeAll, describe, expect, it } from "vitest";
+import { nextTick } from "vue";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import GamePlayerPanel from "./GamePlayerPanel.vue";
@@ -146,24 +147,119 @@ describe("GamePlayerPanel 装备槽固定 2 行（task20）", () => {
   });
 });
 
+describe("GamePlayerPanel 血盾条/状态图标/角标（130 §1.5-B v1）", () => {
+  it("HP/SH 两条细式血盾条渲染（数值文本与填充宽度）", () => {
+    const wrapper = mount(GamePlayerPanel, { props: { player: player(), active: false, local: false } });
+    expect(wrapper.findAll(".game-player__bars .bar").length).toBe(2);
+    expect(wrapper.find(".bar--hp .bar__value").text()).toBe("HP 5/5");
+    expect(wrapper.find(".bar--shield .bar__value").text()).toBe("SH 5/5");
+    expect((wrapper.find(".bar--hp .bar__fill").element as HTMLElement).style.width).toBe("70px"); // 5×14
+  });
+
+  it("铁盾/感电出现在特殊状态图标行，位于血盾条下方、装备区上方", () => {
+    const wrapper = mount(GamePlayerPanel, { props: { player: player({ ironShield: 3, electricMark: 2 }), active: false, local: false } });
+    const icons = wrapper.find(".status-icons");
+    expect(icons.exists()).toBe(true);
+    expect(icons.text()).toContain("铁 3");
+    expect(icons.text()).toContain("感电×2");
+    const barsEl = wrapper.find(".game-player__bars").element as HTMLElement;
+    const iconsEl = icons.element as HTMLElement;
+    const eqEl = wrapper.find(".equipment-slots").element as HTMLElement;
+    expect(barsEl.compareDocumentPosition(iconsEl) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(iconsEl.compareDocumentPosition(eqEl) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("无状态/铁盾/感电时不渲染特殊状态图标行", () => {
+    const wrapper = mount(GamePlayerPanel, { props: { player: player(), active: false, local: false } });
+    expect(wrapper.find(".status-icons").exists()).toBe(false);
+  });
+
+  it("牌数/在线位于面板右下角微角标（小字）", () => {
+    const wrapper = mount(GamePlayerPanel, { props: { player: player(), active: false, local: false } });
+    const corner = wrapper.find(".corner");
+    expect(corner.exists()).toBe(true);
+    expect(corner.find(".cards").text()).toBe("cards 4/4");
+    const cs = getComputedStyle(corner.element as HTMLElement);
+    expect(cs.position).toBe("absolute");
+    expect(parseFloat(cs.fontSize)).toBeLessThanOrEqual(10); // 小字不显眼
+  });
+
+  it("扣血时出现浮动数字 -N（增减特效+弹数字）", async () => {
+    const wrapper = mount(GamePlayerPanel, { props: { player: player({ hp: 5 }), active: false, local: false } });
+    await nextTick();
+    await wrapper.setProps({ player: player({ hp: 3 }) });
+    await nextTick();
+    await nextTick();
+    const loss = wrapper.find(".float-num--loss");
+    expect(loss.exists()).toBe(true);
+    expect(loss.text()).toBe("-2");
+  });
+
+  it("浮动数字 950ms 后自动移除", async () => {
+    vi.useFakeTimers();
+    try {
+      const wrapper = mount(GamePlayerPanel, { props: { player: player({ hp: 5 }), active: false, local: false } });
+      await nextTick();
+      await wrapper.setProps({ player: player({ hp: 3 }) });
+      await nextTick();
+      await nextTick();
+      expect(wrapper.find(".float-num").exists()).toBe(true);
+      vi.advanceTimersByTime(1000);
+      await nextTick();
+      expect(wrapper.find(".float-num").exists()).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe("GamePlayerPanel 濒死/淘汰反馈（130 D2）", () => {
+  it("死亡瞬间（进入 deadNotEliminated）：面板触发抖动类，超时后移除", async () => {
+    vi.useFakeTimers();
+    try {
+      const wrapper = mount(GamePlayerPanel, { props: { player: player(), active: false, local: false } });
+      await nextTick();
+      await wrapper.setProps({ player: player({ lifeState: "deadNotEliminated", hp: null, shield: null }) });
+      await nextTick();
+      await nextTick();
+      expect(wrapper.find(".game-player").classes(), "死亡瞬间应触发抖动类").toContain("player-shake");
+      vi.advanceTimersByTime(700);
+      await nextTick();
+      expect(wrapper.find(".game-player").classes()).not.toContain("player-shake");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("淘汰：不抖动但保留灰化（--out）", async () => {
+    const wrapper = mount(GamePlayerPanel, { props: { player: player(), active: false, local: false } });
+    await nextTick();
+    await wrapper.setProps({ player: player({ lifeState: "eliminated" }) });
+    await nextTick();
+    const panel = wrapper.find(".game-player");
+    expect(panel.classes()).toContain("game-player--out");
+    expect(panel.classes()).not.toContain("player-shake");
+  });
+});
+
 describe("GamePlayerPanel 角色卡信息行（task21）", () => {
   it("删除 手牌x/inplay 元信息行", () => {
     const wrapper = mount(GamePlayerPanel, { props: { player: player(), active: false, local: false } });
     expect(wrapper.find(".game-player__meta").exists(), "不应再渲染 手牌x/inplay 元信息行").toBe(false);
   });
 
-  it("HP/护盾后显示蓝色同样式 cards x/y（当前数量/上限）", () => {
+  it("牌数右下角蓝色小字 cards x/y（原 vitals 徽章移除后迁移）", () => {
     const wrapper = mount(GamePlayerPanel, { props: { player: player(), active: false, local: false } });
-    const cards = wrapper.find(".game-player__vitals .cards");
+    const cards = wrapper.find(".corner .cards");
     expect(cards.exists(), "应存在 cards x/y 元素").toBe(true);
     expect(cards.text()).toBe("cards 4/4");
     const cs = getComputedStyle(cards.element as HTMLElement);
     expect(cs.color, "cards 应为蓝色文字").toBe("rgb(127, 196, 232)");
   });
 
-  it("在线显示绿色无框小字 online，离线显示灰色 offline", () => {
+  it("在线显示绿色无框小字 online，离线显示灰色 offline（迁移到右下角角标）", () => {
     const online = mount(GamePlayerPanel, { props: { player: player(), active: false, local: false } });
-    const onConn = online.find(".game-player__vitals .conn");
+    const onConn = online.find(".corner .conn");
     expect(onConn.exists(), "应存在 online/offline 连接小字").toBe(true);
     expect(onConn.text()).toBe("online");
     const onCs = getComputedStyle(onConn.element as HTMLElement);
@@ -171,7 +267,7 @@ describe("GamePlayerPanel 角色卡信息行（task21）", () => {
     expect(onCs.borderColor === "rgb(111, 221, 160)", "online 应为无框（border 颜色不随状态）").toBe(false);
 
     const offline = mount(GamePlayerPanel, { props: { player: player({ connected: false }), active: false, local: false } });
-    const offConn = offline.find(".game-player__vitals .conn");
+    const offConn = offline.find(".corner .conn");
     expect(offConn.text()).toBe("offline");
     expect(getComputedStyle(offConn.element as HTMLElement).color, "offline 应为灰色").toBe("rgb(111, 135, 149)");
   });

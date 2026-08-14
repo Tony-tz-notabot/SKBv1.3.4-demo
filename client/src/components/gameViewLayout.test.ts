@@ -42,6 +42,11 @@ describe("GameView 页面布局（task6）",()=>{
   const minHeight=parseFloat(getComputedStyle(panel).minHeight);
   expect(minHeight, "操作区 min-height 应足够容纳 3 行按钮，过矮会挤压/溢出").toBeGreaterThanOrEqual(300);
  });
+ it("报价按钮带交错入场 delay（130 E1 stagger）",async()=>{
+  const wrapper=mountView(snapshotWith([]));
+  const style=wrapper.find(".offer-list .button").attributes("style");
+  expect(style,"报价按钮应带 animation-delay 样式").toContain("animation-delay");
+ });
  it("日志与聊天上下平分（纵向排列），且与主战斗区同排：左 3/4 战斗、右 1/4 活动区等高",async()=>{
   const wrapper=mountView(snapshotWith([]));
   const activity=wrapper.find(".game-activity");
@@ -76,15 +81,13 @@ describe("GameView 卡牌颜色虚线边框与牌名同色（task8）",()=>{
   const name=card.find(".game-card__copy strong");
   expect(name.classes()).toContain("game-card__name--red");
  });
- it("弃牌区卡牌带颜色虚线边框与同色牌名",async()=>{
+ it("中央战斗区：牌堆显示剩余数量、弃牌堆条状展示弃牌（132 替代原 .discard-stack，弃牌不再有卡色类）",async()=>{
   const snapshot=snapshotWith([]);
   snapshot.publicView.discardTop=[{ref:"public:c1",templateId:"support.potion",displayName:"小血瓶",category:"support",printedColor:"green",coreStats:[],summary:"",resourceKey:"card.support.potion",badges:[],state:{selected:false,effective:true},detailAvailable:true}];
   const wrapper=mountView(snapshot);
-  const card=wrapper.find(".discard-stack .game-card");
-  expect(card.exists()).toBe(true);
-  expect(card.classes()).toContain("game-card--green");
-  const name=card.find(".game-card__copy strong");
-  expect(name.classes()).toContain("game-card__name--green");
+  expect(wrapper.find(".stage-pile .pile-count").exists(),"牌堆应显示剩余数量").toBe(true);
+  const discard=wrapper.find(".stage-discard .stage-card");
+  expect(discard.exists(),"弃牌堆条状应展示弃牌").toBe(true);
  });
 });
 

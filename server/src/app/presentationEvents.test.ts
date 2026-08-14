@@ -125,3 +125,24 @@ describe("presentation event mapping",()=>{
   }
  });
 });
+  // ---- M0.5 服务端最小补齐（133）：⑦③① ----
+  it("M0.5-⑦ cards.given 映射 seat 取 toSeat（修复 seat 恒 1 缺陷）",async()=>{const {room,users}=await startedRoom();for(const seat of[1,2,3,4]as const)room.game=resolveInitialRedraw(room.game!,seat,false,ruleset).state;const state=room.game!,projector=new GameProjector(ruleset);
+   const presented=projector.presentationFor(state,users[0]!.userId,[{eventType:"cards.given",payload:{fromSeat:2,toSeat:3,cardRefs:[],reason:"talent.extra_gem.death"},eventSeq:1,stateRevision:state.stateRevision}])[0];
+   expect((presented as any).payload.seat,"cards.given 应取 toSeat").toBe(3);
+  });
+  it("M0.5-① 攻击链事件带 operationId（=域 attackId）",async()=>{const {room,users}=await startedRoom();for(const seat of[1,2,3,4]as const)room.game=resolveInitialRedraw(room.game!,seat,false,ruleset).state;const state=room.game!,projector=new GameProjector(ruleset);
+   const chain:Array<[string,Record<string,unknown>]>=[["attack.declare",{attackId:"attack:1:1",attackerSeat:1}],["attack.targets.chosen",{attackId:"attack:1:1",targetRefs:["character:2"]}],["damage.applied",{attackId:"attack:1:1",targetRef:"character:2",segmentIndex:0,totalSegments:1,amount:2,actualHpLoss:2,actualShieldLoss:0}],["attack.resolved",{attackId:"attack:1:1"}]];
+   const presented=projector.presentationFor(state,users[0]!.userId,chain.map(([eventType,payload],i)=>({eventType,payload:payload as any,eventSeq:i+1,stateRevision:state.stateRevision})));
+   for(const ev of presented)expect((ev as any).operationId,"攻击链事件应携带 operationId").toBe("attack:1:1");
+  });
+  it("M0.5-③ ATTACK_RESOLVED outcome 按域事件映射",async()=>{const {room,users}=await startedRoom();for(const seat of[1,2,3,4]as const)room.game=resolveInitialRedraw(room.game!,seat,false,ruleset).state;const state=room.game!,projector=new GameProjector(ruleset);
+   const cases:Array<[string,Record<string,unknown>,string]>=[["attack.resolved",{attackId:"a"},"hit"],["attack.miss",{attackId:"a",targetRef:"character:2",reason:"meleeBlock"},"miss"],["attack.invalidated",{attackId:"a",sourceKind:"armor.a05"},"invalidated"],["attack.cancelled",{attackId:"a",reason:"paidTargetBecameIllegal"},"cancelled"]];
+   for(const [domainType,payload,expected] of cases){const presented=projector.presentationFor(state,users[0]!.userId,[{eventType:domainType,payload:payload as any,eventSeq:1,stateRevision:state.stateRevision}])[0];
+    expect((presented as any).payload.outcome,domainType).toBe(expected);
+    expect(validateProtocol("game",presented)).toEqual({ok:true});}
+  });
+  it("M0.5-③ attack.target.after 产出 perTarget 伤害汇总（公开 ref）",async()=>{const {room,users}=await startedRoom();for(const seat of[1,2,3,4]as const)room.game=resolveInitialRedraw(room.game!,seat,false,ruleset).state;const state=room.game!,projector=new GameProjector(ruleset);
+   const presented=projector.presentationFor(state,users[0]!.userId,[{eventType:"attack.target.after",payload:{attackId:"a",targetRef:"character:2",hit:true,actualHpLoss:1,actualShieldLoss:2},eventSeq:1,stateRevision:state.stateRevision}])[0];
+   expect((presented as any).payload.perTarget).toEqual([{targetRef:"public:seat_2",hpLost:1,shieldLost:2}]);
+   expect(validateProtocol("game",presented)).toEqual({ok:true});
+  });

@@ -187,4 +187,13 @@ describe("PromptBanner 阶段文案（task18）", () => {
     expect(wrapper.find(".prompt-banner").exists()).toBe(false);
     expect(wrapper.find(".prompt-banner-placeholder").text()).toContain("等待服务器推进");
   });
+
+  it("F2：剩余 ≤10s 时倒计时变紧急（urgent 类）；剩余较多时不加", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(1000);
+    const urgent = mount(PromptBanner, { props: { prompt: prompt({ deadlineAt: 5000 }), viewerSeat: 1, serverTime: 1000 } });
+    expect(urgent.find("time").classes(), "剩余 4s 应加 urgent 类").toContain("prompt-banner__time--urgent");
+    const calm = mount(PromptBanner, { props: { prompt: prompt({ deadlineAt: 20000 }), viewerSeat: 1, serverTime: 1000 } });
+    expect(calm.find("time").classes(), "剩余 19s 不应加 urgent 类").not.toContain("prompt-banner__time--urgent");
+  });
 });

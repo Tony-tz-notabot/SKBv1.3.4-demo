@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKB 血盾条设计预览 v1.1</title>
+<style>
+  :root{
+    --bg:#081018; --panel:#0e1d26; --panel-border:#36566a;
+    --bar-h:7px; --bar-unit:14px; --bar-radius:3px;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;gap:24px;padding:32px 16px;
+    font-family:Inter,"Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;color:#edf3f8;background:var(--bg)}
+  h1{font-size:1.2rem;margin:0 0 4px}
+  .hint{color:#718491;font-size:.8rem;margin:0 0 18px;max-width:720px;line-height:1.6}
+  .stage{display:grid;gap:14px;justify-items:center}
+  /* 模拟四角角色面板 */
+  .panel{width:min(330px,92vw);position:relative;padding:12px;border:1px solid var(--panel-border);
+    border-left:4px solid #59c5cf;border-radius:14px;background:rgba(8,21,29,.94);overflow:hidden;min-height:168px}
+  .portrait{position:absolute;right:0;top:0;bottom:0;width:68px;object-fit:cover;opacity:.28;
+    background:linear-gradient(180deg,#2b4d5e,#152c39);display:grid;place-items:center;color:#27424f;font-size:2.4rem}
+  .head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+  .seat-token{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;color:#071317;background:#b2c5ce;font-weight:900;font-size:.8rem}
+  .head strong{font-size:.9rem}
+  /* 特殊状态图标行：血盾条下方、装备区上方 */
+  .status-icons{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;position:relative;z-index:1;min-height:16px}
+  .status-icons .chip{padding:2px 6px;border-radius:5px;font-size:.6rem;font-weight:700;line-height:1.4}
+  .chip--iron{color:#cdd8de;background:#3b454c}
+  .chip--frozen{color:#bfe0f2;background:#24404e}
+  .chip--electric{color:#ffe3a1;background:#4a3d1f}
+  /* ===== 血盾条（纯预计算颜色，不依赖 color-mix） ===== */
+  .bars{display:grid;gap:3px;position:relative;z-index:1}
+  .bar{position:relative;display:flex;align-items:center;gap:6px}
+  .bar__track{position:relative;height:var(--bar-h);width:168px;border-radius:var(--bar-radius);overflow:hidden;
+    background:linear-gradient(180deg,rgba(0,0,0,.38),rgba(0,0,0,.2)),var(--track,#1a2a33);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.5)}
+  .bar__fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:var(--bar-radius);
+    background:linear-gradient(180deg,var(--fill-top),var(--fill,#ff6f66));
+    box-shadow:0 0 6px var(--glow,rgba(255,111,102,.5));
+    transition:width .22s ease-out}
+  .bar__fill--flash{animation:bar-flash .4s ease-out}
+  .bar__value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.62rem;
+    color:#9fb3bd;white-space:nowrap;line-height:1}
+  /* 主题：fill 实色 / fill-top 顶部微亮 / track 失去部分(低透明加深) / glow 光晕 —— 主题色已提亮 */
+  .bar--hp{--fill:#ff857a;--fill-top:#ffb0a6;--track:rgba(255,133,122,.14);--glow:rgba(255,133,122,.55)}
+  .bar--shield{--fill:#dde6ec;--fill-top:#f0f5f8;--track:rgba(221,230,236,.12);--glow:rgba(221,230,236,.4)}
+  .bar--purple{--fill:#c9a3f0;--fill-top:#dec3f7;--track:rgba(201,163,240,.14);--glow:rgba(201,163,240,.5)}
+  .bar--blue{--fill:#93d0f0;--fill-top:#b5e2f8;--track:rgba(147,208,240,.14);--glow:rgba(147,208,240,.5)}
+  /* 单点刻度线（可选，默认关；线已调淡） */
+  .bar--ticks .bar__track{background-image:repeating-linear-gradient(90deg,transparent 0 13px,rgba(255,255,255,.04) 13px 14px),linear-gradient(180deg,rgba(0,0,0,.38),rgba(0,0,0,.2))}
+  .bar--ticks .bar__fill{background-image:repeating-linear-gradient(90deg,transparent 0 13px,rgba(0,0,0,.10) 13px 14px),linear-gradient(180deg,var(--fill-top),var(--fill))}
+  /* 浮动数字 */
+  .float-nums{position:absolute;inset:0;pointer-events:none;z-index:3}
+  .float-num{position:absolute;font-family:var(--mono);font-weight:800;font-size:1.05rem;text-shadow:0 2px 6px rgba(0,0,0,.67);
+    animation:float-up .9s ease-out forwards}
+  .float-num--loss{color:#ff8a7a}
+  .float-num--gain{color:#6fdda0}
+  /* 牌数/在线 右下角微角标 */
+  .corner{position:absolute;right:6px;bottom:2px;display:flex;gap:6px;align-items:center;
+    font-family:var(--mono);font-size:.55rem;color:#7d929f;opacity:.55;z-index:1;letter-spacing:.02em}
+  .corner .conn-on{color:#6fdda0}.corner .conn-off{color:#6f8795}
+  /* 装备区占位（等宽对比用） */
+  .equipment{margin-top:10px;display:grid;gap:3px;position:relative;z-index:1}
+  .equipment .row{display:flex;gap:3px}
+  .equipment .slot{width:31px;height:42px;border:1px dashed #355364;border-radius:5px;color:#617987;font-size:.52rem;
+    display:grid;place-items:center;background:#0a1720}
+  .equipment .slot--w{width:48px}
+  /* 控制区 */
+  .controls{width:min(420px,92vw);display:grid;gap:10px;padding:16px;border:1px solid #294558;border-radius:14px;background:#0b1821}
+  .controls .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .controls label{font-size:.8rem;color:#9fb3bd}
+  .controls button{min-height:34px;padding:0 12px;border:1px solid #36556a;border-radius:8px;color:#dbe8ef;background:#152835;cursor:pointer;font:inherit}
+  .controls button:hover{border-color:#77d5d9}
+  .controls input[type=range]{width:160px}
+  .theme-dots{display:flex;gap:6px}
+  .theme-dot{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent}
+  .theme-dot.active{border-color:#fff}
+  @keyframes float-up{0%{transform:translateY(0);opacity:0}12%{opacity:1}100%{transform:translateY(-30px);opacity:0}}
+  @keyframes bar-flash{0%{filter:brightness(1)}35%{filter:brightness(1.9)}100%{filter:brightness(1)}}
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div>
+      <h1>SKB 血盾条设计预览 v1.1（待审）</h1>
+      <p class="hint">细式条：单点等效长度 = 2×条高（14px），总长随上限改变，12 点 ≈ 168px ≈ 装备区第二行宽；无边框；数值在条左端（等宽字体防跳动）；失去部分=主题色低透明+加深轨道；加减有闪烁与弹数字。铁盾等特殊状态图标统一在血盾条下方、装备区上方（示例：铁3/冰冻/感电×2）。"牌数/在线"在右下角微角标。可切换备用条主题（紫/蓝）；单点刻度线默认关、可打开。</p>
+    </div>
+
+    <div class="panel" id="panel">
+      <div class="portrait">👤</div>
+      <div class="head"><span class="seat-token">1</span><strong>骑士·Knight</strong></div>
+      <div class="bars" id="bars">
+        <div class="bar bar--hp" data-bar="hp">
+          <span class="bar__value" id="hpValue">HP 7/12</span>
+          <div class="bar__track" id="hpTrack"><div class="bar__fill" id="hpFill" style="width:98px"></div></div>
+        </div>
+        <div class="bar bar--shield" data-bar="shield">
+          <span class="bar__value" id="shValue">SH 5/12</span>
+          <div class="bar__track" id="shTrack"><div class="bar__fill" id="shFill" style="width:70px"></div></div>
+        </div>
+      </div>
+      <div class="status-icons"><span class="chip chip--iron">铁 3</span><span class="chip chip--frozen">冰冻</span><span class="chip chip--electric">感电×2</span></div>
+      <div class="equipment">
+        <div class="row"><div class="slot slot--w">武1</div><div class="slot">武2</div><div class="slot">坐骑</div></div>
+        <div class="row"><div class="slot">甲</div><div class="slot">赋1</div><div class="slot">赋2</div><div class="slot">赋3</div><div class="slot">BOSS</div></div>
+      </div>
+      <div class="corner"><span id="cornerCards">cards 4/12</span><span id="cornerConn" class="conn-on">online</span></div>
+      <div class="float-nums" id="floatNums"></div>
+    </div>
+
+    <div class="controls">
+      <div class="row">
+        <label>HP <b id="hpVal">7</b> / <span id="hpMaxVal">12</span></label>
+        <button data-delta="-3">-3</button><button data-delta="-1">-1</button><button data-delta="1">+1</button><button data-delta="3">+3</button>
+      </div>
+      <div class="row">
+        <label>SH <b id="shVal">5</b> / <span id="shMaxVal">12</span></label>
+        <button data-delta="-2" data-bar="shield">-2</button><button data-delta="2" data-bar="shield">+2</button>
+      </div>
+      <div class="row">
+        <label>上限</label>
+        <input type="range" id="maxRange" min="4" max="22" value="12" step="1">
+        <span id="maxLabel" style="font-family:var(--mono)">12</span>
+        <label style="margin-left:10px"><input type="checkbox" id="ticksToggle"> 单点刻度线</label>
+      </div>
+      <div class="row">
+        <label>备用条主题</label>
+        <div class="theme-dots" id="themeDots">
+          <span class="theme-dot" data-theme="purple" title="紫（死灵灵魂）" style="background:#b48ae8"></span>
+          <span class="theme-dot" data-theme="blue" title="蓝（临时资源）" style="background:#7fc4e8"></span>
+          <span class="theme-dot active" data-theme="none" title="关闭" style="background:#4a5a66"></span>
+        </div>
+        <span id="spareVal" style="font-family:var(--mono);font-size:.7rem;color:#9fb3bd"></span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // 参考宽：12 点 × 14px = 168px。上限 >12 时单点按比例收缩，总长保持 168px。
+  const REF_WIDTH=168, REF_POINTS=12, UNIT=14;
+  const $=id=>document.getElementById(id);
+  const state={hp:7,shield:5,max:12,ticks:false,spare:null,spareV:6};
+  let uid=0;
+
+  function unit(){return state.max>REF_POINTS?REF_WIDTH/state.max:UNIT;}
+
+  function refill(){
+    const u=unit();
+    $('hpTrack').style.width=Math.round(state.max*u)+'px';
+    $('hpFill').style.width=Math.round(state.hp*u)+'px';
+    $('hpValue').textContent='HP '+state.hp+'/'+state.max;
+    $('shTrack').style.width=Math.round(state.max*u)+'px';
+    $('shFill').style.width=Math.round(state.shield*u)+'px';
+    $('shValue').textContent='SH '+state.shield+'/'+state.max;
+    $('hpVal').textContent=state.hp;
+    $('shVal').textContent=state.shield;
+    $('hpMaxVal').textContent=state.max;
+    $('shMaxVal').textContent=state.max;
+    $('cornerCards').textContent='cards 4/'+state.max;
+    $('spareVal').textContent=state.spare?('备用条 '+state.spare+' · '+state.spareV+'/12'):'（备用条关闭）';
+    const spare=document.querySelector('.bar--'+state.spare);
+    if(state.spare&&spare){spare.querySelector('.bar__track').style.width='168px';
+      spare.querySelector('.bar__fill').style.width=Math.round(state.spareV*UNIT)+'px';
+      spare.querySelector('.bar__value').textContent='SP '+state.spareV+'/12';}
+  }
+
+  function flash(fillEl){if(!fillEl)return;fillEl.classList.remove('bar__fill--flash');void fillEl.offsetWidth;fillEl.classList.add('bar__fill--flash');}
+
+  function pop(delta,barKey,loss){
+    const n=document.createElement('span');
+    n.className='float-num '+(loss?'float-num--loss':'float-num--gain');
+    n.textContent=(delta>0?'+':'')+delta;
+    const row=document.querySelector('.bar[data-bar="'+barKey+'"]');
+    const rect=row?row.getBoundingClientRect():null,bars=$('bars').getBoundingClientRect();
+    n.style.left=(rect?rect.left-bars.left:40)+40+'px';
+    n.style.top=(barKey==='shield'?42:26)+'px';
+    n.dataset.id=++uid;
+    $('floatNums').appendChild(n);
+    setTimeout(()=>{const el=$('floatNums').querySelector('[data-id="'+n.dataset.id+'"]');if(el)el.remove();},950);
+  }
+
+  function change(barKey,delta){
+    const before=state[barKey];
+    state[barKey]=Math.max(0,Math.min(state.max,before+delta));
+    const actual=state[barKey]-before;
+    if(actual!==0){
+      flash(document.querySelector('.bar[data-bar="'+barKey+'"] .bar__fill'));
+      pop(actual,barKey,actual<0);
+    }
+    refill();
+  }
+
+  document.querySelectorAll('.controls button[data-delta]').forEach(b=>b.addEventListener('click',()=>change(b.dataset.bar||'hp',Number(b.dataset.delta))));
+  $('maxRange').addEventListener('input',e=>{state.max=Number(e.target.value);$('maxLabel').textContent=state.max;refill();});
+  $('ticksToggle').addEventListener('change',e=>{
+    state.ticks=e.target.checked;
+    document.querySelectorAll('.bar').forEach(r=>r.classList.toggle('bar--ticks',state.ticks));
+  });
+  $('themeDots').addEventListener('click',e=>{
+    const dot=e.target.closest('.theme-dot');if(!dot)return;
+    document.querySelectorAll('.theme-dot').forEach(d=>d.classList.toggle('active',d===dot));
+    const theme=dot.dataset.theme==='none'?null:dot.dataset.theme;
+    if(theme===state.spare){state.spare=null;dot.classList.toggle('active',false);document.querySelector('.theme-dot[data-theme=none]').classList.add('active');}
+    else state.spare=theme;
+    const existing=document.querySelector('.bar--purple,.bar--blue');if(existing)existing.remove();
+    if(state.spare){
+      const row=document.createElement('div');
+      row.className='bar bar--'+state.spare+(state.ticks?' bar--ticks':'');
+      row.dataset.bar=state.spare;
+      row.innerHTML='<span class="bar__value">SP '+state.spareV+'/12</span><div class="bar__track" style="width:168px"><div class="bar__fill" style="width:'+(state.spareV*UNIT)+'px"></div></div>';
+      $('bars').appendChild(row);
+    }
+    refill();
+  });
+  refill();
+</script>
+</body>
+</html>
