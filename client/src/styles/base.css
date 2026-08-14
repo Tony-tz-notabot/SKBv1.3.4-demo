@@ -63,6 +63,8 @@ h1 { margin-bottom: 0; font-size: clamp(1.7rem, 5vw, 2.6rem); }
 .resume-card > p:last-child { color: #899da9; line-height: 1.6; }
 .room-code { display: block; color: #7ed7d8; font-size: 2rem; letter-spacing: .16em; }
 .quick-links { padding: 18px; display: flex; justify-content: space-around; color: #9cafba; }
+.quick-links button { padding: 6px 14px; border: 1px solid #36566a; border-radius: 8px; color: #9cafba; background: #0d1c27; font: inherit; cursor: pointer; }
+.quick-links button:hover { border-color: #466274; color: #d7e4ea; }
 .room-layout { min-height: 650px; padding: 24px; display: grid; grid-template-columns: 1fr 260px; grid-template-rows: auto 1fr; gap: 18px; }
 .room-summary { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .room-code-row { display: flex; align-items: center; gap: 10px; margin: 2px 0 6px; }
