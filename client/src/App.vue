@@ -5,6 +5,8 @@ import ConnectionStatus from "./components/ConnectionStatus.vue";
 import { useServerProjectionStore } from "./stores/serverProjection";
 import { useConnectionStore } from "./stores/connection";
 import LobbyView from "./views/LobbyView.vue";
+import MatchLogListView from "./views/MatchLogListView.vue";
+import MatchLogView from "./views/MatchLogView.vue";
 import RoomView from "./views/RoomView.vue";
 import CharacterSelectionView from "./views/CharacterSelectionView.vue";
 import type { MockScene } from "./dev/mockServer";
@@ -26,7 +28,9 @@ const feedbackStore = useCommandFeedbackStore();
 const { screen, lobbySnapshot, roomSnapshot, gameSnapshot, setupSnapshot, eventQueue, protocolErrors } = storeToRefs(store);
 const { state: connectionState, latencyMs } = storeToRefs(connectionStore);
 const { pendingIds, lastRejection } = storeToRefs(feedbackStore);
-const title = computed(() => screen.value === "game" ? "对局" : screen.value === "setup" ? "开局重摸" : screen.value === "room" ? "房间" : "大厅");
+const matchLogsOpen=ref(false);
+const matchLogGameId=ref<string|null>(null);
+const title = computed(() => matchLogGameId.value ? "对局日志" : matchLogsOpen.value ? "对局记录" : screen.value === "game" ? "对局" : screen.value === "setup" ? "开局重摸" : screen.value === "room" ? "房间" : "大厅");
 const isDev = import.meta.env.DEV;
 const mockScene = shallowRef<MockScene>("selection");
 const showHarness = ref(false);
@@ -97,7 +101,9 @@ const localizedRejection = computed(() => lastRejection.value ? localizeCommandR
     <SetupRedrawView v-else-if="setupSnapshot" :snapshot="setupSnapshot" @decide="(offerId,redraw)=>gameActions.execute(offerId,{confirm:[redraw]})" />
     <CharacterSelectionView v-else-if="roomSnapshot?.phase === 'characterSelection'" :snapshot="roomSnapshot" @preselect="roomActions.preselectCharacter" @lock="roomActions.lockCharacter" @chat="roomActions.sendChat" />
     <RoomView v-else-if="roomSnapshot && roomSnapshot.phase !== 'inGame'" :snapshot="roomSnapshot" @ready="roomActions.setReady" @chat="roomActions.sendChat" @settings="roomActions.updateSettings" @change-seat="roomActions.changeSeat" @kick="roomActions.kickPlayer" @transfer-host="roomActions.transferHost" @start="roomActions.startGame" @leave="roomActions.leave" @close="roomActions.closeRoom" />
-    <LobbyView v-else :snapshot="lobbySnapshot" @create="(settings,password)=>roomActions.create(settings,password||null)" @join="(code,password,asSpectator)=>roomActions.join(code,password||null,asSpectator)" />
+    <MatchLogView v-else-if="matchLogGameId && account" :token="account.token" :user-id="account.userId" :game-id="matchLogGameId" @back="matchLogGameId=null" />
+    <MatchLogListView v-else-if="matchLogsOpen && account" :token="account.token" @back="matchLogsOpen=false" @open="(id)=>matchLogGameId=id" />
+    <LobbyView v-else :snapshot="lobbySnapshot" @create="(settings,password)=>roomActions.create(settings,password||null)" @join="(code,password,asSpectator)=>roomActions.join(code,password||null,asSpectator)" @open-logs="matchLogsOpen=true" />
 
     <footer class="boundary-note">Vue 不执行规则，不预测隐藏信息，不直接修改权威状态。</footer>
     </template>

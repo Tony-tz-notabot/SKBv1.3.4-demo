@@ -253,6 +253,7 @@ export type GameSnapshot = {
   "interaction": InteractionView;
   "activeWindow": ActiveWindowView | null;
   "chat": Array<ChatMessage>;
+  "log"?: Array<LogEntryView>;
 };
 
 export type ExecuteOfferPayload = {
@@ -471,6 +472,33 @@ export type DurabilityChangedPayload = {
   "cardRef": ObjectRef;
   "from": number;
   "to": number;
+};
+
+export type LogToken = {
+  "t": "text";
+  "s": string;
+} | {
+  "t": "char";
+  "seat": Seat;
+} | {
+  "t": "card";
+  "templateId": string;
+  "color": CardColor;
+  "scope": string;
+} | {
+  "t": "ability";
+  "id": string;
+} | {
+  "t": "sem";
+  "s": string;
+  "cls": "sem-normal" | "sem-shield" | "sem-hp" | "sem-heal" | "sem-cost" | "sem-fire" | "sem-poison" | "sem-electric" | "sem-frozen" | "sem-extra";
+};
+
+export type LogEntryView = {
+  "seq": number;
+  "mode": "summary" | "atomic";
+  "type": string;
+  "tokens": Array<LogToken>;
 };
 
 

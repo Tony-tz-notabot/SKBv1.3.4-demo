@@ -140,33 +140,40 @@ h1 { margin-bottom: 0; font-size: clamp(1.7rem, 5vw, 2.6rem); }
 .confirm-dialog__card h3 { margin: 0 0 12px; }
 .confirm-dialog__card p { margin: 0 0 18px; line-height: 1.6; color: #b9c7d0; }
 .confirm-dialog__actions { display: flex; justify-content: flex-end; gap: 10px; }
-/* ===== 操作提示词 token 着色（docs/整理/128 §4.0.1）===== */
+/* ===== 操作提示词/对局日志 token 着色（docs/整理/128 §4.0.1）===== */
 .prompt-hint { line-height: 1.7; }
-.prompt-hint .rel-self, .sem-heal { color: #6fdda0; }
-.prompt-hint .rel-ally { color: #7fc4e8; }
-.prompt-hint .rel-enemy { color: #ff9aa8; }
-.prompt-hint .card-white, .prompt-hint .card-green, .prompt-hint .card-blue, .prompt-hint .card-orange, .prompt-hint .card-red { font-weight: 600; }
-.prompt-hint .card-white { color: #eef4f7; }
-.prompt-hint .card-green { color: #7fe0ae; }
-.prompt-hint .card-blue { color: #7fc4e8; }
-.prompt-hint .card-orange { color: #ffb37a; }
-.prompt-hint .card-red { color: #ff9aa8; }
-.prompt-hint .sem-normal { color: #7fc4e8; }
-.prompt-hint .sem-shield { color: #9fb3bd; }
-.prompt-hint .sem-hp { color: #ff8a7a; }
-.prompt-hint .sem-cost { color: #efd27b; }
-.prompt-hint .sem-fire { color: #ffb37a; }
-.prompt-hint .sem-poison { color: #3da86b; }
-.prompt-hint .sem-electric { color: #ffd27b; }
-.prompt-hint .sem-frozen { color: #7fc4e8; }
-.prompt-hint .sem-extra { color: #efd27b; font-weight: 700; }
+:is(.prompt-hint, .offer-preview, .game-log) .rel-self, .sem-heal { color: #6fdda0; }
+:is(.prompt-hint, .offer-preview, .game-log) .rel-ally { color: #7fc4e8; }
+:is(.prompt-hint, .offer-preview, .game-log) .rel-enemy { color: #ff9aa8; }
+:is(.prompt-hint, .offer-preview, .game-log) .card-white, :is(.prompt-hint, .offer-preview, .game-log) .card-green, :is(.prompt-hint, .offer-preview, .game-log) .card-blue, :is(.prompt-hint, .offer-preview, .game-log) .card-orange, :is(.prompt-hint, .offer-preview, .game-log) .card-red { font-weight: 600; }
+:is(.prompt-hint, .offer-preview, .game-log) .card-white { color: #eef4f7; }
+:is(.prompt-hint, .offer-preview, .game-log) .card-green { color: #7fe0ae; }
+:is(.prompt-hint, .offer-preview, .game-log) .card-blue { color: #7fc4e8; }
+:is(.prompt-hint, .offer-preview, .game-log) .card-orange { color: #ffb37a; }
+:is(.prompt-hint, .offer-preview, .game-log) .card-red { color: #ff9aa8; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-normal { color: #7fc4e8; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-shield { color: #9fb3bd; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-hp { color: #ff8a7a; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-cost { color: #efd27b; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-fire { color: #ffb37a; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-poison { color: #3da86b; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-electric { color: #ffd27b; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-frozen { color: #7fc4e8; }
+:is(.prompt-hint, .offer-preview, .game-log) .sem-extra { color: #efd27b; font-weight: 700; }
 .offer-preview { display: block; margin-top: 3px; font-weight: 600; }
-.offer-preview .sem-normal { color: #7fc4e8; }
-.offer-preview .sem-shield { color: #9fb3bd; }
-.offer-preview .sem-hp { color: #ff8a7a; }
-.offer-preview .sem-cost { color: #efd27b; }
-.offer-preview .sem-fire { color: #ffb37a; }
-.offer-preview .sem-poison { color: #3da86b; }
-.offer-preview .sem-electric { color: #ffd27b; }
-.offer-preview .sem-frozen { color: #7fc4e8; }
-.offer-preview .sem-extra { color: #efd27b; font-weight: 700; }
+.game-log { min-width:0; min-height:0; display:flex; flex-direction:column; padding:14px; border:1px solid #294558; border-radius:14px; background:#0b1821; }
+.game-log header { display:flex; align-items:center; justify-content:space-between; }
+.game-log header .eyebrow { margin:0; }
+.game-log__tabs { display:flex; gap:4px; }
+.game-log__tabs button { padding:4px 9px; border:0; border-radius:5px; color:#6e8592; background:transparent; cursor:pointer; }
+.game-log__tabs button.active { color:#e7f4f6; background:#294558; }
+.game-log__list { flex:1; min-height:0; margin:8px 0 0; padding:0; overflow:auto; list-style:none; }
+.game-log__list li { padding:4px 0; line-height:1.55; border-top:1px solid #172e3a; color:#9eb1bb; font-size:.72rem; }
+.matchlog-list,.matchlog-view { padding:22px; border:1px solid #294558; border-radius:16px; background:#0b1821; }
+.matchlog-list header,.matchlog-view header { display:flex; align-items:center; justify-content:space-between; }
+.matchlog-list__items { margin:14px 0 0; padding:0; list-style:none; display:grid; gap:8px; }
+.matchlog-list__items button { width:100%; padding:12px; display:grid; gap:4px; text-align:left; border:1px solid #294558; border-radius:10px; color:#d7e4ea; background:#0d1c27; cursor:pointer; }
+.matchlog-list__items button:hover { border-color:#466274; }
+.matchlog-list__items button span { color:#6e8592; font-size:.72rem; }
+.matchlog-view__meta { margin:10px 0 14px; color:#8fa4af; font-size:.78rem; }
+.matchlog-view .game-log { min-height:62vh; }

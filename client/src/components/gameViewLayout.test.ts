@@ -28,7 +28,7 @@ describe("GameView 页面布局（task6）",()=>{
   expect(panel.exists()).toBe(true);
   expect(panel.find(".offer-list .button").exists()).toBe(true);
   // 日志与聊天都存在（真实组件）
-  expect(wrapper.find(".event-feed").exists()).toBe(true);
+  expect(wrapper.find(".game-log").exists()).toBe(true);
   expect(wrapper.find(".game-chat").exists()).toBe(true);
   // offer 按钮每列 3 行（纵向填充，超出自动换列）
   const offerList=panel.find(".offer-list").element as HTMLElement;
@@ -50,9 +50,9 @@ describe("GameView 页面布局（task6）",()=>{
   // 上下两栏：单列、两行
   expect(cs.gridTemplateColumns, "日志与聊天应上下排列（单列）").not.toMatch(/\s/);
   expect(cs.gridTemplateRows, "日志与聊天应上下平分（两行）").toMatch(/\s/);
-  const feed=wrapper.find(".event-feed").element as HTMLElement;
+  const feed=wrapper.find(".game-log").element as HTMLElement;
   const chat=wrapper.find(".game-chat").element as HTMLElement;
-  expect(feed.parentElement===activity.element, "事件流应直接位于 activity 容器内").toBe(true);
+  expect(feed.parentElement===activity.element, "日志应直接位于 activity 容器内").toBe(true);
   expect(chat.parentElement===activity.element, "聊天应直接位于 activity 容器内").toBe(true);
   const css=readFileSync(join(process.cwd(),"src","styles","base.css"),"utf8");
   // 主战斗区宽度 3/4、活动区 1/4：布局列按 3fr/1fr

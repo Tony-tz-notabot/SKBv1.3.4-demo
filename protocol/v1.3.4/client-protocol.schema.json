@@ -1297,6 +1297,12 @@
           "items": {
             "$ref": "#/$defs/ChatMessage"
           }
+        },
+        "log": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LogEntryView"
+          }
         }
       }
     },
@@ -2230,6 +2236,147 @@
         "to": {
           "type": "integer",
           "minimum": 0
+        }
+      }
+    },
+    "LogToken": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "t",
+            "s"
+          ],
+          "properties": {
+            "t": {
+              "const": "text"
+            },
+            "s": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "t",
+            "seat"
+          ],
+          "properties": {
+            "t": {
+              "const": "char"
+            },
+            "seat": {
+              "$ref": "#/$defs/Seat"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "t",
+            "templateId",
+            "color",
+            "scope"
+          ],
+          "properties": {
+            "t": {
+              "const": "card"
+            },
+            "templateId": {
+              "type": "string"
+            },
+            "color": {
+              "$ref": "#/$defs/CardColor"
+            },
+            "scope": {
+              "type": "string",
+              "pattern": "^(public|hidden|hand:[1-4])$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "t",
+            "id"
+          ],
+          "properties": {
+            "t": {
+              "const": "ability"
+            },
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "t",
+            "s",
+            "cls"
+          ],
+          "properties": {
+            "t": {
+              "const": "sem"
+            },
+            "s": {
+              "type": "string"
+            },
+            "cls": {
+              "type": "string",
+              "enum": [
+                "sem-normal",
+                "sem-shield",
+                "sem-hp",
+                "sem-heal",
+                "sem-cost",
+                "sem-fire",
+                "sem-poison",
+                "sem-electric",
+                "sem-frozen",
+                "sem-extra"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "LogEntryView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seq",
+        "mode",
+        "type",
+        "tokens"
+      ],
+      "properties": {
+        "seq": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "summary",
+            "atomic"
+          ]
+        },
+        "type": {
+          "type": "string"
+        },
+        "tokens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LogToken"
+          }
         }
       }
     }
