@@ -10,7 +10,7 @@ function mountView(snapshot:any){return mount(GameView,{props:{snapshot,events:[
 describe("GameView choice selectors",()=>{
  it("selects a color option and submits it with the offer",async()=>{const snapshot=snapshotWith([{key:"color",kind:"color",min:1,max:1,options:["red","blue"]}]),wrapper=mount(GameView,{props:{snapshot,events:[]},global:{stubs:{GamePlayerPanel:true,GameCard:true,PromptBanner:true,GameChatPanel:true,GameEventFeed:true,ResourceImage:true}}});await wrapper.find(".offer-list .button").trigger("click");const red=wrapper.findAll(".choice-buttons .mini-button").find((b)=>b.text().includes("红"))!;await red.trigger("click");const submit=wrapper.findAll(".interaction-panel .button--primary").at(-1)!;expect((submit.element as HTMLButtonElement).disabled).toBe(false);await submit.trigger("click");expect(wrapper.emitted("execute")![0]![0]).toBe("offer:test:1");expect(wrapper.emitted("execute")![0]![1]).toEqual({color:["red"]});});
  it("selects a number option and a confirm checkbox",async()=>{const snapshot=snapshotWith([{key:"amount",kind:"number",min:1,max:1,options:[0,1,2]},{key:"confirm",kind:"confirm",min:1,max:1,options:[true,false]}]),wrapper=mount(GameView,{props:{snapshot,events:[]},global:{stubs:{GamePlayerPanel:true,GameCard:true,PromptBanner:true,GameChatPanel:true,GameEventFeed:true,ResourceImage:true}}});await wrapper.find(".offer-list .button").trigger("click");const buttons=wrapper.findAll(".choice-buttons .mini-button");await buttons.find((b)=>b.text()==="1")!.trigger("click");await buttons.find((b)=>b.text()==="确认")!.trigger("click");await wrapper.findAll(".interaction-panel .button--primary").at(-1)!.trigger("click");expect(wrapper.emitted("execute")![0]![1]).toEqual({amount:[1],confirm:[true]});});
- it("selects an option (BOSS family) and submits it with the offer",async()=>{const snapshot=snapshotWith([{key:"mode",kind:"option",min:1,max:1,options:["kill","dodge"]}]),wrapper=mountView(snapshot);await wrapper.find(".offer-list .button").trigger("click");const dodge=wrapper.findAll(".choice-buttons .mini-button").find((b)=>b.text().includes("dodge"))!;await dodge.trigger("click");const submit=wrapper.findAll(".interaction-panel .button--primary").at(-1)!;expect((submit.element as HTMLButtonElement).disabled).toBe(false);await submit.trigger("click");expect(wrapper.emitted("execute")![0]![0]).toBe("offer:test:1");expect(wrapper.emitted("execute")![0]![1]).toEqual({mode:["dodge"]});});
+ it("selects an option (BOSS family) and submits it with the offer",async()=>{const snapshot=snapshotWith([{key:"mode",kind:"option",min:1,max:1,options:["kill","dodge"]}]),wrapper=mountView(snapshot);await wrapper.find(".offer-list .button").trigger("click");const dodge=wrapper.findAll(".choice-buttons .mini-button").find((b)=>b.text()==="闪")!;await dodge.trigger("click");const submit=wrapper.findAll(".interaction-panel .button--primary").at(-1)!;expect((submit.element as HTMLButtonElement).disabled).toBe(false);await submit.trigger("click");expect(wrapper.emitted("execute")![0]![0]).toBe("offer:test:1");expect(wrapper.emitted("execute")![0]![1]).toEqual({mode:["dodge"]});});
  it("blocks submit until the spec minimum is met",async()=>{const snapshot=snapshotWith([{key:"color",kind:"color",min:1,max:1,options:["red","blue"]}]),wrapper=mount(GameView,{props:{snapshot,events:[]},global:{stubs:{GamePlayerPanel:true,GameCard:true,PromptBanner:true,GameChatPanel:true,GameEventFeed:true,ResourceImage:true}}});await wrapper.find(".offer-list .button").trigger("click");const submit=wrapper.findAll(".interaction-panel .button--primary").at(-1)!;expect((submit.element as HTMLButtonElement).disabled).toBe(true);await submit.trigger("click");expect(wrapper.emitted("execute")).toBeUndefined();});
  it("shows a plain-language hint for the play phase window",async()=>{const wrapper=mountView(snapshotWith([],undefined,"playPhaseAction"));const hint=wrapper.find(".prompt-hint");expect(hint.exists()).toBe(true);expect(hint.text()).toContain("出牌阶段");expect(hint.text()).toContain("攻击");});
  it("shows a plain-language hint for the attack response window",async()=>{const wrapper=mountView(snapshotWith([],undefined,"attackResponse"));const hint=wrapper.find(".prompt-hint");expect(hint.exists()).toBe(true);expect(hint.text()).toContain("被攻击");});
@@ -94,5 +94,28 @@ describe("F2 逐一排查：特殊窗口按钮不再显示'确认选择'",()=>{
    interaction:{prompt:{promptId:"p:1",kind,mandatory:false,deadlineAt:Date.now()+10000,prioritySeat:1 as const,timeoutPolicy:"pass" as const},offers:[{offerId:"offer:test:1",kind:"respond" as const,sourceRefs:[],legalTargetRefs:[],selectionSpecs:[],preview:{costSummary:null}}],disabledHints:[]}};
   const wrapper=mountView(snapshot);
   expect(wrapper.find(".offer-list .button").text()).toBe("出【闪】");
+ });
+});
+
+describe("F2 中文化与目标",()=>{
+ it("狼人雕像选择区：血/盾显示中文（护盾伤害2/血量伤害1），目标含自己",async()=>{
+  const snapshot={...snapshotWith([],"resolveChoice" as const,"statueResolutionChoice"),
+   interaction:{prompt:{promptId:"p:1",kind:"statueResolutionChoice",mandatory:false,deadlineAt:Date.now()+10000,prioritySeat:1 as const,timeoutPolicy:"pass" as const,promptData:{statueFamily:"statue.werewolf"}},offers:[{offerId:"offer:statue-resolve:p:1",kind:"resolveChoice" as const,sourceRefs:[],legalTargetRefs:["public:seat_1","public:seat_2"],selectionSpecs:[{key:"targets",kind:"targets",min:1,max:1,distinct:true,legalRefs:["public:seat_1","public:seat_2"]},{key:"mode",kind:"option",min:1,max:1,options:["drain_shield","drain_hp"]}],preview:{costSummary:null}}],disabledHints:[]}};
+  const wrapper=mountView(snapshot);
+  await wrapper.find(".offer-list .button").trigger("click");
+  const labels=[...wrapper.findAll(".choice-buttons .mini-button")].map(b=>b.text());
+  expect(labels.some(t=>t==="护盾伤害2")).toBe(true);
+  expect(labels.some(t=>t==="血量伤害1")).toBe(true);
+  expect(labels.some(t=>t==="drain_shield")).toBe(false);
+  expect(labels.some(t=>t.includes("骑士"))).toBe(true);
+ });
+ it("武器方式选择显示中文（方式一/方式二）",async()=>{
+  const snapshot=snapshotWith([{key:"mode",kind:"option",min:1,max:1,options:["mode_1","mode_2"]}]);
+  const wrapper=mountView(snapshot);
+  await wrapper.find(".offer-list .button").trigger("click");
+  const labels=[...wrapper.findAll(".choice-buttons .mini-button")].map(b=>b.text());
+  expect(labels).toContain("方式一");
+  expect(labels).toContain("方式二");
+  expect(labels.some(t=>t==="mode_1")).toBe(false);
  });
 });

@@ -131,7 +131,7 @@ function selectEquipmentSlot(slotId:string,card:DeepReadonly<CardView>|null){
   emit("preselection",slotId,card?.state.modeId??null);
 }
 function valuesFor(spec:DeepReadonly<SelectionSpec>){if(spec.options?.length)return spec.options;if(spec.kind==="confirm")return [true,false];return [];}
-function choiceLabel(value:string|number|boolean){if(value===true)return "确认";if(value===false)return "取消";const colors:Record<string,string>={white:"白",red:"红",orange:"橙",blue:"蓝",green:"绿",none:"无色"};return typeof value==="string"?(colors[value]??value):String(value);}
+function choiceLabel(value:string|number|boolean){if(value===true)return "确认";if(value===false)return "取消";const colors:Record<string,string>={white:"白",red:"红",orange:"橙",blue:"蓝",green:"绿",none:"无色"};const options:Record<string,string>={drain_shield:"护盾伤害2",drain_hp:"血量伤害1",prototype:"原型机甲",vitaminC:"维C机甲",wifi:"无线机甲",kill:"杀",dodge:"闪",shieldDamage:"护盾伤害",hpDamage:"血量伤害",standard:"标准",no_kill:"不耗杀",mode_1:"方式一",mode_2:"方式二",field_fire:"场地火",laser:"激光",coin:"金币"};return typeof value==="string"?(colors[value]??options[value]??value):String(value);}
 function selectWeaponMode(slotId:string,modeId:string){if(activeOfferId.value!==null)return;emit("preselection",slotId,modeId);}
 function cancelOffer(){activeOfferId.value=null;clearSelections();}
 function forwardChat(channel:"all"|"team",text:string){emit("chat",channel,text);}
