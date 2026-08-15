@@ -1330,6 +1330,12 @@
           "items": {
             "$ref": "#/$defs/LogEntryView"
           }
+        },
+        "activityEvents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PresentationEvent"
+          }
         }
       }
     },
@@ -1619,6 +1625,31 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/ObjectRef"
+          }
+        },
+        "attackerSeat": {
+          "$ref": "#/$defs/Seat"
+        },
+        "weaponTemplateId": {
+          "type": "string"
+        },
+        "weaponColor": {
+          "$ref": "#/$defs/CardColor"
+        },
+        "range": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attackTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "damageSegments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DamageSegmentView"
           }
         }
       }
@@ -2040,6 +2071,9 @@
         "cardRef": {
           "$ref": "#/$defs/ObjectRef"
         },
+        "templateId": {
+          "type": "string"
+        },
         "purpose": {
           "type": "string"
         }
@@ -2061,6 +2095,10 @@
         },
         "reason": {
           "type": "string"
+        },
+        "templateId": {
+          "type": "string",
+          "description": "被弃置卡牌模板 ID（仅 cardRef 对查看者可见时提供，弃牌堆可显示正面牌面图）"
         }
       }
     },
@@ -2079,6 +2117,28 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/ObjectRef"
+          }
+        },
+        "weaponTemplateId": {
+          "type": "string"
+        },
+        "weaponColor": {
+          "$ref": "#/$defs/CardColor"
+        },
+        "range": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attackTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "damageSegments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DamageSegmentView"
           }
         }
       }
@@ -2210,6 +2270,9 @@
           "type": "string"
         },
         "action": {
+          "type": "string"
+        },
+        "result": {
           "type": "string"
         }
       }

@@ -83,6 +83,12 @@ describe("presentation event mapping",()=>{
   expect([...covered].sort()).toEqual(["ATTACK_DECLARED","ATTACK_RESOLVED","ATTACK_TARGETED","CARD_DISCARDED","CARD_DRAWN","CARD_MOVED","CARD_PLAYED","CARD_REVEALED","CHARACTER_DIED","CHARACTER_ELIMINATED","CHARACTER_RESCUED","CHOICE_REQUESTED","COUNTER_CHANGED","DAMAGE_PREVENTED","DAMAGE_SEGMENT_APPLIED","DECK_RESHUFFLED","DURABILITY_CHANGED","DYING_STARTED","GAME_ENDED","GAME_STARTED","HEALTH_CHANGED","JUDGMENT_RESULT_CHANGED","JUDGMENT_REVEALED","PHASE_CHANGED","RESPONSE_RESOLVED","RESPONSE_WINDOW_OPENED","STATUS_CHANGED","STATUS_PREVENTED","TRIGGER_RESOLVED","TURN_CHANGED"].sort());
   expect(covered.has("ACTION_COMMITTED")).toBe(false);
  });
+ it("CARD_DISCARDED 投影携带 templateId（cardRef 对查看者可见时，弃牌堆显示正面图）",async()=>{const {room,users}=await startedRoom();for(const seat of[1,2,3,4]as const)room.game=resolveInitialRedraw(room.game!,seat,false,ruleset).state;const state=room.game!,projector=new GameProjector(ruleset),handCard=state.zones["hand:1"]!.orderedCardRefs[0]!,tpl=state.cards[handCard]!.templateId;
+  const presented=projector.presentationFor(state,users[0]!.userId,[{eventType:"card.discarded",payload:{seat:1,cardRef:handCard,reason:"handLimit"},eventSeq:1,stateRevision:state.stateRevision}])[0];
+  expect(presented!.eventType).toBe("CARD_DISCARDED");
+  expect(presented!.payload).toMatchObject({seat:1,reason:"handLimit",cardRef:expect.stringContaining("private:"),templateId:tpl});
+  expect(validateProtocol("game",presented!)).toEqual({ok:true});
+ });
  it("projects real talent trigger events (triggerId/sourceRef/controllerSeat) with abilityId and seat",async()=>{const {room,users}=await startedRoom();for(const seat of[1,2,3,4]as const)room.game=resolveInitialRedraw(room.game!,seat,false,ruleset).state;const state=room.game!,projector=new GameProjector(ruleset);
   const cases:Array<[string,Record<string,unknown>,number,string]>=[
    ["trigger.resolved",{triggerId:"talent.blue_shield:x:0",sourceRef:"initialTalent:2:talent.blue_shield",controllerSeat:2,eventType:"damage.segment.before"},2,"talent.blue_shield"],

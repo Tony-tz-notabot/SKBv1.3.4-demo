@@ -7,15 +7,24 @@ import StageCard from "./StageCard.vue";
 const mountC = (props: Record<string, unknown>) => mount(StageCard, { props: { cardRef: "private:u1:c1", faceUp: true, ...props } });
 
 describe("StageCard 中央区卡牌", () => {
-  it("正面显示牌名（ref 尾段）", () => {
-    const w = mountC({});
-    expect(w.find(".stage-card").exists()).toBe(true);
-    expect(w.find(".stage-card__label").text()).toBe("c1");
+  it("正面（无 templateId）渲染默认占位图，不显示编号", () => {
+    const w = mount(StageCard, {
+      props: { cardRef: "public:card:0055", faceUp: true },
+      global: { stubs: { ResourceImage: { template: '<img class="ri" :src="resourceKey" />', props: ["resourceKey"] } } },
+    });
+    expect(w.find(".ri").exists()).toBe(true);
+    expect(w.find(".ri").attributes("src")).toBe("card.unknown");
+    expect(w.find(".stage-card__back-mark").exists()).toBe(false);
   });
 
-  it("背面显示卡背纹样类", () => {
-    const w = mountC({ faceUp: false });
+  it("背面统一 SKB 卡背（不显示图片/编号）", () => {
+    const w = mount(StageCard, {
+      props: { cardRef: "public:card:0055", faceUp: false, templateId: "basic.kill.blue" },
+      global: { stubs: { ResourceImage: { template: '<img class="ri" />' } } },
+    });
+    expect(w.find(".ri").exists()).toBe(false);
     expect(w.find(".stage-card").classes()).toContain("stage-card--back");
+    expect(w.find(".stage-card__back-mark").text()).toBe("SKB");
   });
 
   it("判定成功：高亮类 + 边缘色光（--glow 按印刷色）", () => {
@@ -37,5 +46,25 @@ describe("StageCard 中央区卡牌", () => {
   it("迷你条状（弃牌堆）：mini 类", () => {
     const w = mountC({ mini: true });
     expect(w.find(".stage-card").classes()).toContain("stage-card--mini");
+  });
+
+  it("带 templateId 的正面牌：渲染牌面图片（resourceKey=card.<templateId>），不显示文字编号", () => {
+    const w = mount(StageCard, {
+      props: { cardRef: "public:card:0055", faceUp: true, templateId: "basic.kill.blue" },
+      global: { stubs: { ResourceImage: { template: '<img class="ri" :src="resourceKey" />', props: ["resourceKey"] } } },
+    });
+    const img = w.find(".ri");
+    expect(img.exists()).toBe(true);
+    expect(img.attributes("src")).toBe("card.basic.kill.blue");
+    expect(w.find(".stage-card__label").exists()).toBe(false);
+  });
+
+  it("背面牌不显示图片（仅卡背纹样）", () => {
+    const w = mount(StageCard, {
+      props: { cardRef: "public:card:0055", faceUp: false, templateId: "basic.kill.blue" },
+      global: { stubs: { ResourceImage: { template: '<img class="ri" />' } } },
+    });
+    expect(w.find(".ri").exists()).toBe(false);
+    expect(w.find(".stage-card").classes()).toContain("stage-card--back");
   });
 });

@@ -51,3 +51,12 @@ export function effectKindFromSegment(segment: { hpLost?: unknown; shieldLost?: 
   if (shield > 0) return "shield";
   return "none";
 }
+
+/** 从攻击伤害段声明推断箭头基线效果色：元素攻击（火/毒/感电）取其元素色，普通攻击取伤害红。 */
+export function effectKindFromAttack(segments: Array<{ element?: unknown }> | undefined): EffectKind {
+  const elements = (segments ?? []).map((s) => String(s.element ?? "none"));
+  if (elements.some((e) => e === "fire")) return "fire";
+  if (elements.some((e) => e === "poison")) return "poison";
+  if (elements.some((e) => e === "electric")) return "electric";
+  return "hp";
+}

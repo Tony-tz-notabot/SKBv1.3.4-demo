@@ -42,17 +42,20 @@ const mountView = (events: unknown[] = []) =>
   });
 
 describe("GameView × CombatStage 集成（M5）", () => {
-  it("渲染中央战斗区：四子区 + 牌堆数量（快照直供）", () => {
+  it("渲染中央战斗区：主区/牌堆/弃牌堆 + 牌堆数量（快照直供）", () => {
     const w = mountView();
     expect(w.find(".combat-stage").exists()).toBe(true);
     expect(w.find(".stage-pile .pile-count").text()).toBe("20");
     expect(w.find(".stage-main").exists()).toBe(true);
-    expect(w.find(".stage-temp").exists()).toBe(true);
+    expect(w.find(".stage-temp").exists(), "临时弃牌区已移除").toBe(false);
     expect(w.find(".stage-discard").exists()).toBe(true);
   });
 
   it("攻击声明事件 → 操作箭头（standby）+ 主区词条", () => {
-    const w = mountView([{ eventSeq: 1, eventType: "ATTACK_DECLARED", payload: { attackerSeat: 1, targetRefs: ["public:seat_3"] } }]);
+    const w = mountView([
+      { eventSeq: 1, eventType: "ATTACK_DECLARED", payload: { attackerSeat: 1, targetRefs: [] } },
+      { eventSeq: 2, eventType: "ATTACK_TARGETED", payload: { attackerSeat: 1, targetRefs: ["public:seat_3"] } },
+    ]);
     const arrow = w.find(".stage-arrow");
     expect(arrow.exists(), "应渲染操作箭头").toBe(true);
     expect(arrow.classes()).toContain("stage-arrow--standby");
@@ -65,7 +68,7 @@ describe("GameView × CombatStage 集成（M5）", () => {
     expect(w.find(".stage-flight--face").exists()).toBe(true);
   });
 
-  it("出牌+攻击+结算 → 主区牌 → 弃牌堆条状", async () => {
+  it("出牌+攻击+结算 → 主区牌 → 弃牌堆条状", () => {
     const w = mountView([
       { eventSeq: 1, eventType: "CARD_PLAYED", payload: { seat: 1, cardRef: "private:u1:c1", purpose: "attack" } },
       { eventSeq: 2, eventType: "ATTACK_DECLARED", payload: { attackerSeat: 1, targetRefs: ["public:seat_3"] } },

@@ -260,6 +260,7 @@ export type GameSnapshot = {
   "activeWindow": ActiveWindowView | null;
   "chat": Array<ChatMessage>;
   "log"?: Array<LogEntryView>;
+  "activityEvents"?: Array<PresentationEvent>;
 };
 
 export type ExecuteOfferPayload = {
@@ -335,6 +336,12 @@ export type ActionCommittedPayload = {
 export type AttackTargetedPayload = {
   "sourceRef": ObjectRef;
   "targetRefs": Array<ObjectRef>;
+  "attackerSeat"?: Seat;
+  "weaponTemplateId"?: string;
+  "weaponColor"?: CardColor;
+  "range"?: number;
+  "attackTypes"?: Array<string>;
+  "damageSegments"?: Array<DamageSegmentView>;
 };
 
 export type ResponseWindowOpenedPayload = {
@@ -411,6 +418,7 @@ export type CardDrawnPayload = {
 export type CardPlayedPayload = {
   "seat": Seat;
   "cardRef"?: ObjectRef;
+  "templateId"?: string;
   "purpose": string;
 };
 
@@ -418,11 +426,17 @@ export type CardDiscardedPayload = {
   "seat": Seat;
   "cardRef"?: ObjectRef;
   "reason": string;
+  "templateId"?: string;
 };
 
 export type AttackDeclaredPayload = {
   "attackerSeat": Seat;
   "targetRefs": Array<ObjectRef>;
+  "weaponTemplateId"?: string;
+  "weaponColor"?: CardColor;
+  "range"?: number;
+  "attackTypes"?: Array<string>;
+  "damageSegments"?: Array<DamageSegmentView>;
 };
 
 export type AttackResolvedPayload = {
@@ -459,6 +473,7 @@ export type TriggerResolvedPayload = {
   "seat": Seat;
   "abilityId"?: string;
   "action": string;
+  "result"?: string;
 };
 
 export type DeckReshuffledPayload = {

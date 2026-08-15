@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// CombatStage 中央战斗区四子区 TDD（132 §3/R5：主区/临时弃牌区/牌堆/弃牌堆 + 主区词条）。
+// CombatStage 中央战斗区子区 TDD（132 §3/R5：主区/牌堆/弃牌堆 + 主区词条；临时弃牌区已移除）。
 import { mount } from "@vue/test-utils";
 import { nextTick } from "vue";
 import { describe, expect, it, vi } from "vitest";
@@ -15,13 +15,16 @@ const mountStage = (events: StageEvent[], drawPileCount: number | null = 30) =>
     global: { stubs: { StageArrow: true } },
   });
 
-describe("CombatStage 中央战斗区四子区（R5）", () => {
-  it("渲染四子区：主区/临时弃牌区/牌堆/弃牌堆", () => {
+describe("CombatStage 中央战斗区子区（R5）", () => {
+  it("渲染子区：主区（占满宽度）/牌堆/弃牌堆；临时弃牌区已移除", () => {
     const w = mountStage([]);
-    expect(w.find(".stage-main").exists()).toBe(true);
-    expect(w.find(".stage-temp").exists()).toBe(true);
-    expect(w.find(".stage-pile").exists()).toBe(true);
-    expect(w.find(".stage-discard").exists()).toBe(true);
+    expect(w.find(".combat-stage").exists()).toBe(true);
+    expect(w.find(".combat-stage__center").exists(), "子区应收进紧凑中心面板").toBe(true);
+    expect(w.find(".combat-stage__center .stage-main").exists()).toBe(true);
+    expect(w.find(".combat-stage__center .stage-temp").exists(), "临时弃牌区已移除").toBe(false);
+    expect(w.find(".combat-stage__center .stage-pile").exists()).toBe(true);
+    expect(w.find(".combat-stage__center .stage-discard").exists()).toBe(true);
+    expect(w.find(".combat-stage .stage-arrows").exists(), "箭头层应在表格级覆盖层").toBe(true);
   });
 
   it("牌堆显示卡背与数量", () => {
@@ -30,7 +33,7 @@ describe("CombatStage 中央战斗区四子区（R5）", () => {
     expect(w.find(".stage-pile .pile-back").exists()).toBe(true);
   });
 
-  it("出牌进主区；新操作开始（步骤推进）摊入临时弃牌；操作结束入弃牌堆条状区", async () => {
+  it("出牌进主区；新操作开始主区清空（内部经临时弃牌中转，不渲染）；操作结束入弃牌堆条状区", async () => {
     const w = mountStage([ev(1, "CARD_PLAYED", { seat: 1, cardRef: "private:u1:c1", purpose: "attack" })]);
     expect(w.find(".stage-main .stage-card").exists()).toBe(true);
     await w.setProps({
@@ -42,11 +45,11 @@ describe("CombatStage 中央战斗区四子区（R5）", () => {
     });
     expect(w.find(".stage-main .stage-card").exists()).toBe(false);
     expect(w.find(".stage-discard .stage-card").exists()).toBe(true);
-    expect(w.find(".stage-discard .stage-card").text()).toContain("c1");
+    expect(w.find(".stage-discard .stage-card img").exists(), "弃牌堆显示正面图").toBe(true);
   });
 
-  it("主区词条：攻击声明叙述（角色名+关系色 token）", () => {
-    const w = mountStage([ev(1, "ATTACK_DECLARED", { attackerSeat: 1, targetRefs: ["public:seat_3"] })]);
+  it("主区词条：攻击目标叙述（角色名+关系色 token）", () => {
+    const w = mountStage([ev(1, "ATTACK_TARGETED", { attackerSeat: 1, targetRefs: ["public:seat_3"] })]);
     expect(w.find(".stage-narration").exists()).toBe(true);
     expect(w.find(".stage-narration").text()).toContain("角色1攻击角色3");
   });
@@ -63,7 +66,8 @@ describe("CombatStage 中央战斗区四子区（R5）", () => {
       expect(w.findAll(".stage-flight").length).toBe(2);
       expect(w.find(".stage-flight--face").exists()).toBe(true);
       const flight = w.find(".stage-flight--face");
-      expect((flight.element as HTMLElement).style.getPropertyValue("--dx")).toBeTruthy();
+      expect((flight.element as HTMLElement).style.getPropertyValue("--fx")).toBeTruthy();
+      expect((flight.element as HTMLElement).style.getPropertyValue("--fy")).toBeTruthy();
       await w.setProps({ events: [...w.props("events"), ev(2, "CARD_DRAWN", { seat: 3, count: 1, cardRefs: [] })] });
       expect(w.findAll(".stage-flight").length).toBe(3);
       expect(w.find(".stage-flight--back").exists()).toBe(true);
@@ -75,7 +79,7 @@ describe("CombatStage 中央战斗区四子区（R5）", () => {
     }
   });
 
-  it("判定翻牌进主区 + 判定完成：判定卡高亮（success）", async () => {
+  it("判定翻牌进主区 + 判定完成：判定卡高亮（success）", () => {
     const w = mountStage([
       ev(1, "JUDGMENT_REVEALED", { card: { ref: "public:j1", displayName: "红牌", printedColor: "red" }, printedColor: "red" }),
       ev(2, "JUDGMENT_RESULT_CHANGED", { from: "red", to: "red", reason: "resolved" }),
@@ -94,15 +98,21 @@ describe("CombatStage 中央战斗区四子区（R5）", () => {
     expect(new Set(bends).size, `多目标箭头应扇形弯曲，实际 bends=${bends.join(",")}`).toBe(2);
   });
 
-  it("操作结束后箭头不残留：结束事件+1 个事件内保留（淡出期），之后清理", async () => {
-    const w = mountStage([
-      ev(1, "ATTACK_DECLARED", { attackerSeat: 1, targetRefs: ["public:seat_3"] }),
-      ev(2, "ATTACK_RESOLVED", { attackId: "a1", result: "resolved", outcome: "hit" }),
-    ]);
-    expect(w.findAllComponents({ name: "StageArrow" }).length).toBe(1); // 结束事件刚发生，保留淡出期
-    await w.setProps({ events: [...w.props("events"), ev(3, "CARD_DRAWN", { seat: 1, count: 1, cardRefs: [] })] });
-    expect(w.findAllComponents({ name: "StageArrow" }).length).toBe(1); // +1 事件仍在保留期
-    await w.setProps({ events: [...w.props("events"), ev(4, "CARD_DRAWN", { seat: 1, count: 1, cardRefs: [] })] });
-    expect(w.findAllComponents({ name: "StageArrow" }).length).toBe(0); // 超出保留窗口 → 清理
+  it("操作结束后箭头按时间保留（让 solid/arrive 动画播放）再清理", async () => {
+    vi.useFakeTimers();
+    try {
+      const w = mountStage([
+        ev(1, "ATTACK_DECLARED", { attackerSeat: 1, targetRefs: ["public:seat_3"] }),
+        ev(2, "ATTACK_RESOLVED", { attackId: "a1", result: "resolved", outcome: "hit" }),
+      ]);
+      expect(w.findAllComponents({ name: "StageArrow" }).length).toBe(1); // 结束事件刚发生，保留播放期
+      await w.setProps({ events: [...w.props("events"), ev(3, "CARD_DRAWN", { seat: 1, count: 1, cardRefs: [] })] });
+      expect(w.findAllComponents({ name: "StageArrow" }).length).toBe(1); // 保留期（<1200ms）内仍在
+      vi.advanceTimersByTime(1700);
+      await w.setProps({ events: [...w.props("events"), ev(4, "CARD_DRAWN", { seat: 1, count: 1, cardRefs: [] })] });
+      expect(w.findAllComponents({ name: "StageArrow" }).length).toBe(0); // 超出保留窗口 → 清理
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

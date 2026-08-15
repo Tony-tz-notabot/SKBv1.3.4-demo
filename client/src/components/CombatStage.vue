@@ -2,6 +2,8 @@
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { createStage, stageReducer, DISCARD_CAP, type StageEvent, type StageState } from "../stage/stageMachine";
 import { buildNarration, type NarrationCtx, type NarrationLine } from "../stage/narration";
+import { cardNameById, cardCls } from "../localization/promptRenderers";
+import { abilityDisplayName } from "../localization/descriptions";
 import { type Point } from "../stage/arrowPath";
 import StageArrow from "./StageArrow.vue";
 import StageCard from "./StageCard.vue";
@@ -20,10 +22,9 @@ const props = defineProps<{
   centralCards?: readonly { ref?: string }[];
 }>();
 
-// 舞台逻辑坐标（SVG 覆盖层坐标空间）
+// 舞台逻辑坐标（SVG 覆盖层坐标空间；箭头/飞行卡用 600x500 空间，经 viewBox/百分比映射到表格）
 const VIEW_W = 600;
 const VIEW_H = 500;
-const PILE_POS: Point = { x: VIEW_W * 0.14, y: VIEW_H * 0.93 };
 const defaultSeatPosition = (seat: number): Point => {
   const pos: Record<number, [number, number]> = {
     1: [VIEW_W * 0.8, VIEW_H * 0.88],
@@ -40,7 +41,7 @@ const endpointPos = (ep: number | "center"): Point => (ep === "center" ? centerP
 
 const stage = ref<StageState>(createStage());
 // 快照种子：弃牌堆条状 + 主区展示牌（判定/展示）在快照重置后恢复
-stage.value.discardRefs = (props.discardTop ?? []).map((c) => c.ref ?? "").filter(Boolean).slice(-DISCARD_CAP);
+stage.value.discardRefs = (props.discardTop ?? []).map((c) => ({ ref: c.ref ?? "" })).filter((d) => d.ref).slice(-DISCARD_CAP);
 stage.value.mainCards = (props.centralCards ?? []).map((c, i) => ({ ref: c.ref ?? `central:${i}`, faceUp: true, highlight: null, step: 0 }));
 
 // 多目标扇形弯曲（R2）：同一操作的多根箭头按序弯曲分离（±30px/级）
@@ -60,14 +61,16 @@ const arrowBends = computed(() => {
 });
 const narration = ref<NarrationLine[]>([]);
 let lastSeq = 0;
-const narrationCtx = (): NarrationCtx => ({ characterName: props.characterName, relationshipCls: props.relationshipCls });
-
+// 攻击详情缓存：ATTACK_DECLARED 写入武器/距离/伤害，ATTACK_TARGETED 拼完整句。
+const attackCtx: NarrationCtx["attackCtx"] = {};
+const narrationCtx = (): NarrationCtx => ({ characterName: props.characterName, relationshipCls: props.relationshipCls, cardName: cardNameById, cardCls, abilityName: abilityDisplayName, attackCtx });
 // 摸牌飞行卡（R6）：牌堆→座位，正/背面按公开性，800ms 后移除
 interface Flight {
   id: number;
   faceUp: boolean;
-  dx: number;
-  dy: number;
+  /** 终点百分比（600x500 逻辑坐标 → 表格百分比） */
+  fx: string;
+  fy: string;
 }
 const flights = ref<Flight[]>([]);
 let flightSeq = 0;
@@ -79,7 +82,7 @@ function processDraws(state: StageState): void {
     const seat = seatPos(draw.seat);
     for (let k = 0; k < draw.count; k++) {
       const id = ++flightSeq;
-      flights.value = [...flights.value, { id, faceUp: draw.faceUp, dx: seat.x - PILE_POS.x, dy: seat.y - PILE_POS.y }];
+      flights.value = [...flights.value, { id, faceUp: draw.faceUp, fx: `${((seat.x / VIEW_W) * 100).toFixed(1)}%`, fy: `${((seat.y / VIEW_H) * 100).toFixed(1)}%` }];
       const timer = setTimeout(() => {
         flights.value = flights.value.filter((f) => f.id !== id);
         flightTimers.delete(timer);
@@ -89,9 +92,27 @@ function processDraws(state: StageState): void {
   }
   seenDraws = state.draws.length;
 }
-onBeforeUnmount(() => {
-  for (const timer of flightTimers) clearTimeout(timer);
-});
+
+// 事件处理：同步逐条应用（快照 activityEvents 全量携带，组件随 :key=gameId 跨快照存活）。
+// 结束箭头按时间保留（ARROW_KEEP_MS）而非事件窗口——批量投递下 seq 窗口会立即裁剪，时间保留
+// 让命中后 solid/arrive 阶段渲染并播放其 CSS 动画（132 §4.3）。
+const ARROW_KEEP_MS = 1600;
+const opEndedAt = new Map<string, number>();
+/** 多目标攻击：单目标已结算（arrow.completed）的独立淡出计时——不等整个操作结束 */
+const arrowEndedAt = new Map<string, number>();
+
+function pruneEndedArrows(): void {
+  const current = stage.value;
+  const now = Date.now();
+  const keep = current.arrows.filter((arrow) => {
+    const endedAt = arrowEndedAt.get(arrow.id);
+    if (endedAt !== undefined) return now - endedAt < ARROW_KEEP_MS; // 该目标已结算完，独立淡出中
+    const op = current.operations.find((o) => o.opId === arrow.opId);
+    if (!op || op.state === "active") return true;
+    return now - (opEndedAt.get(op.opId) ?? now) < ARROW_KEEP_MS;
+  });
+  if (keep.length !== current.arrows.length) stage.value = { ...current, arrows: keep };
+}
 
 watch(
   () => props.events,
@@ -100,8 +121,15 @@ watch(
       if (event.eventSeq <= lastSeq) continue;
       stage.value = stageReducer(stage.value, event);
       lastSeq = event.eventSeq;
+      for (const op of stage.value.operations) {
+        if (op.state !== "active" && !opEndedAt.has(op.opId)) opEndedAt.set(op.opId, Date.now());
+      }
+      for (const arrow of stage.value.arrows) {
+        if (arrow.completed && !arrowEndedAt.has(arrow.id)) arrowEndedAt.set(arrow.id, Date.now());
+      }
       const line = buildNarration(event, narrationCtx());
-      if (line) narration.value = [...narration.value, line].slice(-6);
+      // 主区非日志区：只显示当前正在进行的操作（单条词条），新步骤/新操作替换而非累积。
+      if (line) narration.value = [line];
     }
     processDraws(stage.value);
     pruneEndedArrows();
@@ -109,36 +137,27 @@ watch(
   { immediate: true },
 );
 
-// 操作结束后箭头不残留：结束事件 +1 个事件内保留（让淡出/到达动画播完），之后清理该操作箭头。
-function pruneEndedArrows(): void {
-  const current = stage.value;
-  const keep = current.arrows.filter((arrow) => {
-    const op = current.operations.find((o) => o.opId === arrow.opId);
-    if (!op || op.state === "active") return true;
-    if (op.endedSeq == null) return true;
-    return lastSeq - op.endedSeq < 2;
-  });
-  if (keep.length !== current.arrows.length) stage.value = { ...current, arrows: keep };
-}
+onBeforeUnmount(() => {
+  for (const timer of flightTimers) clearTimeout(timer);
+});
 </script>
 
 <template>
   <div class="combat-stage">
-    <div class="stage-main">
-      <StageNarration :lines="narration" />
-      <div class="stage-main__cards">
-        <StageCard v-for="card in stage.mainCards" :key="card.ref" :card-ref="card.ref" :face-up="card.faceUp" :printed-color="card.printedColor" :highlight="card.highlight" :flip-in="card.flipIn" />
+    <div class="combat-stage__center">
+      <div class="stage-main">
+        <StageNarration :lines="narration" />
+        <div class="stage-main__cards">
+          <StageCard v-for="card in stage.mainCards" :key="card.ref" :card-ref="card.ref" :face-up="card.faceUp" :printed-color="card.printedColor" :template-id="card.templateId" :highlight="card.highlight" :flip-in="card.flipIn" />
+        </div>
+      </div>
+      <div class="stage-pile"><div class="pile-back"></div><span class="pile-count">{{ drawPileCount }}</span></div>
+      <div class="stage-discard">
+        <StageCard v-for="d in stage.discardRefs" :key="d.ref" :card-ref="d.ref" :template-id="d.templateId" :face-up="true" mini />
       </div>
     </div>
-    <div class="stage-temp">
-      <StageCard v-for="card in stage.tempDiscard" :key="card.ref" :card-ref="card.ref" :face-up="card.faceUp" />
-    </div>
-    <div class="stage-pile"><div class="pile-back"></div><span class="pile-count">{{ drawPileCount }}</span></div>
-    <div class="stage-discard">
-      <StageCard v-for="ref in stage.discardRefs" :key="ref" :card-ref="ref" :face-up="true" mini />
-    </div>
     <div class="stage-flights">
-      <div v-for="f in flights" :key="f.id" class="stage-flight" :class="f.faceUp ? 'stage-flight--face' : 'stage-flight--back'" :style="{ '--dx': `${f.dx}px`, '--dy': `${f.dy}px` }"></div>
+      <div v-for="f in flights" :key="f.id" class="stage-flight" :class="f.faceUp ? 'stage-flight--face' : 'stage-flight--back'" :style="{ '--fx': f.fx, '--fy': f.fy }"></div>
     </div>
     <div class="stage-arrows"><StageArrow v-for="arrow in stage.arrows" :key="arrow.id" :from="endpointPos(arrow.from)" :to="endpointPos(arrow.to)" :self-loop="arrow.selfLoop" :phase="arrow.phase" :effect="arrow.effect" :opacity="arrow.opacity" :bend="arrowBends.get(arrow.id) ?? 0" /></div>
   </div>

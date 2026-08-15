@@ -100,7 +100,7 @@ h1 { margin-bottom: 0; font-size: clamp(1.7rem, 5vw, 2.6rem); }
 .candidate-body { padding: 14px; }.candidate-body h3 { margin: 0; font-size: 1.25rem; }.candidate-body > p { margin: 7px 0 0; overflow: hidden; color: #8399a5; font-size: .76rem; text-overflow: ellipsis; white-space: nowrap; }.vitals { margin-top: 12px; display: flex; gap: 6px; }.vitals span { padding: 4px 7px; border-radius: 6px; font-size: .72rem; font-weight: 800; }.vitals span:first-child { color: #ff9a9a; background: #3c2027; }.vitals span:last-child { color: #d6dde2; background: #3b454c; }
 .selection-footer { display: flex; align-items: center; gap: 16px; }.selection-seats { flex: 1; display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }.seat-card--compact { min-height: 76px; padding: 9px; }.seat-card--compact .seat-card__number { width: 26px; height: 26px; }.seat-card--compact p { display: none; }
 .detail-backdrop { position: fixed; z-index: 100; inset: 0; display: flex; justify-content: flex-end; background: rgba(2,8,12,.7); backdrop-filter: blur(5px); }.detail-drawer { width: min(430px,100%); height: 100%; overflow-y: auto; padding: 24px; border-left: 1px solid #36586b; background: #0b1821; box-shadow: -24px 0 60px rgba(0,0,0,.45); }.detail-close { position: absolute; z-index: 1; top: 14px; right: 16px; width: 38px; height: 38px; border: 1px solid #456779; border-radius: 50%; color: #edf9fa; background: rgba(9,24,33,.88); font-size: 1.5rem; cursor: pointer; }.detail-portrait { width: 100%; aspect-ratio: 4 / 3; margin-bottom: 20px; border-radius: 14px; object-fit: cover; }.detail-drawer h2 { margin: 4px 0 16px; font-size: 2rem; }.detail-vitals { display: flex; gap: 8px; }.detail-vitals span { padding: 8px 10px; border-radius: 8px; background: #17303e; }.detail-drawer section { margin-top: 22px; padding-top: 14px; border-top: 1px solid #253e4c; }.detail-drawer section h3 { margin: 0 0 8px; }.detail-drawer section p,.detail-drawer li { color: #b8cad3; }.detail-note { margin-top: 28px; color: #6f8795; font-size: .78rem; }
-.game-layout { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,1fr); gap: 14px; }.game-hud { grid-column: 1 / -1; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid #294558; border-radius: 15px; background: #0b1821; }.game-hud h2 { margin: 0; }.phase-track { display: flex; flex-wrap: wrap; gap: 5px; }.phase-track span { padding: 5px 7px; border-radius: 6px; color: #647b89; background: #10222d; font-size: .68rem; }.phase-track span.active { color: #071317; background: #77d5d9; font-weight: 800; }.game-table { grid-column:1;grid-row:3; min-height: 650px; position: relative; overflow: hidden; border: 1px solid #294558; border-radius: 24px; background: radial-gradient(ellipse at center,#21475a 0,#112934 40%,#07131b 76%); }.game-player-position { width: min(330px,42%); position: absolute; transform: translate(-50%,-50%); }.game-player-position[data-position="bottomLeft"] { left:22%;top:85%; }.game-player-position[data-position="bottomRight"] { left:78%;top:85%; }.game-player-position[data-position="topLeft"] { left:22%;top:15%; }.game-player-position[data-position="topRight"] { left:78%;top:15%; }.game-player { min-height: 168px; position: relative; overflow: hidden; padding: 12px; border: 1px solid #36566a; border-radius: 14px; background: rgba(8,21,29,.94); }.game-player[data-team="A"] { border-left:4px solid #59c5cf; }.game-player[data-team="B"] { border-left:4px solid #d08066; }.game-player--active { box-shadow: 0 0 0 2px #efd27b,0 0 28px rgba(239,210,123,.24); }.game-player--local { border-bottom-color:#77d5d9; }.game-player--out { filter: grayscale(1);opacity:.58; }.game-player__portrait { width:68px;height:100%;position:absolute;inset:0 0 0 auto;object-fit:cover;opacity:.28; }.game-player__head { position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:6px; }.seat-token { width:24px;height:24px;display:grid;place-items:center;border-radius:50%;color:#071317;background:#b2c5ce;font-weight:900; }
+.game-layout { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,1fr); grid-template-rows: auto auto 551px auto auto; gap: 14px; }.game-hud { grid-column: 1 / -1; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid #294558; border-radius: 15px; background: #0b1821; }.game-hud h2 { margin: 0; }.phase-track { display: flex; flex-wrap: wrap; gap: 5px; }.phase-track span { padding: 5px 7px; border-radius: 6px; color: #647b89; background: #10222d; font-size: .68rem; }.phase-track span.active { color: #071317; background: #77d5d9; font-weight: 800; }.game-table { grid-column:1;grid-row:3; min-height: 551px; position: relative; overflow: hidden; border: 1px solid #294558; border-radius: 24px; background: radial-gradient(ellipse at center,#21475a 0,#112934 40%,#07131b 76%); }.game-player-position { width: min(330px,42%); position: absolute; transform: translate(-50%,-50%); }.game-player-position[data-position="bottomLeft"] { left:22%;top:85%; }.game-player-position[data-position="bottomRight"] { left:78%;top:85%; }.game-player-position[data-position="topLeft"] { left:22%;top:15%; }.game-player-position[data-position="topRight"] { left:78%;top:15%; }.game-player { min-height: 168px; position: relative; overflow: hidden; padding: 12px; border: 1px solid #36566a; border-radius: 14px; background: rgba(8,21,29,.94); }.game-player[data-team="A"] { border-left:4px solid #59c5cf; }.game-player[data-team="B"] { border-left:4px solid #d08066; }.game-player--active { box-shadow: 0 0 0 2px #efd27b,0 0 28px rgba(239,210,123,.24); }.game-player--local { border-bottom-color:#77d5d9; }.game-player--out { filter: grayscale(1);opacity:.58; }.game-player__portrait { width:68px;height:100%;position:absolute;inset:0 0 0 auto;object-fit:cover;opacity:.28; }.game-player__head { position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:6px; }.seat-token { width:24px;height:24px;display:grid;place-items:center;border-radius:50%;color:#071317;background:#b2c5ce;font-weight:900; }
 /* ===== 血盾条（130 §1.5-B v1：细式/数值在左/主题提亮/无边框/失去部分加深+低透明/等宽字体） ===== */
 .game-player__bars { position:relative;z-index:1;margin-top:8px;display:grid;gap:3px; }
 .bar { position:relative;display:flex;align-items:center;gap:6px; }
@@ -152,7 +152,7 @@ h1 { margin-bottom: 0; font-size: clamp(1.7rem, 5vw, 2.6rem); }
   .candidate-grid { grid-template-columns: repeat(2,1fr); }.selection-layout { padding: 18px; }.selection-seats { grid-template-columns: repeat(2,1fr); }.selection-footer { align-items: stretch; flex-direction: column; }
   .inline-form { grid-template-columns: 1fr; }
   .room-create-form,.room-join-form,.time-settings,.toggle-grid { grid-template-columns: 1fr; }.form-field,.spectator-option { grid-column: 1 / -1; }
-  .game-layout { grid-template-columns:1fr; }.game-hud { align-items:flex-start;flex-direction:column; }.game-table { grid-column:1;grid-row:auto;min-height:700px; }.game-player-position { width:58%; }.game-player-position[data-position="bottomLeft"] { left:25%; }.game-player-position[data-position="bottomRight"] { left:75%; }.game-player-position[data-position="topLeft"] { left:25%; }.game-player-position[data-position="topRight"] { left:75%; }.interaction-panel { grid-column:1;grid-row:auto;min-height:0; }.game-activity { grid-column:1;grid-row:auto; }.hand-zone { grid-column:1;grid-row:auto; }.hand-cards .game-card+.game-card { margin-left:-36px; }
+  .game-layout { grid-template-columns:1fr; grid-template-rows:none; }.game-hud { align-items:flex-start;flex-direction:column; }.game-table { grid-column:1;grid-row:auto;min-height:700px; }.game-player-position { width:58%; }.game-player-position[data-position="bottomLeft"] { left:25%; }.game-player-position[data-position="bottomRight"] { left:75%; }.game-player-position[data-position="topLeft"] { left:25%; }.game-player-position[data-position="topRight"] { left:75%; }.interaction-panel { grid-column:1;grid-row:auto;min-height:0; }.game-activity { grid-column:1;grid-row:auto; height:min(520px,55vh); }.hand-zone { grid-column:1;grid-row:auto; }.hand-cards .game-card+.game-card { margin-left:-36px; }
   .game-activity { grid-template-columns:1fr; }
 }
 
@@ -209,46 +209,46 @@ h1 { margin-bottom: 0; font-size: clamp(1.7rem, 5vw, 2.6rem); }
 .matchlog-view__meta { margin:10px 0 14px; color:#8fa4af; font-size:.78rem; }
 .matchlog-view .game-log { min-height:62vh; }
 
-/* ===== 中央战斗区（132 §3/R5：主区/临时弃牌区/牌堆/弃牌堆 + 箭头 + 词条） ===== */
-.combat-stage { position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58%;height:72%;display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:1fr auto;gap:8px;pointer-events:none;z-index:2; }
-.stage-main { grid-column:1;grid-row:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:8px;overflow:hidden;border:1px solid #2a4a5c;border-radius:12px;background:rgba(9,20,29,.55); }
-.stage-main__cards { display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;overflow:hidden; }
-.stage-narration { display:flex;flex-direction:column;gap:3px;overflow:hidden;color:#cfe0e7;font-size:.66rem;line-height:1.5; }
-.stage-temp { grid-column:2;grid-row:1;min-height:0;display:flex;flex-wrap:wrap;align-content:flex-start;gap:4px;padding:8px;overflow:hidden;border:1px solid #2a4a5c;border-radius:12px;background:rgba(9,20,29,.4); }
-.stage-pile { grid-column:1;grid-row:2;display:flex;align-items:center;gap:6px; }
-.stage-pile .pile-back { width:26px;height:38px;border:1px solid #41657a;border-radius:4px;background:repeating-linear-gradient(45deg,#1d3a4a,#1d3a4a 4px,#152b38 4px,#152b38 8px); }
+/* ===== 中央战斗区（132 §3/R5：全表格覆盖层 + 紧凑中心面板（主区/临时弃牌/牌堆/弃牌堆）+ 箭头 + 飞行卡） ===== */
+.combat-stage { position:absolute; inset:0; pointer-events:none; z-index:2; }
+.combat-stage__center { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(320px,36%); height:min(178px,50%); display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr auto; gap:6px; }
+.stage-main { grid-column:1/-1; grid-row:1; min-height:0; display:flex; flex-direction:column; gap:6px; padding:8px; overflow:hidden; border:1px solid #2a4a5c; border-radius:12px; background:rgba(9,20,29,.66); }
+.stage-main__cards { display:flex; flex-wrap:wrap; gap:4px; align-content:flex-start; overflow:hidden; }
+.stage-narration { display:flex; flex-direction:column; gap:3px; overflow:hidden; color:#cfe0e7; font-size:.66rem; line-height:1.5; }
+.stage-pile { grid-column:1; grid-row:2; display:flex; align-items:center; gap:6px; }
+.stage-pile .pile-back { width:26px;height:38px;border:1px solid #4d7084;border-radius:4px;background:radial-gradient(circle at 50% 40%,#3a6378 0%,#1d3a4a 48%,#122936 100%); }
 .stage-pile .pile-count { color:#7ed7d8;font-weight:800;font-size:.8rem; }
-.stage-discard { grid-column:2;grid-row:2;display:flex;align-items:center;gap:2px;overflow:hidden; }
+.stage-discard { grid-column:2; grid-row:2; display:flex; align-items:center; gap:2px; overflow:hidden; }
 .stage-card { width:52px;height:74px;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;border:1px dashed #4a6b7c;border-radius:6px;color:#9fb3bd;background:#0b1a24;font-size:.5rem; }
+.stage-card img { width:100%;height:100%;object-fit:cover;border-radius:5px; }
 .stage-card--mini { width:22px;height:32px; }
-.stage-card--back { background:repeating-linear-gradient(45deg,#1d3a4a,#1d3a4a 4px,#152b38 4px,#152b38 8px); }
+.stage-card--back { background:radial-gradient(circle at 50% 40%,#3a6378 0%,#1d3a4a 48%,#122936 100%);border-color:#4d7084; }
+.stage-card__back-mark { font-size:.5rem;font-weight:800;color:#9cc7da;letter-spacing:.12em;text-shadow:0 1px 3px #000b; }
+.stage-card--mini .stage-card__back-mark { font-size:.28rem; }
 .stage-card--success { border-color:var(--glow,#ff9aa8);box-shadow:0 0 10px var(--glow,#ff9aa8); }
 .stage-card--fail { filter:grayscale(.85);opacity:.45; }
 .stage-card--flip-in { animation:card-flip-in .3s ease-out; }
-.stage-card__label { max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 3px; }
 @keyframes card-flip-in { from { transform:rotateY(90deg);opacity:0 } to { transform:rotateY(0);opacity:1 } }
-/* 摸牌飞行卡（R6）：牌堆→座位，正/背面按公开性 */
-.stage-flights { position:absolute;inset:0;overflow:visible;pointer-events:none;z-index:3; }
-.stage-flight { position:absolute;left:14%;top:93%;width:20px;height:30px;border-radius:4px;animation:card-flight .7s ease-in forwards; }
+/* 摸牌飞行卡（R6）：牌堆→座位（百分比终点，与 viewBox 坐标一致），正/背面按公开性 */
+.stage-flights { position:absolute; inset:0; overflow:visible; pointer-events:none; z-index:3; }
+.stage-flight { position:absolute; left:14%; top:93%; width:20px; height:30px; border-radius:4px; animation:card-flight .7s ease-in forwards; }
 .stage-flight--face { background:#23475c;border:1px solid #5d89a0; }
-.stage-flight--back { background:repeating-linear-gradient(45deg,#1d3a4a,#1d3a4a 4px,#152b38 4px,#152b38 8px);border:1px solid #41657a; }
-@keyframes card-flight { to { transform:translate(var(--dx,0),var(--dy,0)); } }
+.stage-flight--back { background:radial-gradient(circle at 50% 40%,#3a6378 0%,#1d3a4a 48%,#122936 100%);border:1px solid #4d7084; }
+@keyframes card-flight { to { left: var(--fx,90%); top: var(--fy,80%); } }
 .stage-arrows { position:absolute;inset:0;overflow:visible;pointer-events:none; }
 
-/* ===== 操作指示箭头（132 §4：standby 白荧光轮廓 → solid 实体化 → flow 能量流 → arrive/voided） ===== */
-.stage-arrow { position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;transition:opacity .3s; }
-.stage-arrow__outline { fill:none;stroke:#eaf6ff;stroke-width:2.5;filter:drop-shadow(0 0 5px rgba(234,246,255,.9)); }
-.stage-arrow__body { fill:rgba(234,246,255,.14);transition:fill .2s; }
-.stage-arrow--standby .stage-arrow__body { fill:none; }
-.stage-arrow--solid .stage-arrow__body { fill:rgba(234,246,255,.3); }
-.stage-arrow--flow .stage-arrow__body { fill:rgba(234,246,255,.34); }
-.stage-arrow--flow .stage-arrow__energy { fill:none;stroke:var(--effect,#eaf6ff);stroke-width:4;stroke-dasharray:6 10;filter:drop-shadow(0 0 4px var(--effect));animation:energy-flow .6s linear infinite; }
-.stage-arrow--arrive .stage-arrow__body { fill:rgba(234,246,255,.38); }
-.stage-arrow--arrive { animation:arrow-impact .5s ease-out; }
+/* ===== 操作指示箭头（132 §4 修订：↑ 楔形行军图箭头）=====
+   standby：白色荧光轮廓；命中（solid/flow/arrive）：效果色 fill 经 clipPath SMIL 从尾部→头部
+   加速揭示（填色渲染并冲击），随后冲击爆闪 + 淡出；voided 直接淡出。 */
+.stage-arrow { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; transition:opacity .3s; }
+.stage-arrow__outline { fill:none;stroke:#eaf6ff;stroke-width:3.5;filter:drop-shadow(0 0 6px rgba(234,246,255,.95)); }
+.stage-arrow__body { fill:none;stroke:rgba(234,246,255,.3);stroke-width:1.5; }
+.stage-arrow__fill { fill:var(--impact,#eaf6ff); }
+.stage-arrow--standby .stage-arrow__body { stroke:none; }
+.stage-arrow--arrive { animation:arrow-impact .3s ease .5s 1,arrow-fade .5s ease .75s forwards; }
 .stage-arrow--voided { animation:arrow-fade .4s ease-out forwards; }
-@keyframes energy-flow { to { stroke-dashoffset:-16; } }
 @keyframes arrow-fade { to { opacity:0; } }
-@keyframes arrow-impact { 30% { filter:drop-shadow(0 0 10px rgba(234,246,255,.8)); } }
+@keyframes arrow-impact { 0%{filter:none} 55%{filter:drop-shadow(0 0 16px var(--impact,#eaf6ff))} 100%{filter:none} }
 
 /* ===== 无障碍：prefers-reduced-motion 全局降级（130 I1） ===== */
 @media (prefers-reduced-motion: reduce) {
